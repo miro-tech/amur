@@ -1,0 +1,209 @@
+{
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "127.0.0.1",
+        "port": 53
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": false,
+        "routeOnly": false
+      },
+      "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "tag": "http"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1053,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1",
+        "network": "tcp,udp",
+        "port": 53
+      },
+      "tag": "dns-in"
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "proxy",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "Api.devsoftsnow.com",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "8890bb0b-8ece-4c80-b249-4cf6f8d5ffc3",
+                "level": 8,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "publicKey": "",
+          "serverName": "gateway02.nikanart.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
+        },
+        "wsSettings": {
+          "path": "/gateway02",
+          "headers": {
+            "Host": "gateway02.nikanart.top"
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "mark": 255,
+          "tcpNoDelay": true
+        }
+      },
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "1",
+          "interval": "0"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "TcpNoDelay": true,
+          "mark": 255
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "outboundTag": "proxy",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "port": "53",
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {}
+}
