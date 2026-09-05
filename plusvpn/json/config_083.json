@@ -1,13 +1,17 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
+    "hosts": {},
     "servers": [
-      "https+local://dns.google/dns-query",
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
+      {
+        "address": "127.0.0.1",
+        "port": 53
+      }
     ]
   },
   "inbounds": [
@@ -25,74 +29,104 @@
           "http",
           "tls"
         ],
-        "enabled": true
+        "enabled": false,
+        "routeOnly": false
       },
       "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "tag": "http"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1053,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1",
+        "network": "tcp,udp",
+        "port": 53
+      },
+      "tag": "dns-in"
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "mconfnewone1.stonemain.com",
+            "address": "Api.devsoftsnow.com",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
                 "flow": "",
-                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
-                "level": 8
+                "id": "d8bf9a88-4f27-44dc-bd7c-cdf85da6adf9",
+                "level": 8,
+                "security": "auto"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "grpcSettings": {
-          "authority": "",
-          "health_check_timeout": 20,
-          "idle_timeout": 60,
-          "multiMode": false,
-          "serviceName": ""
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "publicKey": "",
+          "serverName": "statics44.sarvelat.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
         },
-        "network": "grpc",
+        "wsSettings": {
+          "path": "/statics44",
+          "headers": {
+            "Host": "statics44.sarvelat.top"
+          }
+        },
         "sockopt": {
           "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 60,
+          "tcpKeepAliveIdle": 100,
           "mark": 255,
           "tcpNoDelay": true
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
+      }
     },
     {
       "tag": "fragment",
       "protocol": "freedom",
       "settings": {
-        "domainStrategy": "AsIs",
         "fragment": {
-          "packets": "1-1",
-          "length": "2-4",
-          "interval": "25"
+          "packets": "tlshello",
+          "length": "1",
+          "interval": "0"
         }
       },
       "streamSettings": {
+        "network": "tcp",
+        "security": "",
         "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 60
+          "TcpNoDelay": true,
+          "mark": 255
         }
       }
     },
@@ -111,37 +145,35 @@
         }
       },
       "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
-        "domain": [
-          "geosite:private"
+        "inboundTag": [
+          "dns-in"
         ],
         "outboundTag": "proxy",
         "type": "field"
       },
       {
         "ip": [
-          "geoip:private"
+          "1.1.1.1"
         ],
+        "outboundTag": "proxy",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "port": "53",
         "outboundTag": "proxy",
         "type": "field"
       },
@@ -149,6 +181,20 @@
         "network": "udp",
         "outboundTag": "block",
         "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
         "type": "field"
       },
       {

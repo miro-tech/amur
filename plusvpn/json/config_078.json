@@ -4,17 +4,10 @@
       "domain:googleapis.cn": "googleapis.com"
     },
     "servers": [
+      "https+local://dns.google/dns-query",
       "1.1.1.1",
-      {
-        "address": "1.1.1.1",
-        "domains": []
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
-      }
+      "8.8.8.8",
+      "localhost"
     ]
   },
   "inbounds": [
@@ -32,8 +25,7 @@
           "http",
           "tls"
         ],
-        "enabled": true,
-        "routeOnly": false
+        "enabled": true
       },
       "tag": "socks"
     }
@@ -41,25 +33,27 @@
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
+    "error": ""
   },
   "outbounds": [
     {
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "37.27.252.18",
+            "address": "mconfnewfive5.stonemain.com",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "id": "c63e725f-566d-440c-8511-82c0c98b8a5d",
+                "flow": "",
+                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
                 "level": 8
               }
             ]
@@ -67,24 +61,40 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+        "network": "grpc",
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 60,
+          "mark": 255,
+          "tcpNoDelay": true
         }
       },
       "tag": "proxy"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "1-1",
+          "length": "2-4",
+          "interval": "25"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 60
+        }
+      }
     },
     {
       "protocol": "freedom",
@@ -103,9 +113,50 @@
       "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
   "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
-  }
+    "rules": [
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {}
 }
