@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -24,7 +17,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:3h-kazakhstan1.09vpn.com"
+          "full:s3.stonemain.com"
         ]
       },
       {
@@ -33,7 +26,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:3h-kazakhstan1.09vpn.com"
+          "full:s3.stonemain.com"
         ]
       },
       {
@@ -42,7 +35,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:3h-kazakhstan1.09vpn.com"
+          "full:s3.stonemain.com"
         ]
       },
       {
@@ -89,16 +82,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -155,20 +138,31 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "vmess",
+      "mux": {
+        "concurrency": 8,
+        "enabled": false,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
+      "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "3h-kazakhstan1.09vpn.com",
-            "port": 80,
+            "address": "s3.stonemain.com",
+            "port": 443,
             "users": [
               {
-                "id": "567f4be5-12ab-42e1-b8d9-db6fd1fdd31c",
-                "alterId": 0,
-                "security": "auto",
+                "encryption": "none",
+                "flow": "",
+                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
                 "level": 8
               }
             ]
@@ -176,21 +170,20 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/vmess/",
-          "headers": {
-            "Host": "wrmelmwxlf.gktevlrqznwqqozy.fabpfs66gizmnojhcvqxwl.kytrcfzqla87gvgvs6c7kjnrubuh.cc"
-          }
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
+        "network": "grpc",
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true,
           "happyEyeballs": {
@@ -200,7 +193,8 @@
             "maxConcurrentTry": 4
           }
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -239,6 +233,7 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -246,7 +241,7 @@
       {
         "type": "field",
         "domain": [
-          "full:3h-kazakhstan1.09vpn.com"
+          "full:s3.stonemain.com"
         ],
         "network": "tcp,udp",
         "outboundTag": "direct"
@@ -291,5 +286,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
