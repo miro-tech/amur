@@ -15,7 +15,7 @@ from Crypto.Util.Padding import unpad
 # SETTINGS
 # ============================================================
 
-API_URL = "https://meliv2me.org/api/protocols"
+API_URL = "https://amur-managev1-xyz.translate.goog/api/protocols"
 
 OUTPUT_DIR = "plusvpn"
 
