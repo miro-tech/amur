@@ -1,4 +1,5 @@
 {
+  "remarks": "@shenvpn",
   "log": {
     "access": "",
     "error": "",
@@ -21,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api-bl.data-media-social.org"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api-bl.data-media-social.org"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api-bl.data-media-social.org"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -79,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -142,14 +162,14 @@
       "settings": {
         "vnext": [
           {
-            "address": "193.148.253.5",
-            "port": 40436,
+            "address": "api-bl.data-media-social.org",
+            "port": 443,
             "users": [
               {
-                "id": "20b62dda-34c1-4273-9339-6492c25f957b",
-                "email": "t@t.tt",
-                "security": "auto",
-                "encryption": "none"
+                "id": "ef4f4c3d-0b16-48ad-a8d8-2d22512b3b36",
+                "encryption": "none",
+                "level": 8,
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
@@ -157,19 +177,34 @@
       },
       "streamSettings": {
         "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "api-bl.data-media-social.org",
+          "fingerprint": "safari",
+          "publicKey": "FM_FCyXj3OKqsDvc7ABvxiYC5G1dP_H5W0wjqPOg2Sc",
+          "shortId": "f3a9d1b1c7d4f708"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
       }
     },
     {
@@ -198,10 +233,29 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:api-bl.data-media-social.org"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -242,27 +296,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "remarks": "@shenvpn",
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }
