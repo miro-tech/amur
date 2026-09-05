@@ -22,28 +22,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -89,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -152,84 +153,38 @@
       "settings": {
         "vnext": [
           {
-            "address": "Api.devsoftsnow.com",
-            "port": 443,
+            "address": "135.125.152.124",
+            "port": 8443,
             "users": [
               {
+                "id": "ebd0f951-3dd8-4f19-a118-3ca7fa76f8eb",
                 "encryption": "none",
-                "flow": "",
-                "id": "d8bf9a88-4f27-44dc-bd7c-cdf85da6adf9",
-                "level": 8,
-                "security": "auto"
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.cloudflare.com",
           "fingerprint": "chrome",
-          "publicKey": "",
-          "serverName": "statics48.nikanpro.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
+          "publicKey": "sj5dIGtuDXqPRcUwaqlqz0IaOFan4URk8ekmk7YYm2Y",
+          "shortId": "3e4e304b19f51454",
+          "spiderX": "/jmemky5SDfWq"
         },
-        "wsSettings": {
-          "path": "/statics48",
-          "headers": {
-            "Host": "statics48.nikanpro.top"
-          }
+        "xhttpSettings": {
+          "path": "/Ap4LRO3H9Kzt"
         },
         "sockopt": {
-          "tcpKeepAliveIdle": 20,
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "domainStrategy": "UseIPv4v6",
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMptcp": true,
-          "domainStrategy": "UseIPv4v6",
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
+          "tcpKeepAliveIdle": 25,
+          "tcpKeepAliveInterval": 20,
+          "tcpUserTimeout": 30000,
+          "domainStrategy": "UseIP"
         }
       }
     },
@@ -259,18 +214,21 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:api.devsoftsnow.com"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
@@ -311,26 +269,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

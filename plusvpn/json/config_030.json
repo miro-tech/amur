@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -22,19 +15,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewthree3.stonemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewthree3.stonemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewthree3.stonemain.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +82,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -146,51 +138,63 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": 8,
+        "enabled": false,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "46.16.131.146",
+            "address": "mconfnewthree3.stonemain.com",
             "port": 443,
             "users": [
               {
-                "id": "d1397607-f47b-4684-b0dc-f61f03c7e635",
                 "encryption": "none",
-                "level": 8,
-                "flow": "xtls-rprx-vision"
+                "flow": "",
+                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "gateway.icloud.com",
-          "fingerprint": "chrome",
-          "publicKey": "eQI6RcW6P3X1bMcqUDReqp5K-LO3VGYMEd7Zws8cay0",
-          "shortId": "91f00f9aaaa3ce9b"
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
-        },
+        "network": "grpc",
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -229,10 +233,19 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:mconfnewthree3.stonemain.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -273,5 +286,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }

@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -22,19 +15,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewfour4.stonemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewfour4.stonemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:mconfnewfour4.stonemain.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +82,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -146,72 +138,63 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "trojan",
+      "mux": {
+        "concurrency": 8,
+        "enabled": false,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "185.75.243.102",
+            "address": "mconfnewfour4.stonemain.com",
             "port": 443,
-            "password": "humanity",
-            "level": 8
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
+                "level": 8
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.ignitelimit.com",
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "alpn": [
-            "h3",
-            "+h2",
-            "+http/1.1"
-          ]
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "wsSettings": {
-          "path": "/assignment",
-          "headers": {
-            "Host": "www.ignitelimit.com"
-          }
-        },
+        "network": "grpc",
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMptcp": true
-        }
-      }
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -250,10 +233,19 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:mconfnewfour4.stonemain.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -294,5 +286,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }

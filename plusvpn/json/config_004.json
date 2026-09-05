@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:whatismyipaddress.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:whatismyipaddress.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:whatismyipaddress.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -153,11 +162,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "172.104.142.172",
+            "address": "whatismyipaddress.com",
             "port": 80,
             "users": [
               {
-                "id": "ff24da13-19cd-4a00-9cac-9b8c396e8e4d",
+                "id": "295e7de6-00ea-464d-bca9-9d8f446d1e07",
                 "encryption": "none",
                 "level": 8
               }
@@ -166,22 +175,10 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "xhttp",
         "security": "none",
-        "tcpSettings": {
-          "header": {
-            "type": "http",
-            "request": {
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "amp-api-edge.apps.apple.com"
-                ]
-              }
-            }
-          }
+        "xhttpSettings": {
+          "path": "/"
         },
         "sockopt": {
           "tcpFastOpen": true,
@@ -191,7 +188,13 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -236,6 +239,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:whatismyipaddress.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
