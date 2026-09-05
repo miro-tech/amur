@@ -49,11 +49,15 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "enabled": true,
+        "concurrency": 8
+      },
       "protocol": "vless",
       "settings": {
         "address": "dee338dd.localip.ir",
         "encryption": "none",
-        "id": "a0157cfa-2ce0-46a7-b657-c940038d6858",
+        "id": "63fc1fbb-6021-4e7c-aa16-ecfadab8b0c6",
         "port": 443
       },
       "streamSettings": {
@@ -99,10 +103,10 @@
           ],
           "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
           "fingerprint": "unsafe",
-          "serverName": "sm.jovingrove.space"
+          "serverName": "s1.jovingrove.space"
         },
         "wsSettings": {
-          "host": "sm.jovingrove.space",
+          "host": "s1.jovingrove.space",
           "path": "/mash"
         }
       },
@@ -126,12 +130,27 @@
   ],
   "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "regexp:\\.ir$"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct",
         "type": "field"
       },
       {
@@ -145,6 +164,12 @@
           "fe80::/10"
         ],
         "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
         "type": "field"
       },
       {

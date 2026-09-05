@@ -1,82 +1,101 @@
 {
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "servers": [
-      "https+local://dns.google/dns-query",
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
-    ]
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none"
   },
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls"
         ],
-        "enabled": true
+        "routeOnly": false
       },
-      "tag": "socks"
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "mconfnewfour4.stonemain.com",
-            "port": 443,
+            "address": "speedtest.org",
+            "port": 8443,
             "users": [
               {
+                "id": "68a594d5-ea70-439f-b960-bb53c472d4fa",
+                "alterId": 0,
+                "email": "t806774833502673574.t.tt",
+                "security": "auto",
                 "encryption": "none",
-                "flow": "",
-                "id": "c3c818ee-36ac-4eb5-a723-452db9cd73a4",
-                "level": 8
+                "flow": ""
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "grpcSettings": {
-          "authority": "",
-          "health_check_timeout": 20,
-          "idle_timeout": 60,
-          "multiMode": false,
-          "serviceName": ""
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "serverName": "worker-12-061.appenginebeam.top",
+          "alpn": [],
+          "fingerprint": "chrome",
+          "show": false
         },
-        "network": "grpc",
+        "wsSettings": {
+          "path": "/cdn/775cebe114514683",
+          "headers": {
+            "Host": "worker-12-061.appenginebeam.top"
+          }
+        },
         "sockopt": {
           "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 60,
+          "tcpKeepAliveIdle": 100,
           "mark": 255,
           "tcpNoDelay": true
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "enabled": true,
+        "concurrency": 8,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      }
     },
     {
       "tag": "fragment",
@@ -84,79 +103,51 @@
       "settings": {
         "domainStrategy": "AsIs",
         "fragment": {
-          "packets": "1-1",
-          "length": "2-4",
-          "interval": "25"
+          "packets": "tlshello",
+          "length": "1",
+          "interval": "0"
         }
       },
       "streamSettings": {
         "sockopt": {
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 60
+          "tcpKeepAliveIdle": 100
         }
       }
     },
     {
+      "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
+      "settings": {}
     },
     {
+      "tag": "block",
       "protocol": "blackhole",
       "settings": {
         "response": {
           "type": "http"
         }
-      },
-      "tag": "block"
+      }
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "domain": [
-          "geosite:private"
+        "type": "field",
+        "inboundTag": [
+          "api"
         ],
-        "outboundTag": "proxy",
-        "type": "field"
+        "outboundTag": "api",
+        "enabled": true
       },
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "outboundTag": "proxy",
+        "id": "5627785659655799759",
+        "type": "field",
         "port": "0-65535",
-        "type": "field"
+        "outboundTag": "proxy",
+        "enabled": true
       }
     ]
-  },
-  "stats": {}
+  }
 }
