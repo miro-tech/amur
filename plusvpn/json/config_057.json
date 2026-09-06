@@ -1,22 +1,26 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "warning"
+  },
   "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
       {
         "address": "1.1.1.1",
-        "domains": []
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
       },
-      {
-        "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
-      }
+      "8.8.8.8"
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -24,88 +28,82 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
+      "protocol": "shadowsocks",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "62.238.62.132",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "id": "1ce6fcf4-ddbb-4317-9df6-1b821b74b890",
-                "level": 8
-              }
-            ]
+            "address": "82.38.31.16",
+            "port": 8080,
+            "method": "chacha20-ietf-poly1305",
+            "password": "oZIoA69Q8yhcQV8ka3Pa3A"
           }
         ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
-        },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
-        }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
       "tag": "direct"
     },
     {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
       "tag": "block"
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      }
+    ]
   }
 }
