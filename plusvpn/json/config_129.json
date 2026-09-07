@@ -1,13 +1,17 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "dns": {
-    "hosts": {
-      "cloudflare-dns.com": [
-        "104.16.248.249",
-        "104.16.249.249"
-      ]
-    },
+    "hosts": {},
     "servers": [
-      "https://cloudflare-dns.com/dns-query"
+      {
+        "address": "127.0.0.1",
+        "port": 53
+      }
     ]
   },
   "inbounds": [
@@ -17,15 +21,15 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
+        "enabled": false,
         "routeOnly": false
       },
       "tag": "socks"
@@ -34,28 +38,39 @@
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": [],
+      "settings": {
+        "userLevel": 8
+      },
       "tag": "http"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1053,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1",
+        "network": "tcp,udp",
+        "port": 53
+      },
+      "tag": "dns-in"
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.67.141.182",
+            "address": "Api.devsoftsnow.com",
             "port": 443,
             "users": [
               {
-                "id": "ffbe9473-6871-4230-8aa2-0b84e25bda46",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "082309ce-9c7d-4921-a082-71a54959e976",
+                "level": 8,
+                "security": "auto"
               }
             ]
           }
@@ -65,59 +80,129 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "vipusersapn.vfhw.ir",
+          "allowInsecure": false,
           "alpn": [
             "http/1.1"
           ],
-          "fingerprint": "chrome"
+          "fingerprint": "firefox",
+          "publicKey": "",
+          "serverName": "dashboard08.bazampuzzle.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
         },
         "wsSettings": {
-          "host": "vipusersapn.vfhw.ir",
-          "path": "/armiti500mona"
+          "path": "/dashboard08",
+          "headers": {
+            "Host": "dashboard08.bazampuzzle.top"
+          }
         },
         "sockopt": {
-          "dialerProxy": "fragment"
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "mark": 255,
+          "tcpNoDelay": true
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "concurrency": 1,
+        "enabled": true,
+        "xudpConcurrency": 1,
+        "xudpProxyUDP443": "reject"
+      }
     },
     {
       "tag": "fragment",
       "protocol": "freedom",
       "settings": {
-        "domainStrategy": "AsIs",
         "fragment": {
           "packets": "tlshello",
-          "length": "5-94",
-          "interval": "0-1"
+          "length": "1",
+          "interval": "0"
         }
       },
       "streamSettings": {
+        "network": "tcp",
+        "security": "",
         "sockopt": {
-          "tcpNoDelay": true
+          "TcpNoDelay": true,
+          "mark": 255
         }
       }
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {},
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
     }
   ],
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
-        "type": "field",
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "outboundTag": "proxy",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "port": "53",
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
         "network": "udp",
+        "outboundTag": "block",
         "port": "443",
-        "outboundTag": "block"
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
       }
     ]
   },
-  "remarks": "@shenvpn"
+  "stats": {}
 }

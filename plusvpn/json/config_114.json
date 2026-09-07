@@ -1,23 +1,16 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
-      {
-        "address": "127.0.0.1",
-        "port": 53
-      }
+      "1.1.1.1"
     ]
   },
   "inbounds": [
     {
       "listen": "127.0.0.1",
-      "port": 10808,
+      "port": 30909,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
@@ -27,113 +20,72 @@
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "fakedns"
         ],
-        "enabled": false,
+        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      },
-      "tag": "http"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 1053,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1",
-        "network": "tcp,udp",
-        "port": 53
-      },
-      "tag": "dns-in"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "Api.devsoftsnow.com",
+            "address": "ebl02g.wsgq.ir",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "flow": "",
-                "id": "e13cf851-b4fd-413b-8d49-146e6eb8e5d4",
-                "level": 8,
-                "security": "auto"
+                "flow": "xtls-rprx-vision",
+                "id": "8df2e661-6f46-471b-9133-7fc13a0daa35",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "chrome",
-          "publicKey": "",
-          "serverName": "platform103.golnamakpro.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
-        },
-        "wsSettings": {
-          "path": "/platform103",
-          "headers": {
-            "Host": "platform103.golnamakpro.top"
-          }
-        },
-        "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
-        }
-      },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "1",
-          "interval": "0"
-        }
-      },
-      "streamSettings": {
         "network": "tcp",
-        "security": "",
+        "security": "reality",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "jDoORbrtDrvAlFSo19CJbc99C4ev8SAo1MwczSUt9no",
+          "serverName": "web.eitaa.com",
+          "shortId": "90ec9bba2019",
+          "show": false,
+          "spiderX": "/4KOVoB9IrR1hn"
+        },
         "sockopt": {
-          "TcpNoDelay": true,
-          "mark": 255
+          "tcpKeepAliveIdle": 100,
+          "tcpNoDelay": true
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
       "settings": {
-        "domainStrategy": "UseIP"
+        "domainStrategy": "AsIs"
       },
       "tag": "direct"
     },
@@ -145,36 +97,28 @@
         }
       },
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    }
+  },
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
         "ip": [
-          "1.1.1.1"
+          "223.5.5.5"
         ],
-        "outboundTag": "proxy",
+        "outboundTag": "direct",
         "port": "53",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "port": "53",
-        "outboundTag": "proxy",
         "type": "field"
       },
       {
@@ -184,25 +128,10 @@
         "type": "field"
       },
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
         "outboundTag": "proxy",
         "port": "0-65535",
         "type": "field"
       }
     ]
-  },
-  "stats": {}
+  }
 }

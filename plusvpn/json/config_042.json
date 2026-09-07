@@ -1,179 +1,272 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
     "access": "",
-    "error": ""
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
   "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
     "servers": [
       {
-        "address": "localhost",
-        "domains": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "skipFallback": true
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
       },
-      "https://cloudflare-dns.com/dns-query"
-    ],
-    "disableFallbackIfMatch": true,
-    "tag": "dns-module"
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      }
+    ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "allowTransparent": false,
+        "userLevel": 8
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
-        "enabled": true,
+        "metadataOnly": false,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
     },
     {
+      "tag": "http",
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": [],
+      "settings": {
+        "userLevel": 8
+      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
-        "enabled": true,
+        "metadataOnly": false,
         "routeOnly": false
-      },
-      "tag": "http"
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 10853,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "port": 53,
+        "network": "tcp,udp"
+      }
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "address": "meshddeck.ir",
-        "encryption": "none",
-        "id": "8191459a-60a5-4385-882e-e59d64273a64",
-        "port": 2087
+        "vnext": [
+          {
+            "address": "51.83.70.96",
+            "port": 8443,
+            "users": [
+              {
+                "id": "0434b1e2-70c4-4b62-b76c-bcef6f06e328",
+                "encryption": "none",
+                "level": 8
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "5",
-                  "94",
-                  "1"
-                ],
-                "delays": [
-                  "0"
-                ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "109",
-                  "1"
-                ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "355"
-              }
-            }
-          ]
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.cloudflare.com",
+          "fingerprint": "chrome",
+          "publicKey": "3Zk0FHYu2kuZ2C4ctu8fxNd7Z_t6dTT7vy10Ouhm6FY",
+          "shortId": "fc8de1f3f961f22e",
+          "spiderX": "/hemXspfKImZx"
         },
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "s3.panjaremosi.org"
+        "xhttpSettings": {
+          "path": "/"
         },
-        "wsSettings": {
-          "host": "s3.panjaremosi.org",
-          "path": "/jJdsg7bVw2SP77Jbf38ysQxckyngSZ"
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 25,
+          "tcpKeepAliveInterval": 20,
+          "tcpUserTimeout": 30000,
+          "domainStrategy": "UseIP"
         }
-      },
-      "mux": {
-        "enabled": true,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
-      "tag": "proxy"
+      }
     },
     {
+      "tag": "direct",
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
+      }
     },
     {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
+    },
+    {
+      "tag": "block",
       "protocol": "blackhole",
-      "settings": {},
-      "tag": "block"
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "hybrid",
     "rules": [
       {
         "type": "field",
         "inboundTag": [
-          "dns-module"
+          "dns-proxy"
         ],
         "outboundTag": "proxy"
       },
       {
         "type": "field",
-        "domain": [
-          "domain:ir",
-          "geosite:category-ir"
+        "inboundTag": [
+          "dns-direct"
         ],
         "outboundTag": "direct"
       },
       {
         "type": "field",
-        "ip": [
-          "geoip:ir",
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16",
-          "127.0.0.0/8",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
+        "inboundTag": [
+          "dns-in"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "dns-out"
       },
       {
         "type": "field",
-        "network": "udp",
-        "port": "443",
-        "outboundTag": "block"
+        "protocol": [
+          "dns"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
       }
     ]
   }
