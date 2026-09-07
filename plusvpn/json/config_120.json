@@ -1,67 +1,63 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+    "loglevel": "warning"
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
-    ]
-  },
-  "inbounds": [
-    {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
         ]
       },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
-      "settings": {
-        "udp": false,
-        "allowTransparent": false
-      }
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "57.129.142.10",
-            "port": 8443,
+            "address": "dee338dd.localip.ir",
+            "port": 443,
             "users": [
               {
-                "id": "304ad749-efe3-4d9c-b57f-c9a1868dd6a9",
+                "id": "e2ca3c85-af1d-427c-9b00-068be1441664",
                 "encryption": "none"
               }
             ]
@@ -69,55 +65,64 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "amd.com",
-          "publicKey": "7GccJTBj6vriEuwe61oluc0Afp8qsjdKy1r0aV25RiU",
-          "shortId": "b59c0bc343b4cdec",
-          "fingerprint": "chrome",
-          "spiderX": "/tAJtepPne71o",
-          "show": false
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "httpzkqay0wzwserwmwyc2q92v8odg.ralu.ir",
+          "alpn": [
+            "h2"
+          ]
         },
-        "xhttpSettings": {
-          "path": "/JL7P8ePj7Et6",
-          "mode": "stream-one"
+        "wsSettings": {
+          "path": "/api/v2/users/sync",
+          "headers": {
+            "Host": "httpzkqay0wzwserwmwyc2q92v8odg.ralu.ir"
+          }
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {}
+      "tag": "direct"
     },
     {
-      "tag": "block",
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:ir"
-        ]
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
       },
       {
-        "type": "field",
-        "outboundTag": "proxy",
-        "port": "0-65535"
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
     ]
   }
