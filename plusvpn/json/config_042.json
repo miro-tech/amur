@@ -1,26 +1,25 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
   "dns": {
-    "hosts": {},
     "servers": [
       {
-        "address": "1.1.1.1",
+        "address": "localhost",
         "domains": [
-          "geosite:geolocation-!cn"
-        ]
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true
       },
-      "8.8.8.8"
-    ]
+      "https://cloudflare-dns.com/dns-query"
+    ],
+    "disableFallbackIfMatch": true,
+    "tag": "dns-module"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -38,86 +37,142 @@
         ],
         "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": [],
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http"
     }
   ],
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "104.18.26.90",
-            "port": 2096,
-            "users": [
-              {
-                "id": "932c537f-c277-4534-9109-2fd35179ee86",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "meshddeck.ir",
+        "encryption": "none",
+        "id": "8191459a-60a5-4385-882e-e59d64273a64",
+        "port": 2087
       },
       "streamSettings": {
-        "network": "xhttp",
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
+        },
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "uae.unixzone.xyz",
-          "fingerprint": "chrome",
+          "allowInsecure": false,
           "alpn": [
-            "h2",
             "http/1.1"
-          ]
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s3.panjaremosi.org"
+        },
+        "wsSettings": {
+          "host": "s3.panjaremosi.org",
+          "path": "/jJdsg7bVw2SP77Jbf38ysQxckyngSZ"
         }
+      },
+      "mux": {
+        "enabled": true,
+        "concurrency": 8,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": {},
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "type": "field",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "domain:ir",
+          "geosite:category-ir"
         ],
         "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
+        "type": "field",
+        "ip": [
+          "geoip:ir",
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
         ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "network": "udp",
+        "port": "443",
         "outboundTag": "block"
       }
     ]

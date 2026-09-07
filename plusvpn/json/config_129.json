@@ -1,26 +1,15 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
+    },
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
+      "https://cloudflare-dns.com/dns-query"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -31,94 +20,104 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
-        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": [],
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "185.47.254.251",
+            "address": "172.67.141.182",
             "port": 443,
             "users": [
               {
-                "id": "878fb7f7-fc65-465e-a352-17c7216c6f3d",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
+                "id": "ffbe9473-6871-4230-8aa2-0b84e25bda46",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "gateway.icloud.com",
-          "fingerprint": "chrome",
-          "publicKey": "6-_ZidygR8PRt4gtHlGCAW-PPmjEIm7Wn7MZqJU1z1Q",
-          "shortId": "6c059ecfddf9b179"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "vipusersapn.vfhw.ir",
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "chrome"
+        },
+        "wsSettings": {
+          "host": "vipusersapn.vfhw.ir",
+          "path": "/armiti500mona"
+        },
+        "sockopt": {
+          "dialerProxy": "fragment"
         }
       },
       "tag": "proxy"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "tlshello",
+          "length": "5-94",
+          "interval": "0-1"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true
+        }
+      }
     },
     {
       "protocol": "freedom",
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": {},
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
+        "type": "field",
+        "network": "udp",
+        "port": "443",
         "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }

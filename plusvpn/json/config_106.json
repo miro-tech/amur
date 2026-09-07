@@ -1,9 +1,19 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "dns": {
+    "hosts": {},
     "servers": [
-      "https://cloudflare-dns.com/dns-query"
-    ],
-    "tag": "dns-module"
+      {
+        "address": "127.0.0.1",
+        "port": 53
+      }
+    ]
   },
   "inbounds": [
     {
@@ -12,15 +22,15 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
-        "enabled": true,
+        "enabled": false,
         "routeOnly": false
       },
       "tag": "socks"
@@ -29,67 +39,45 @@
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": [],
-      "sniffing": {
-        "destOverride": [
-          "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+      "settings": {
+        "userLevel": 8
       },
       "tag": "http"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1053,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1",
+        "network": "tcp,udp",
+        "port": 53
+      },
+      "tag": "dns-in"
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "address": "188.114.97.206",
-        "encryption": "none",
-        "id": "63fc1fbb-6021-4e7c-aa16-ecfadab8b0c6",
-        "port": 443
+        "vnext": [
+          {
+            "address": "Api.devsoftsnow.com",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "377736b9-7e71-4494-9137-00e15bc427a4",
+                "level": 8,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "5",
-                  "94",
-                  "1"
-                ],
-                "delays": [
-                  "0"
-                ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "109",
-                  "1"
-                ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "355"
-              }
-            }
-          ]
-        },
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
@@ -97,37 +85,99 @@
           "alpn": [
             "http/1.1"
           ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "firefox",
-          "serverName": "s1.tavoraprism.bond"
+          "fingerprint": "chrome",
+          "publicKey": "",
+          "serverName": "assets37.bademjoonebam.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
         },
         "wsSettings": {
-          "host": "s1.tavoraprism.bond",
-          "path": "/mash"
+          "path": "/assets37",
+          "headers": {
+            "Host": "assets37.bademjoonebam.top"
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "mark": 255,
+          "tcpNoDelay": true
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "1",
+          "interval": "0"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "TcpNoDelay": true,
+          "mark": 255
+        }
+      }
     },
     {
       "protocol": "freedom",
-      "streamSettings": {
-        "network": "tcp",
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        }
+      "settings": {
+        "domainStrategy": "UseIP"
       },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {},
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
+      {
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "outboundTag": "proxy",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "port": "53",
+        "outboundTag": "proxy",
+        "type": "field"
+      },
       {
         "network": "udp",
         "outboundTag": "block",
@@ -136,24 +186,24 @@
       },
       {
         "ip": [
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16",
-          "127.0.0.0/8",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
+          "geoip:private"
         ],
         "outboundTag": "direct",
         "type": "field"
       },
       {
-        "inboundTag": [
-          "dns-module"
+        "domain": [
+          "geosite:private"
         ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
         "outboundTag": "proxy",
+        "port": "0-65535",
         "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }
