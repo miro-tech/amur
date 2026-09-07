@@ -6,17 +6,6 @@
     "loglevel": "none",
     "dnsLog": false
   },
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -33,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -154,37 +152,85 @@
       "settings": {
         "vnext": [
           {
-            "address": "62.238.53.250",
-            "port": 2052,
+            "address": "Api.devsoftsnow.com",
+            "port": 443,
             "users": [
               {
-                "id": "d23f1172-6d6a-4c59-a207-285d752f0bf9",
                 "encryption": "none",
-                "level": 8
+                "flow": "",
+                "id": "367712cb-412d-47cf-b772-b5e04825d550",
+                "level": 8,
+                "security": "auto"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "httpupgrade",
-        "security": "none",
-        "httpupgradeSettings": {
-          "host": "rosa-bd7570b5f7c887b3.mehrdadgsm.ir",
-          "path": "/"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "publicKey": "",
+          "serverName": "assets36.bademjoonebam.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
+        },
+        "wsSettings": {
+          "path": "/assets36",
+          "headers": {
+            "Host": "assets36.bademjoonebam.top"
+          }
         },
         "sockopt": {
+          "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
           "domainStrategy": "UseIPv4v6",
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      },
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "domainStrategy": "UseIPv4v6",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
-      },
-      "mux": {
-        "enabled": false
       }
     },
     {
@@ -217,6 +263,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:api.devsoftsnow.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -267,5 +321,16 @@
       "ipPool": "fc00::/18",
       "poolSize": 65535
     }
-  ]
+  ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  }
 }

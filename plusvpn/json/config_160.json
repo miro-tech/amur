@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -73,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -129,28 +146,19 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "62.238.48.116",
+            "address": "134.122.52.196",
             "port": 443,
             "users": [
               {
+                "id": "18f1b94e-35f1-4c7f-953c-7b4681c52339",
                 "encryption": "none",
-                "id": "67d767e6-630e-44c0-8262-c05711c147ec",
                 "level": 8
               }
             ]
@@ -158,24 +166,34 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "store.steampowered.com"
+                ]
+              }
+            }
+          }
         },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -203,7 +221,17 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -248,26 +276,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

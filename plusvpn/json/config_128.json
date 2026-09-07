@@ -1,19 +1,9 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "dns": {
-    "hosts": {},
     "servers": [
-      {
-        "address": "127.0.0.1",
-        "port": 53
-      }
-    ]
+      "https://cloudflare-dns.com/dns-query"
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
@@ -22,15 +12,15 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
-        "enabled": false,
+        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
@@ -39,45 +29,67 @@
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {
-        "userLevel": 8
+      "settings": [],
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       },
       "tag": "http"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 1053,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1",
-        "network": "tcp,udp",
-        "port": 53
-      },
-      "tag": "dns-in"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "Api.devsoftsnow.com",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "flow": "",
-                "id": "34771e7b-7262-4b9b-a919-d884b1198b4e",
-                "level": 8,
-                "security": "auto"
-              }
-            ]
-          }
-        ]
+        "address": "104.21.21.111",
+        "encryption": "none",
+        "id": "8191459a-60a5-4385-882e-e59d64273a64",
+        "port": 2087
       },
       "streamSettings": {
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
+        },
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
@@ -85,99 +97,37 @@
           "alpn": [
             "http/1.1"
           ],
-          "fingerprint": "chrome",
-          "publicKey": "",
-          "serverName": "assets34.bademjoonebam.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s3.panjaremosi.org"
         },
         "wsSettings": {
-          "path": "/assets34",
-          "headers": {
-            "Host": "assets34.bademjoonebam.top"
-          }
-        },
-        "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
+          "host": "s3.panjaremosi.org",
+          "path": "/iys"
         }
       },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "fragment",
       "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "1",
-          "interval": "0"
-        }
-      },
       "streamSettings": {
         "network": "tcp",
-        "security": "",
         "sockopt": {
-          "TcpNoDelay": true,
-          "mark": 255
+          "domainStrategy": "UseIP"
         }
-      }
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
       },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
+      "settings": {},
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
-      {
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "outboundTag": "proxy",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "port": "53",
-        "outboundTag": "proxy",
-        "type": "field"
-      },
       {
         "network": "udp",
         "outboundTag": "block",
@@ -186,24 +136,24 @@
       },
       {
         "ip": [
-          "geoip:private"
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
         ],
         "outboundTag": "direct",
         "type": "field"
       },
       {
-        "domain": [
-          "geosite:private"
+        "inboundTag": [
+          "dns-module"
         ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
         "outboundTag": "proxy",
-        "port": "0-65535",
         "type": "field"
       }
     ]
-  },
-  "stats": {}
+  }
 }

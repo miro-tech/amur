@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -15,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dee338dd.localip.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dee338dd.localip.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dee338dd.localip.ir"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -73,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -129,24 +155,20 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.67.217.240",
-            "port": 2087,
+            "address": "dee338dd.localip.ir",
+            "port": 2083,
             "users": [
               {
-                "id": "fd6fb48f-b324-4a82-9dcd-f8bdb1bd5301",
-                "encryption": "none"
+                "id": "3b1932e1-a3ad-425e-ad67-6c7785cb5b4a",
+                "encryption": "none",
+                "level": 8
               }
             ]
           }
@@ -156,20 +178,24 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "ukliveista.y07yf6rba2.website",
+          "serverName": "stream.jalu.ir",
+          "allowInsecure": false,
           "alpn": [
             "h2"
-          ],
-          "fingerprint": "firefox",
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+          ]
         },
         "xhttpSettings": {
-          "host": "ukliveista.y07yf6rba2.website",
-          "path": "/meti",
-          "mode": "stream-one"
+          "path": "/"
+        },
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 25,
+          "tcpKeepAliveInterval": 20,
+          "tcpUserTimeout": 30000,
+          "domainStrategy": "UseIP"
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -197,10 +223,29 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:dee338dd.localip.ir"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -241,27 +286,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "remarks": "@shenvpn",
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

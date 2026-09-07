@@ -1,123 +1,124 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+    "loglevel": "warning"
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
-    ]
-  },
-  "inbounds": [
-    {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
         ]
       },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
-      "settings": {
-        "udp": false,
-        "allowTransparent": false
-      }
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "51.68.143.38",
-            "port": 8443,
+            "address": "146.59.205.90",
+            "port": 443,
             "users": [
               {
-                "id": "42d0bccc-99e8-4961-9433-af44bc04faeb",
-                "encryption": "none"
+                "id": "59fe0ed4-18a2-4d46-9f3d-8e19ebb4e3fc",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
+        "network": "tcp",
         "security": "reality",
         "realitySettings": {
-          "serverName": "amd.com",
-          "publicKey": "R-dx9ZmlFGmEyOa90xXXaRLK-MRI1WXIUYRazN-GO2s",
-          "shortId": "9dfd53ef12f7f95f",
+          "serverName": "amp-api-edge.apps.apple.com",
           "fingerprint": "chrome",
-          "spiderX": "/lyj3LFyMO7Bv",
-          "show": false
-        },
-        "xhttpSettings": {
-          "path": "/WXGCR96jLoQR",
-          "mode": "stream-one"
+          "publicKey": "9uy9iyfR_L3uVRqf25qNBzWdwd0noI8OjM58KfddVEg",
+          "shortId": "87a464549f5b7f01",
+          "spiderX": "/"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {}
+      "tag": "direct"
     },
     {
-      "tag": "block",
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:ir"
-        ]
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
       },
       {
-        "type": "field",
-        "outboundTag": "proxy",
-        "port": "0-65535"
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
     ]
   }

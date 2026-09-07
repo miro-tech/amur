@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -22,28 +15,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:api.devsoftsnow.com"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -145,6 +129,12 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
       "tag": "proxy",
@@ -152,85 +142,48 @@
       "settings": {
         "vnext": [
           {
-            "address": "Api.devsoftsnow.com",
-            "port": 443,
+            "address": "65.20.114.191",
+            "port": 440,
             "users": [
               {
+                "id": "59906cb2-a61b-4cf3-b77b-5762ef61d2b0",
                 "encryption": "none",
-                "flow": "",
-                "id": "01665917-8eaf-4997-9d02-64161b0b4fc2",
-                "level": 8,
-                "security": "auto"
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "firefox",
-          "publicKey": "",
-          "serverName": "dashboard01.badoompuzzle.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
-        },
-        "wsSettings": {
-          "path": "/dashboard01",
-          "headers": {
-            "Host": "dashboard01.badoompuzzle.top"
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "store.steampowered.com"
+                ]
+              }
+            }
           }
         },
         "sockopt": {
-          "tcpKeepAliveIdle": 20,
-          "tcpNoDelay": true,
           "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
           "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
+          "tcpMptcp": true
         }
       },
       "mux": {
-        "concurrency": 1,
-        "enabled": true,
-        "xudpConcurrency": 1,
-        "xudpProxyUDP443": "reject"
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMptcp": true,
-          "domainStrategy": "UseIPv4v6",
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
-        }
+        "enabled": false,
+        "concurrency": -1
       }
     },
     {
@@ -259,18 +212,11 @@
       }
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:api.devsoftsnow.com"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
