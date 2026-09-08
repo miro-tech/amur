@@ -15,19 +15,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -137,17 +146,23 @@
   },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "65.20.113.159",
+            "address": "dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com",
             "port": 443,
             "users": [
               {
-                "id": "18f1b94e-35f1-4c7f-953c-7b4681c52339",
                 "encryption": "none",
+                "flow": "",
+                "id": "712e95de-0511-4c67-a812-069f24be275f",
                 "level": 8
               }
             ]
@@ -155,36 +170,31 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "http",
-            "request": {
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "store.steampowered.com"
-                ]
-              }
-            }
-          }
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
+        "network": "grpc",
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -212,11 +222,30 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -267,16 +296,5 @@
       "ipPool": "fc00::/18",
       "poolSize": 65535
     }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  }
+  ]
 }
