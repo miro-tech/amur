@@ -1,16 +1,19 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
+      "1.1.1.1",
       {
-        "address": "127.0.0.1",
-        "port": 53
+        "address": "1.1.1.1",
+        "domains": []
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [],
+        "expectIPs": [],
+        "skipFallback": true
       }
     ]
   },
@@ -29,106 +32,59 @@
           "http",
           "tls"
         ],
-        "enabled": false,
+        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      },
-      "tag": "http"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 1053,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1",
-        "network": "tcp,udp",
-        "port": 53
-      },
-      "tag": "dns-in"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "Api.devsoftsnow.com",
+            "address": "65.109.188.55",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "flow": "",
-                "id": "e13cf851-b4fd-413b-8d49-146e6eb8e5d4",
-                "level": 8,
-                "security": "auto"
+                "id": "ff1c1a0f-eb2c-4fe4-9314-5eee3f539db1",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
           "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
           "fingerprint": "chrome",
-          "publicKey": "",
-          "serverName": "platform108.golnamakmoon.top",
-          "shortId": "",
+          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
+          "serverName": "www.wikipedia.org",
+          "shortId": "1c213fd68e13",
           "show": false,
-          "spiderX": ""
+          "spiderX": "/"
         },
-        "wsSettings": {
-          "path": "/platform108",
-          "headers": {
-            "Host": "platform108.golnamakmoon.top"
-          }
-        },
-        "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",
+          "path": "/farasati1"
         }
       },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "1",
-          "interval": "0"
-        }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "TcpNoDelay": true,
-          "mark": 255
-        }
-      }
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
@@ -145,64 +101,11 @@
         }
       },
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "rules": [
-      {
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "outboundTag": "proxy",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "port": "53",
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "outboundTag": "proxy",
-        "port": "0-65535",
-        "type": "field"
-      }
-    ]
-  },
-  "stats": {}
+    "domainStrategy": "AsIs",
+    "rules": []
+  }
 }

@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +89,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -149,14 +148,21 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "trojan",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "213.182.199.137",
+            "address": "Api.devsoftsnow.com",
             "port": 443,
-            "password": "humanity",
-            "level": 8
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "1181efb5-6a6b-412a-aa59-daf41714bd27",
+                "level": 8,
+                "security": "auto"
+              }
+            ]
           }
         ]
       },
@@ -164,29 +170,38 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.pleadcourt.org",
           "allowInsecure": false,
-          "fingerprint": "chrome",
           "alpn": [
             "http/1.1"
-          ]
+          ],
+          "fingerprint": "firefox",
+          "publicKey": "",
+          "serverName": "dashboard11.bishooreavazi.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
         },
         "wsSettings": {
-          "path": "/assignment",
+          "path": "/dashboard11",
           "headers": {
-            "Host": "www.pleadcourt.org"
+            "Host": "dashboard11.bishooreavazi.top"
           }
         },
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "dialerProxy": "fragment"
         }
+      },
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
       }
     },
     {
@@ -207,7 +222,14 @@
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "domainStrategy": "UseIPv4v6",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -237,21 +259,18 @@
       }
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:api.devsoftsnow.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -292,5 +311,26 @@
         "outboundTag": "proxy"
       }
     ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
   }
 }

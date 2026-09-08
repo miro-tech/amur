@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -73,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -129,48 +146,53 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "address": "104.21.21.111",
-        "encryption": "none",
-        "id": "8191459a-60a5-4385-882e-e59d64273a64",
-        "port": 2087
+        "vnext": [
+          {
+            "address": "172.67.217.250",
+            "port": 443,
+            "users": [
+              {
+                "id": "365747d7-9c6e-4ecd-8bbb-a9a7d5f71c3f",
+                "encryption": "none",
+                "level": 8
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "minileafbox-norm.lat",
           "allowInsecure": false,
           "alpn": [
+            "h2",
             "http/1.1"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "s3.panjaremosi.org"
+          ]
         },
         "wsSettings": {
-          "host": "s3.panjaremosi.org",
-          "path": "/iys"
+          "path": "/balad",
+          "headers": {
+            "Host": "minileafbox-norm.lat"
+          }
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "dialerProxy": "fragment"
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "fragment",
@@ -220,7 +242,17 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -265,26 +297,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

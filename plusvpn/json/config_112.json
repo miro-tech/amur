@@ -1,26 +1,10 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
+      "1.1.1.1",
       "8.8.8.8"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -28,7 +12,8 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
@@ -38,71 +23,116 @@
         ],
         "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": {
+        "userLevel": 8
+      },
+      "tag": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      }
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "protocol": "shadowsocks",
+      "tag": "proxy",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "23.150.248.20",
-            "port": 8388,
-            "method": "chacha20-ietf-poly1305",
-            "password": "qB2Cv9VIlujj"
+            "address": "70.34.250.74",
+            "port": 443,
+            "users": [
+              {
+                "id": "18f1b94e-35f1-4c7f-953c-7b4681c52339",
+                "encryption": "none",
+                "level": 8
+              }
+            ]
           }
         ]
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "streamSettings": {
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "store.steampowered.com"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
-  },
+  ],
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
       {
         "ip": [
           "geoip:private"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
         "domain": [
-          "geosite:category-ads-all"
+          "geosite:private"
         ],
-        "outboundTag": "block"
+        "outboundTag": "direct",
+        "type": "field"
       }
     ]
   }
