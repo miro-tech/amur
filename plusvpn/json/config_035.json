@@ -6,17 +6,6 @@
     "loglevel": "none",
     "dnsLog": false
   },
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -91,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -154,11 +153,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "62.238.25.96",
-            "port": 2052,
+            "address": "172.67.141.182",
+            "port": 443,
             "users": [
               {
-                "id": "f83968aa-5766-4b9a-9e33-e77232978932",
+                "id": "ffbe9473-6871-4230-8aa2-0b84e25bda46",
                 "encryption": "none",
                 "level": 8
               }
@@ -167,24 +166,50 @@
         ]
       },
       "streamSettings": {
-        "network": "httpupgrade",
-        "security": "none",
-        "httpupgradeSettings": {
-          "host": "rosa-3904729a4fe810ab.mehrdadgsm.ir",
-          "path": "/"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "vipusersapn.vfhw.ir",
+          "allowInsecure": false
+        },
+        "wsSettings": {
+          "path": "/armiti500mona",
+          "headers": {
+            "Host": "172.67.141.182"
+          }
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
         }
       },
-      "mux": {
-        "enabled": false
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
+        }
       }
     },
     {
@@ -213,6 +238,17 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -257,15 +293,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }

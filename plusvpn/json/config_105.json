@@ -1,24 +1,32 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
       {
-        "address": "1.1.1.1",
+        "address": "fakedns",
         "domains": [
-          "geosite:geolocation-!cn"
+          "geosite:cn",
+          "geosite:private"
         ]
       },
-      "8.8.8.8"
-    ]
+      "8.8.8.8",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
+      }
+    ],
+    "tag": "dns-module"
   },
   "fakedns": [
     {
       "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
+      "poolSize": 10000
     }
   ],
   "inbounds": [
@@ -28,99 +36,188 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
         "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": {
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "milan.adaspoloandco.com",
-            "port": 8443,
-            "users": [
-              {
-                "id": "69ac162b-1643-4acb-9f49-09d8b0fad609",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "188.114.96.169",
+        "encryption": "none",
+        "flow": "",
+        "id": "05510b39-97ad-4f43-861b-30039a655a5e",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "milan.adaspoloandco.com",
-          "fingerprint": "chrome",
-          "alpn": [
-            "v2rayNplus--v2rayNplus--v2rayNplus--v2rayNplus--v2rayNplus--v2rayNplus--v2rayNplus--v2rayNplus"
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
           ]
         },
-        "wsSettings": {
-          "path": "/RoBeRt"
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "ray.fynorharbor.bond"
+        },
+        "xhttpSettings": {
+          "extra": {
+            "mode": "stream-one",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "ray.fynorharbor.bond",
+          "mode": "stream-one",
+          "path": "/iki"
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
       "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {},
+      "tag": "block"
     },
     {
       "protocol": "dns",
       "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "inboundTag": [
+          "socks"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "ext:geoip-only-cn-private.dat:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
         "domain": [
-          "geosite:category-ads-all"
+          "geosite:private"
         ],
-        "outboundTag": "block"
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   }
