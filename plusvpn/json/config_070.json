@@ -6,48 +6,47 @@
     "error": "",
     "dnsLog": false
   },
-  "stats": {},
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 300,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1
-      }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
   "dns": {
-    "tag": "dns-module",
-    "hosts": {},
     "servers": [
-      "https://1.1.1.1/dns-query",
-      "tcp://8.8.8.8:53"
-    ],
-    "queryStrategy": "UseIPv4"
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
+    ]
   },
   "inbounds": [
     {
       "tag": "socks",
-      "listen": "127.0.0.1",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
-      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
           "tls"
-        ],
-        "routeOnly": false
+        ]
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "udp": false,
+        "allowTransparent": false
       }
     }
   ],
@@ -58,46 +57,51 @@
       "settings": {
         "vnext": [
           {
-            "address": "62.238.53.250",
-            "port": 2052,
+            "address": "147.135.209.157",
+            "port": 8443,
             "users": [
               {
-                "id": "d23f1172-6d6a-4c59-a207-285d752f0bf9",
-                "encryption": "none",
-                "level": 8
+                "id": "13067cbf-0594-47ec-8719-ca24de561686",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "httpupgrade",
-        "security": "none",
-        "httpupgradeSettings": {
-          "host": "rosa-bd7570b5f7c887b3.mehrdadgsm.ir",
-          "path": "/"
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.samsung.com",
+          "publicKey": "OSdcg8VQ854Gbe74DOiViX3NaeVD38jVDDSMHUz55l0",
+          "shortId": "acdfaf8ba8fc6fb3",
+          "fingerprint": "chrome",
+          "spiderX": "/mgKBm7BUFYjN",
+          "show": false
+        },
+        "xhttpSettings": {
+          "path": "/XMsYnE75DYo8",
+          "mode": "stream-one"
         }
       },
       "mux": {
-        "enabled": false
+        "enabled": false,
+        "concurrency": -1
       }
     },
     {
       "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      }
+      "settings": {}
     },
     {
       "tag": "block",
       "protocol": "blackhole",
-      "settings": {}
-    },
-    {
-      "tag": "dns-out",
-      "protocol": "dns",
-      "settings": {}
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
   "routing": {
@@ -105,19 +109,15 @@
     "rules": [
       {
         "type": "field",
-        "inboundTag": [
-          "socks"
-        ],
-        "network": "tcp,udp",
-        "port": "53",
-        "outboundTag": "dns-out"
+        "outboundTag": "direct",
+        "domain": [
+          "domain:ir"
+        ]
       },
       {
         "type": "field",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "port": "0-65535"
       }
     ]
   }
