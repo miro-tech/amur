@@ -6,17 +6,6 @@
     "loglevel": "none",
     "dnsLog": false
   },
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -91,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -154,37 +153,42 @@
       "settings": {
         "vnext": [
           {
-            "address": "62.238.53.250",
-            "port": 2052,
+            "address": "178.83.226.19",
+            "port": 443,
             "users": [
               {
-                "id": "d23f1172-6d6a-4c59-a207-285d752f0bf9",
+                "id": "3093b90e-72f4-406a-b331-62391e06b1f9",
                 "encryption": "none",
-                "level": 8
+                "level": 8,
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "httpupgrade",
-        "security": "none",
-        "httpupgradeSettings": {
-          "host": "rosa-bd7570b5f7c887b3.mehrdadgsm.ir",
-          "path": "/"
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "sellflow.org",
+          "fingerprint": "firefox",
+          "publicKey": "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true
         }
-      },
-      "mux": {
-        "enabled": false
       }
     },
     {
@@ -213,6 +217,17 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -257,15 +272,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }

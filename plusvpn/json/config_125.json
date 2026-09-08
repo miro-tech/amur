@@ -1,19 +1,34 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
       {
-        "address": "127.0.0.1",
-        "port": 53
+        "address": "fakedns",
+        "domains": [
+          "geosite:cn",
+          "geosite:private"
+        ]
+      },
+      "8.8.8.8",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
       }
-    ]
+    ],
+    "tag": "dns-module"
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 10000
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -27,9 +42,11 @@
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
-        "enabled": false,
+        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
@@ -41,109 +58,109 @@
       "settings": {
         "userLevel": 8
       },
-      "tag": "http"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 1053,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1",
-        "network": "tcp,udp",
-        "port": 53
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "enabled": true,
+        "routeOnly": false
       },
-      "tag": "dns-in"
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "Api.devsoftsnow.com",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "flow": "",
-                "id": "e13cf851-b4fd-413b-8d49-146e6eb8e5d4",
-                "level": 8,
-                "security": "auto"
-              }
-            ]
-          }
-        ]
+        "address": "188.114.96.169",
+        "encryption": "none",
+        "flow": "",
+        "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "ws",
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
+        },
+        "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
           "allowInsecure": false,
           "alpn": [
-            "http/1.1"
+            "h2"
           ],
-          "fingerprint": "chrome",
-          "publicKey": "",
-          "serverName": "platform116.golnamakpro.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s2.sylvibridge.fun"
         },
-        "wsSettings": {
-          "path": "/platform116",
-          "headers": {
-            "Host": "platform116.golnamakpro.top"
-          }
-        },
-        "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "extra": {
+            "mode": "stream-one",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "s2.sylvibridge.fun",
+          "mode": "stream-one",
+          "path": "/bir"
         }
       },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "fragment",
       "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "1",
-          "interval": "0"
-        }
-      },
       "streamSettings": {
         "network": "tcp",
-        "security": "",
         "sockopt": {
-          "TcpNoDelay": true,
-          "mark": 255
+          "domainStrategy": "UseIP"
         }
-      }
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
       },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
+      "settings": {},
       "tag": "block"
     },
     {
@@ -151,30 +168,16 @@
       "tag": "dns-out"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
         "inboundTag": [
-          "dns-in"
+          "socks"
         ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "outboundTag": "proxy",
+        "outboundTag": "dns-out",
         "port": "53",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "port": "53",
-        "outboundTag": "proxy",
         "type": "field"
       },
       {
@@ -185,7 +188,7 @@
       },
       {
         "ip": [
-          "geoip:private"
+          "ext:geoip-only-cn-private.dat:private"
         ],
         "outboundTag": "direct",
         "type": "field"
@@ -201,8 +204,21 @@
         "outboundTag": "proxy",
         "port": "0-65535",
         "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  },
-  "stats": {}
+  }
 }

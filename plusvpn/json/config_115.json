@@ -1,124 +1,123 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
   "dns": {
-    "hosts": {},
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+          "tls"
+        ]
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     },
     {
-      "listen": "127.0.0.1",
+      "tag": "http",
       "port": 10809,
+      "listen": "127.0.0.1",
       "protocol": "http",
-      "settings": {}
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "udp": false,
+        "allowTransparent": false
+      }
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "57.128.103.142",
-            "port": 443,
+            "address": "51.83.68.184",
+            "port": 8443,
             "users": [
               {
-                "id": "662587b0-d89f-4506-99f0-29cc05c561ad",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
+                "id": "ae8cdd5a-8f32-4e34-ad80-403b068b8e9a",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "xhttp",
         "security": "reality",
         "realitySettings": {
-          "serverName": "amp-api-edge.apps.apple.com",
+          "serverName": "www.samsung.com",
+          "publicKey": "PzQyG8LieztZ-32BV_99IiyCBG9jBYaU65c9mIgdFig",
+          "shortId": "fbeb5844bca41ba9",
           "fingerprint": "chrome",
-          "publicKey": "wMaZc6gUGxuELzE6cL0eFzssirGAspvUNI8nYP0y0TE",
-          "shortId": "ed8d59c36ce9ef7a",
-          "spiderX": "/"
+          "spiderX": "/R8zeeAh5MKp1",
+          "show": false
+        },
+        "xhttpSettings": {
+          "path": "/sdyt284ItddJ",
+          "mode": "stream-one"
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
-  },
+  ],
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "domain:ir"
+        ]
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "type": "field",
+        "outboundTag": "proxy",
+        "port": "0-65535"
       }
     ]
   }
