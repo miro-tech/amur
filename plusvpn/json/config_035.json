@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:api.devsoftsnow.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +89,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -153,13 +152,15 @@
       "settings": {
         "vnext": [
           {
-            "address": "172.67.141.182",
+            "address": "Api.devsoftsnow.com",
             "port": 443,
             "users": [
               {
-                "id": "ffbe9473-6871-4230-8aa2-0b84e25bda46",
                 "encryption": "none",
-                "level": 8
+                "flow": "",
+                "id": "0230b920-0121-4e03-9acc-94538a1838ac",
+                "level": 8,
+                "security": "auto"
               }
             ]
           }
@@ -169,25 +170,38 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "vipusersapn.vfhw.ir",
-          "allowInsecure": false
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "firefox",
+          "publicKey": "",
+          "serverName": "dashboard02.badoompuzzle.top",
+          "shortId": "",
+          "show": false,
+          "spiderX": ""
         },
         "wsSettings": {
-          "path": "/armiti500mona",
+          "path": "/dashboard02",
           "headers": {
-            "Host": "172.67.141.182"
+            "Host": "dashboard02.badoompuzzle.top"
           }
         },
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "dialerProxy": "fragment"
         }
+      },
+      "mux": {
+        "concurrency": 4,
+        "enabled": true,
+        "xudpConcurrency": 4,
+        "xudpProxyUDP443": "reject"
       }
     },
     {
@@ -208,7 +222,14 @@
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "domainStrategy": "UseIPv4v6",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -238,21 +259,18 @@
       }
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:api.devsoftsnow.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -293,5 +311,26 @@
         "outboundTag": "proxy"
       }
     ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
   }
 }

@@ -1,63 +1,67 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
   "dns": {
-    "hosts": {},
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+          "tls"
+        ]
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     },
     {
-      "listen": "127.0.0.1",
+      "tag": "http",
       "port": 10809,
+      "listen": "127.0.0.1",
       "protocol": "http",
-      "settings": {}
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "udp": false,
+        "allowTransparent": false
+      }
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.67.157.29",
-            "port": 443,
+            "address": "51.195.82.143",
+            "port": 8443,
             "users": [
               {
-                "id": "44eae030-290b-4083-8102-6f8bab05701b",
+                "id": "068b34e2-fd5c-4085-b398-41292b597a40",
                 "encryption": "none"
               }
             ]
@@ -65,61 +69,55 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "cfvvv-ev1.pages.dev",
-          "alpn": [
-            "http/1.1"
-          ]
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "it.nvidia.com",
+          "publicKey": "6NE-OLLjcAmBJn2Eg1EBezeHLB5ODk0SFO9ciiK8gG8",
+          "shortId": "6aff22679c4c86e7",
+          "fingerprint": "chrome",
+          "spiderX": "/0AttKUJP0xAx",
+          "show": false
         },
-        "wsSettings": {
-          "path": "/"
+        "xhttpSettings": {
+          "path": "/24p4OMpCmzjf",
+          "mode": "stream-one"
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
-  },
+  ],
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "domain:ir"
+        ]
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "type": "field",
+        "outboundTag": "proxy",
+        "port": "0-65535"
       }
     ]
   }

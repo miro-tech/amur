@@ -4,19 +4,31 @@
       "domain:googleapis.cn": "googleapis.com"
     },
     "servers": [
-      "1.1.1.1",
       {
-        "address": "1.1.1.1",
-        "domains": []
+        "address": "fakedns",
+        "domains": [
+          "geosite:cn",
+          "geosite:private"
+        ]
       },
+      "8.8.8.8",
       {
         "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
       }
-    ]
+    ],
+    "tag": "dns-module"
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 10000
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -30,19 +42,39 @@
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
         "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http"
     }
   ],
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
+    "error": ""
   },
   "outbounds": [
     {
@@ -52,60 +84,141 @@
       },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "62.238.58.235",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "id": "235b5a82-66dc-4105-b97e-4efc8c8a42c2",
-                "level": 8
-              }
-            ]
-          }
-        ]
+        "address": "104.21.21.111",
+        "encryption": "none",
+        "flow": "",
+        "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
+        },
         "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
+        "security": "tls",
+        "tlsSettings": {
           "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s4.sylvibridge.fun"
         },
         "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+          "extra": {
+            "mode": "stream-one",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "s4.sylvibridge.fun",
+          "mode": "stream-one",
+          "path": "/bir"
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
       },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
+      "settings": {},
       "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
     }
   ],
   "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
+    "rules": [
+      {
+        "inboundTag": [
+          "socks"
+        ],
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "ext:geoip-only-cn-private.dat:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      }
+    ]
   }
 }
