@@ -6,6 +6,90 @@
     "loglevel": "none",
     "dnsLog": false
   },
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
+    "servers": [
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      }
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -69,80 +153,42 @@
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.org",
-            "port": 8443,
+            "address": "207.241.172.98",
+            "port": 4777,
             "users": [
               {
-                "id": "01c55414-1384-406f-8bd3-d05fdeb1f184",
-                "alterId": 0,
-                "email": "{{email}}",
-                "security": "auto",
+                "id": "010bf7ad-b6ec-482b-8392-ae038f466a0a",
                 "encryption": "none",
-                "flow": ""
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "worker-030.appenginewave.top",
-          "alpn": [],
-          "fingerprint": "chrome",
-          "show": false
-        },
-        "wsSettings": {
-          "path": "/cdn/3592923188e849b9",
-          "headers": {
-            "Host": "worker-030.appenginewave.top"
-          }
-        },
-        "sockopt": {
-          "tcpKeepAliveIdle": 20,
-          "tcpNoDelay": true,
-          "domainStrategy": "UseIPv4v6",
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      },
-      "mux": {
-        "enabled": true,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
-      "streamSettings": {
         "network": "tcp",
-        "security": "",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "amp-api-edge.apps.apple.com",
+          "fingerprint": "firefox",
+          "publicKey": "8ZL2JgDP9gHkgGTbGF-uK8omfWkFplZnCH0N2_U18Uo",
+          "shortId": "01115788253bc845",
+          "spiderX": "/"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
         "sockopt": {
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "tcpMptcp": true,
-          "domainStrategy": "UseIPv4v6",
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
       }
     },
@@ -172,18 +218,21 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:speedtest.org"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
@@ -224,109 +273,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "queryStrategy": "UseIP",
-    "disableCache": false,
-    "serveStale": true,
-    "serveExpiredTTL": 86400,
-    "enableParallelQuery": true,
-    "disableFallback": false,
-    "disableFallbackIfMatch": false,
-    "servers": [
-      {
-        "tag": "dns-direct",
-        "address": "1.1.1.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:speedtest.org"
-        ]
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.8.8",
-        "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:speedtest.org"
-        ]
-      },
-      {
-        "tag": "dns-direct",
-        "address": "9.9.9.9",
-        "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:speedtest.org"
-        ]
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://1.1.1.1/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://8.8.8.8/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "1.0.0.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.4.4",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "149.112.112.112",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://cloudflare-dns.com/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://dns.quad9.net/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      }
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

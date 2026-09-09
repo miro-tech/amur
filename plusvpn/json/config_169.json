@@ -1,153 +1,159 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
+  "dns": {
+    "servers": [
+      "8.8.8.8"
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "socks"
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
+      "settings": [],
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
+        "enabled": true,
         "routeOnly": false
       },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "speedtest.org",
-            "port": 8443,
-            "users": [
-              {
-                "id": "01c55414-1384-406f-8bd3-d05fdeb1f184",
-                "alterId": 0,
-                "email": "{{email}}",
-                "security": "auto",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
-          }
-        ]
+        "address": "188.114.96.169",
+        "encryption": "none",
+        "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
+        "port": 443
       },
       "streamSettings": {
-        "network": "ws",
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
+        },
+        "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "worker-024.appenginewave.top",
-          "alpn": [],
-          "fingerprint": "chrome",
-          "show": false
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s4.sevora.bond"
         },
-        "wsSettings": {
-          "path": "/cdn/3592923188e849b9",
-          "headers": {
-            "Host": "worker-024.appenginewave.top"
-          }
-        },
-        "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "host": "s4.sevora.bond",
+          "path": "/bir",
+          "mode": "stream-one"
         }
       },
-      "mux": {
-        "enabled": true,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "fragment",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "AsIs",
-        "fragment": {
-          "packets": "1",
-          "length": "1",
-          "interval": "0"
-        }
-      },
       "streamSettings": {
+        "network": "tcp",
         "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 100
+          "domainStrategy": "UseIP"
         }
-      }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "settings": {},
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "enabled": true
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
       },
       {
-        "id": "5627785659655799759",
-        "type": "field",
-        "port": "0-65535",
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
         "outboundTag": "proxy",
-        "enabled": true
+        "type": "field"
       }
     ]
   }

@@ -1,18 +1,17 @@
 {
-  "remarks": "@V2rayNGVPN > کانفیگ رایگان",
+  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
   "inbounds": [
     {
       "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
-      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
@@ -20,62 +19,107 @@
           "tls"
         ],
         "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     }
   ],
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "trojan",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "167.82.76.27",
-            "ota": false,
-            "password": "MiTiVPN",
-            "port": 443,
-            "level": 8
+            "address": "speedtest.org",
+            "port": 8443,
+            "users": [
+              {
+                "id": "01c55414-1384-406f-8bd3-d05fdeb1f184",
+                "alterId": 0,
+                "email": "{{email}}",
+                "security": "auto",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
         "network": "ws",
         "security": "tls",
-        "wsSettings": {
-          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/NLSs---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN",
-          "headers": {
-            "Host": "mitivpn---ss--s---mitivpn-3.global.ssl.fastly.net"
-          }
-        },
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "ssl.fastly.com",
-          "alpn": [
-            "http/1.1"
-          ],
+          "serverName": "worker-189-059.appenginewave.top",
+          "alpn": [],
           "fingerprint": "chrome",
           "show": false
+        },
+        "wsSettings": {
+          "path": "/cdn/3592923188e849b9",
+          "headers": {
+            "Host": "worker-189-059.appenginewave.top"
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "mark": 255,
+          "tcpNoDelay": true
         }
       },
       "mux": {
-        "enabled": false,
-        "concurrency": -1,
+        "enabled": true,
+        "concurrency": 8,
         "xudpConcurrency": 8,
-        "xudpProxyUDP443": ""
+        "xudpProxyUDP443": "reject"
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "1",
+          "length": "1",
+          "interval": "0"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
+        }
       }
     },
     {
       "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": ""
-      }
+      "settings": {}
     },
     {
       "tag": "block",
@@ -84,75 +128,26 @@
         "response": {
           "type": "http"
         }
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": ""
       }
     }
   ],
-  "dns": {
-    "servers": [
-      "1.1.1.1"
-    ],
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com",
-      "dns.alidns.com": [
-        "223.5.5.5",
-        "223.6.6.6",
-        "2400:3200::1",
-        "2400:3200:baba::1"
-      ],
-      "one.one.one.one": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "2606:4700:4700::1111",
-        "2606:4700:4700::1001"
-      ],
-      "dot.pub": [
-        "1.12.12.12",
-        "120.53.53.53"
-      ],
-      "dns.google": [
-        "8.8.8.8",
-        "8.8.4.4",
-        "2001:4860:4860::8888",
-        "2001:4860:4860::8844"
-      ],
-      "dns.quad9.net": [
-        "9.9.9.9",
-        "149.112.112.112",
-        "2620:fe::fe",
-        "2620:fe::9"
-      ],
-      "common.dot.dns.yandex.net": [
-        "77.88.8.8",
-        "77.88.8.1",
-        "2a02:6b8::feed:0ff",
-        "2a02:6b8:0:1::feed:0ff"
-      ]
-    }
-  },
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
         "type": "field",
-        "ip": [
-          "1.1.1.1"
+        "inboundTag": [
+          "api"
         ],
-        "outboundTag": "proxy",
-        "port": "53"
+        "outboundTag": "api",
+        "enabled": true
       },
       {
+        "id": "5627785659655799759",
         "type": "field",
-        "ip": [
-          "223.5.5.5"
-        ],
-        "outboundTag": "direct",
-        "port": "53"
+        "port": "0-65535",
+        "outboundTag": "proxy",
+        "enabled": true
       }
     ]
   }

@@ -1,67 +1,63 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+    "loglevel": "warning"
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
-    ]
-  },
-  "inbounds": [
-    {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
         ]
       },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
-      "settings": {
-        "udp": false,
-        "allowTransparent": false
-      }
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "164.132.76.37",
-            "port": 8443,
+            "address": "fhzq-o8ago9.truepaycart.com",
+            "port": 443,
             "users": [
               {
-                "id": "1344641f-bba6-4462-85e7-74d3f8cdfe45",
+                "id": "eb0cb97f-680b-4963-a05b-e30b04befc97",
                 "encryption": "none"
               }
             ]
@@ -69,55 +65,61 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "amd.com",
-          "publicKey": "aKZbe_oFJOPxzreAFVg0rDefOBqLjcw8dFx7tH0C1Qo",
-          "shortId": "af349148f67e6a62",
-          "fingerprint": "chrome",
-          "spiderX": "/hVFKg1qCWE3b",
-          "show": false
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "fhzq-o8ago9.truepaycart.com"
         },
-        "xhttpSettings": {
-          "path": "/pErA0ePyLPLp",
-          "mode": "stream-one"
+        "wsSettings": {
+          "path": "/eb0cb97f-680b-4963-a05b-e30b04befc97",
+          "headers": {
+            "Host": "fhzq-o8ago9.truepaycart.com"
+          }
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {}
+      "tag": "direct"
     },
     {
-      "tag": "block",
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:ir"
-        ]
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
       },
       {
-        "type": "field",
-        "outboundTag": "proxy",
-        "port": "0-65535"
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
     ]
   }
