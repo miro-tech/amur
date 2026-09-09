@@ -7,46 +7,49 @@
     "dnsLog": false
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
+      "1.1.1.1"
     ]
   },
   "inbounds": [
     {
       "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
       "settings": {
         "auth": "noauth",
         "udp": true,
-        "allowTransparent": false
+        "userLevel": 8
+      },
+      "sniffing": {
+        "enabled": false,
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "routeOnly": false
       }
     },
     {
       "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
       "settings": {
-        "udp": false,
-        "allowTransparent": false
+        "userLevel": 8
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 1053,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "network": "tcp,udp",
+        "port": 53
       }
     }
   ],
@@ -57,12 +60,15 @@
       "settings": {
         "vnext": [
           {
-            "address": "51.195.82.143",
-            "port": 8443,
+            "address": "185.206.168.39",
+            "port": 443,
             "users": [
               {
-                "id": "068b34e2-fd5c-4085-b398-41292b597a40",
-                "encryption": "none"
+                "id": "2188aab7-2881-4255-bd66-b592b5e072d5",
+                "encryption": "none",
+                "flow": "",
+                "level": 8,
+                "security": "auto"
               }
             ]
           }
@@ -72,21 +78,19 @@
         "network": "xhttp",
         "security": "reality",
         "realitySettings": {
-          "serverName": "it.nvidia.com",
-          "publicKey": "6NE-OLLjcAmBJn2Eg1EBezeHLB5ODk0SFO9ciiK8gG8",
-          "shortId": "6aff22679c4c86e7",
+          "serverName": "help.steampowered.com",
           "fingerprint": "chrome",
-          "spiderX": "/0AttKUJP0xAx",
-          "show": false
+          "publicKey": "ezAiEcZkPrOsp3ZS-uNSqJYt3lELMjR2JkL4kmy4WEw",
+          "shortId": "b8a3d14b065fa4ca",
+          "spiderX": "/"
         },
         "xhttpSettings": {
-          "path": "/24p4OMpCmzjf",
+          "path": "/9190bd2d1d62710f19da5baa",
           "mode": "stream-one"
+        },
+        "sockopt": {
+          "dialerProxy": "fragment"
         }
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
       }
     },
     {
@@ -95,30 +99,74 @@
       "settings": {}
     },
     {
-      "tag": "block",
+      "tag": "blocked",
       "protocol": "blackhole",
       "settings": {
         "response": {
           "type": "http"
         }
       }
+    },
+    {
+      "tag": "dns-out",
+      "protocol": "dns"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "1",
+          "interval": "0"
+        }
+      }
     }
   ],
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:ir"
-        ]
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "proxy"
       },
       {
         "type": "field",
-        "outboundTag": "proxy",
-        "port": "0-65535"
+        "ip": [
+          "1.1.1.1"
+        ],
+        "port": "53",
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "blocked"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "port": "0-65535",
+        "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "stats": {}
 }

@@ -8,14 +8,12 @@
   "dns": {
     "hosts": {},
     "servers": [
-      {
-        "address": "127.0.0.1",
-        "port": 53
-      }
+      "1.1.1.1"
     ]
   },
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -25,34 +23,33 @@
         "userLevel": 8
       },
       "sniffing": {
+        "enabled": false,
         "destOverride": [
           "http",
           "tls"
         ],
-        "enabled": false,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
     },
     {
+      "tag": "http",
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
       "settings": {
         "userLevel": 8
-      },
-      "tag": "http"
+      }
     },
     {
+      "tag": "dns-in",
       "listen": "127.0.0.1",
       "port": 1053,
       "protocol": "dokodemo-door",
       "settings": {
-        "address": "127.0.0.1",
+        "address": "1.1.1.1",
         "network": "tcp,udp",
         "port": 53
-      },
-      "tag": "dns-in"
+      }
     }
   ],
   "outbounds": [
@@ -62,13 +59,13 @@
       "settings": {
         "vnext": [
           {
-            "address": "Api.devsoftsnow.com",
+            "address": "185.206.168.71",
             "port": 443,
             "users": [
               {
+                "id": "2188aab7-2881-4255-bd66-b592b5e072d5",
                 "encryption": "none",
                 "flow": "",
-                "id": "04a96bd7-34df-4a71-998c-59327b885bc6",
                 "level": 8,
                 "security": "auto"
               }
@@ -77,39 +74,41 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "firefox",
-          "publicKey": "",
-          "serverName": "dashboard04.badoompuzzle.top",
-          "shortId": "",
-          "show": false,
-          "spiderX": ""
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "help.steampowered.com",
+          "fingerprint": "chrome",
+          "publicKey": "xNP-RAQRwbeYZC1327p1qGBD9cGL81AsQAM3u74MLws",
+          "shortId": "9ed6a00e53c0a47a",
+          "spiderX": "/"
         },
-        "wsSettings": {
-          "path": "/dashboard04",
-          "headers": {
-            "Host": "dashboard04.badoompuzzle.top"
-          }
+        "xhttpSettings": {
+          "path": "/20d1923c9d141c7b1e7d0535",
+          "mode": "stream-one"
         },
         "sockopt": {
-          "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
-          "mark": 255,
-          "tcpNoDelay": true
+          "dialerProxy": "fragment"
         }
-      },
-      "mux": {
-        "concurrency": 4,
-        "enabled": true,
-        "xudpConcurrency": 4,
-        "xudpProxyUDP443": "reject"
       }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
+    },
+    {
+      "tag": "dns-out",
+      "protocol": "dns"
     },
     {
       "tag": "fragment",
@@ -120,87 +119,51 @@
           "length": "1",
           "interval": "0"
         }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "TcpNoDelay": true,
-          "mark": 255
-        }
       }
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
-      "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
     }
   ],
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
+        "type": "field",
         "inboundTag": [
           "dns-in"
         ],
-        "outboundTag": "proxy",
-        "type": "field"
+        "outboundTag": "proxy"
       },
       {
-        "ip": [
-          "1.1.1.1"
-        ],
-        "outboundTag": "proxy",
-        "port": "53",
-        "type": "field"
-      },
-      {
+        "type": "field",
         "ip": [
           "1.1.1.1"
         ],
         "port": "53",
-        "outboundTag": "proxy",
-        "type": "field"
+        "outboundTag": "proxy"
       },
       {
+        "type": "field",
         "network": "udp",
-        "outboundTag": "block",
         "port": "443",
-        "type": "field"
+        "outboundTag": "blocked"
       },
       {
+        "type": "field",
         "ip": [
           "geoip:private"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
+        "type": "field",
         "domain": [
           "geosite:private"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "outboundTag": "proxy",
+        "type": "field",
         "port": "0-65535",
-        "type": "field"
+        "outboundTag": "proxy"
       }
     ]
   },
