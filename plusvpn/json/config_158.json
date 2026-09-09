@@ -1,9 +1,9 @@
 {
   "dns": {
     "servers": [
-      "1.1.1.1",
       "8.8.8.8"
-    ]
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
@@ -12,8 +12,7 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
@@ -30,89 +29,105 @@
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      },
-      "tag": "http",
+      "settings": [],
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
+        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "http"
     }
   ],
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
+    "error": ""
   },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "164.92.137.117",
-            "port": 443,
-            "users": [
-              {
-                "id": "18f1b94e-35f1-4c7f-953c-7b4681c52339",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
-          }
-        ]
+        "address": "104.21.70.21",
+        "encryption": "none",
+        "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
+        "port": 443
       },
       "streamSettings": {
-        "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "http",
-            "request": {
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "store.steampowered.com"
-                ]
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
               }
             }
-          }
+          ]
+        },
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s4.sevora.bond"
+        },
+        "xhttpSettings": {
+          "host": "s4.sevora.bond",
+          "path": "/bir",
+          "mode": "stream-one"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      }
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "settings": {},
+      "tag": "block"
     }
   ],
   "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
         "network": "udp",
@@ -122,16 +137,22 @@
       },
       {
         "ip": [
-          "geoip:private"
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
         ],
         "outboundTag": "direct",
         "type": "field"
       },
       {
-        "domain": [
-          "geosite:private"
+        "inboundTag": [
+          "dns-module"
         ],
-        "outboundTag": "direct",
+        "outboundTag": "proxy",
         "type": "field"
       }
     ]
