@@ -1,63 +1,67 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
   "dns": {
-    "hosts": {},
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+          "tls"
+        ]
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     },
     {
-      "listen": "127.0.0.1",
+      "tag": "http",
       "port": 10809,
+      "listen": "127.0.0.1",
       "protocol": "http",
-      "settings": {}
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "udp": false,
+        "allowTransparent": false
+      }
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "104.21.33.59",
-            "port": 443,
+            "address": "51.75.160.185",
+            "port": 8443,
             "users": [
               {
-                "id": "9b18ccef-b9e0-41d1-8990-9d970569e142",
+                "id": "b67a2a4d-2012-4316-9011-939f8f6318c3",
                 "encryption": "none"
               }
             ]
@@ -65,61 +69,55 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "web-socket.tgdaosheng.ggff.net"
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "intel.com",
+          "publicKey": "mo56cnuMEBHiHa0T644QVG7zwRNKQRNyFNc6avn1SCc",
+          "shortId": "2e29aed92d2f9bbf",
+          "fingerprint": "chrome",
+          "spiderX": "/aGbeC7WFdAfa",
+          "show": false
         },
-        "wsSettings": {
-          "path": "/proxyip=bpb.yousef.isegaro.com",
-          "headers": {
-            "Host": "web-socket.tgdaosheng.ggff.net"
-          }
+        "xhttpSettings": {
+          "path": "/wiRCCs8NtkMc",
+          "mode": "stream-one"
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
-  },
+  ],
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "domain:ir"
+        ]
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "type": "field",
+        "outboundTag": "proxy",
+        "port": "0-65535"
       }
     ]
   }
