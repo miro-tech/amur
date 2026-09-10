@@ -1,10 +1,26 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "warning"
+  },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
       "8.8.8.8"
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -12,8 +28,7 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
@@ -23,48 +38,27 @@
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      },
-      "tag": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls",
-          "quic"
-        ],
-        "routeOnly": false
-      }
+      "settings": {}
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "173.255.229.160",
-            "port": 80,
+            "address": "tur.zavqeron.ir",
+            "port": 8443,
             "users": [
               {
-                "id": "0ee6e326-4335-4b43-a9ef-b30c2d65aa27",
-                "encryption": "none",
-                "level": 8
+                "id": "8db3a1ab-f739-41f2-ae46-4fb72d9134f8",
+                "encryption": "none"
               }
             ]
           }
@@ -72,67 +66,62 @@
       },
       "streamSettings": {
         "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "amp-api-edge.apps.apple.com",
+          "fingerprint": "qq",
+          "publicKey": "9PxwbCMskvn1WA7ieKvvgJ3tvYU-u0r9wms__WU8URU",
+          "shortId": "0bd70fc8a4034691"
+        },
         "tcpSettings": {
           "header": {
-            "type": "http",
-            "request": {
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "amp-api-edge.apps.apple.com"
-                ]
-              }
-            }
+            "type": "none"
           }
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      }
+      "tag": "direct"
     },
     {
-      "tag": "block",
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "tag": "block"
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
       {
         "ip": [
           "geoip:private"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
         "domain": [
-          "geosite:private"
+          "geosite:category-ads-all"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "block"
       }
     ]
   }
