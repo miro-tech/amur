@@ -1,66 +1,68 @@
 {
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "servers": [
-      "1.1.1.1",
-      {
-        "address": "1.1.1.1",
-        "domains": []
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
-      }
-    ]
-  },
-  "inbounds": [
-    {
-      "listen": "127.0.0.1",
-      "port": 10808,
-      "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
-      },
-      "sniffing": {
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "enabled": true,
-        "routeOnly": false
-      },
-      "tag": "socks"
-    }
-  ],
+  "remarks": "@shenvpn",
   "log": {
     "loglevel": "none",
     "access": "",
     "error": "",
     "dnsLog": false
   },
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
+    ]
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      },
+      "settings": {
+        "udp": false,
+        "allowTransparent": false
+      }
+    }
+  ],
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "65.109.199.210",
-            "port": 443,
+            "address": "51.68.137.225",
+            "port": 8443,
             "users": [
               {
-                "encryption": "none",
-                "id": "30def688-0789-4505-ac7b-12b41ebd8ea1",
-                "level": 8
+                "id": "9fa2cf03-0e86-42e0-bbe5-f103547e0ab1",
+                "encryption": "none"
               }
             ]
           }
@@ -70,42 +72,53 @@
         "network": "xhttp",
         "security": "reality",
         "realitySettings": {
-          "allowInsecure": false,
+          "serverName": "www.samsung.com",
+          "publicKey": "P5ZdXU0ZhqKyqecItN3AgkTxE_rV3uLmWRWwSrqH23I",
+          "shortId": "deb7c723816961d9",
           "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.samsungebiz.com",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+          "spiderX": "/2rBJnoknSbqs",
+          "show": false
         },
         "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+          "path": "/OQvm6L0Ul8D6",
+          "mode": "stream-one"
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
+      }
     },
     {
+      "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
+      "settings": {}
     },
     {
+      "tag": "block",
       "protocol": "blackhole",
       "settings": {
         "response": {
           "type": "http"
         }
-      },
-      "tag": "block"
+      }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "domain:ir"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "proxy",
+        "port": "0-65535"
+      }
+    ]
   }
 }
