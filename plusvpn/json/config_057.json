@@ -1,115 +1,142 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
-  "dns": {
-    "hosts": {},
-    "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     },
     {
-      "listen": "127.0.0.1",
+      "tag": "http",
       "port": 10809,
+      "listen": "127.0.0.1",
       "protocol": "http",
-      "settings": {}
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "51.83.252.41",
-            "port": 2087,
+            "address": "172.67.167.42",
+            "port": 80,
             "users": [
               {
-                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
-                "encryption": "none"
+                "id": "c4d9932c-a041-41ba-b182-83b9812d204a",
+                "alterId": 0,
+                "email": "t@t.tt",
+                "security": "auto",
+                "encryption": "none",
+                "flow": ""
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp"
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+          "headers": {
+            "Host": "globalten.site"
+          }
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "mark": 255,
+          "tcpNoDelay": true
+        }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "1-1",
+          "length": "10-20",
+          "interval": "10-20"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
+        }
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
-  },
+  ],
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "type": "field",
+        "inboundTag": [
+          "api"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "api",
+        "enabled": true
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "type": "field",
+        "port": "0-65535",
+        "outboundTag": "proxy",
+        "enabled": true
       }
     ]
   }

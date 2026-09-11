@@ -1,123 +1,200 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "dns": {
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8",
-      "localhost"
-    ]
+      "https://cloudflare-dns.com/dns-query",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_1_0"
+      }
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      },
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
-    },
-    {
-      "tag": "http",
-      "port": 10809,
-      "listen": "127.0.0.1",
-      "protocol": "http",
+        "udp": true
+      },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
-          "tls"
-        ]
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       },
-      "settings": {
-        "udp": false,
-        "allowTransparent": false
-      }
+      "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": [],
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "164.132.76.37",
-            "port": 8443,
-            "users": [
-              {
-                "id": "5f709abd-5e95-4302-a337-d5c906dd89da",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "104.21.70.21",
+        "encryption": "none",
+        "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
+        "port": 443
       },
       "streamSettings": {
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "0",
+                  "104",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "114",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "11"
+              }
+            }
+          ]
+        },
         "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "amd.com",
-          "publicKey": "aKZbe_oFJOPxzreAFVg0rDefOBqLjcw8dFx7tH0C1Qo",
-          "shortId": "af349148f67e6a62",
-          "fingerprint": "chrome",
-          "spiderX": "/hVFKg1qCWE3b",
-          "show": false
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "s4.zanexo.org"
         },
         "xhttpSettings": {
-          "path": "/pErA0ePyLPLp",
+          "host": "s4.zanexo.org",
+          "path": "/bir",
           "mode": "stream-one"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": {}
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "settings": {},
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:ir"
-        ]
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
       },
       {
-        "type": "field",
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private",
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_1_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
         "outboundTag": "proxy",
-        "port": "0-65535"
+        "type": "field"
       }
     ]
   }

@@ -1,26 +1,22 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
+      "1.1.1.1",
       {
         "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
+        "domains": []
       },
-      "8.8.8.8"
+      {
+        "address": "223.5.5.5",
+        "domains": [],
+        "expectIPs": [],
+        "skipFallback": true
+      }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -28,37 +24,43 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
         "enabled": true,
         "routeOnly": false
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "104.21.21.111",
-            "port": 443,
+            "address": "202.78.163.182",
+            "port": 8443,
             "users": [
               {
-                "id": "70f95dff-e4dc-4bd2-a760-c0585066019d",
-                "encryption": "none"
+                "encryption": "none",
+                "id": "45f4b0f6-f5b2-4239-8b75-e0aa06ca19c1",
+                "level": 8
               }
             ]
           }
@@ -66,59 +68,67 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "s3.orvexa.bond",
-          "fingerprint": "unsafe",
-          "alpn": [
-            "h2"
-          ]
+        "security": "reality",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "3ArPHLI_XTPs-gdc0OyqPYEQbidH_iwnZUR8Sm0Jikc",
+          "serverName": "www.wikipedia.org",
+          "shortId": "200d20501444820a",
+          "show": false,
+          "spiderX": "/"
+        },
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",
+          "path": "/hndr"
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "tcpNoDelay": true
         }
       },
       "tag": "proxy"
     },
     {
+      "tag": "fragment",
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "1",
+          "length": "1",
+          "interval": "0"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpKeepAliveIdle": 100,
+          "tcpNoDelay": true
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
-      }
-    ]
+    "rules": []
   }
 }
