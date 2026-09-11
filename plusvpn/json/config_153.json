@@ -4,17 +4,10 @@
       "domain:googleapis.cn": "googleapis.com"
     },
     "servers": [
+      "https+local://dns.google/dns-query",
       "1.1.1.1",
-      {
-        "address": "1.1.1.1",
-        "domains": []
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
-      }
+      "8.8.8.8",
+      "localhost"
     ]
   },
   "inbounds": [
@@ -32,8 +25,7 @@
           "http",
           "tls"
         ],
-        "enabled": true,
-        "routeOnly": false
+        "enabled": true
       },
       "tag": "socks"
     }
@@ -41,25 +33,27 @@
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
+    "error": ""
   },
   "outbounds": [
     {
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "87.120.106.161",
-            "port": 8443,
+            "address": "qwdwejhdfbehjgrfbjernfjertngkrtjngjuefbu4.slicemain.com",
+            "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "id": "427f89be-beca-4239-b1d0-473a69a11ba4",
+                "flow": "",
+                "id": "712e95de-0511-4c67-a812-069f24be275f",
                 "level": 8
               }
             ]
@@ -67,25 +61,18 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "NcEw7Q33hPDS4jvuqncEGGPyRFu0rhYulod0ITDq82A",
-          "serverName": "www.wikipedia.org",
-          "shortId": "19887af1b1ab5f6c",
-          "show": false,
-          "spiderX": "/"
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/hndr"
-        },
+        "network": "grpc",
         "sockopt": {
           "dialerProxy": "fragment",
-          "tcpKeepAliveIdle": 100,
+          "tcpKeepAliveIdle": 60,
+          "mark": 255,
           "tcpNoDelay": true
         }
       },
@@ -97,15 +84,15 @@
       "settings": {
         "domainStrategy": "AsIs",
         "fragment": {
-          "packets": "1",
-          "length": "1",
-          "interval": "0"
+          "packets": "1-1",
+          "length": "2-4",
+          "interval": "25"
         }
       },
       "streamSettings": {
         "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 60
         }
       }
     },
@@ -126,9 +113,50 @@
       "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
   "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
-  }
+    "rules": [
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535",
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {}
 }
