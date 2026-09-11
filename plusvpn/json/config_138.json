@@ -1,102 +1,98 @@
 {
-  "remarks": "@MiTiVPN | [ ɴᴇᴛᴍᴇʟɪɪ ] 4🇩🇪",
+  "remarks": "@shenvpn",
   "log": {
     "loglevel": "warning"
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "fakedns",
       {
-        "address": "https://dns.google/dns-query",
-        "tag": "remote-dns"
-      }
-    ],
-    "queryStrategy": "UseIPv4",
-    "tag": "dns"
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
+      "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "fakedns"
+          "quic"
         ],
         "enabled": true,
-        "routeOnly": true
-      },
-      "tag": "socks-in"
+        "routeOnly": false
+      }
     },
     {
-      "port": 10853,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "1.1.1.1",
-        "network": "tcp,udp",
-        "port": 53
-      },
-      "tag": "dns-in"
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "protocol": "trojan",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "199.232.78.160",
+            "address": "s1.cheezandroidsoft.digital",
             "port": 443,
-            "password": "mitivpn",
-            "level": 8
+            "users": [
+              {
+                "id": "794bc120-4094-4dd3-b53a-4d378469daab",
+                "encryption": "none"
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
         "network": "ws",
         "security": "tls",
-        "sockopt": {
-          "domainStrategy": "UseIPv4"
+        "tlsSettings": {
+          "serverName": "s1.cheezandroidsoft.digital",
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ]
         },
         "wsSettings": {
-          "host": "mitivpn---ss--s---mitivpn-4.global.ssl.fastly.net",
-          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/D-e1i@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN"
-        },
-        "tlsSettings": {
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "http/1.1"
-          ],
-          "serverName": "ssl.fastly.com"
+          "path": "/Cpanel/Logs/546f5esFSEFse5fg5rgrgd5rgdrg",
+          "headers": {
+            "Host": "s1.cheezandroidsoft.digital"
+          }
         }
       },
       "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
     },
     {
       "protocol": "dns",
       "tag": "dns-out"
     },
     {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
-    },
-    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
       "tag": "block"
     }
   ],
@@ -110,53 +106,25 @@
       }
     },
     "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
     }
   },
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "inboundTag": [
-          "socks-in"
+        "ip": [
+          "geoip:private"
         ],
-        "port": 53,
-        "outboundTag": "dns-out",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "inboundTag": [
-          "dns-in"
+        "domain": [
+          "geosite:category-ads-all"
         ],
-        "outboundTag": "dns-out",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "remote-dns"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "dns"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "network": "tcp",
-        "outboundTag": "proxy",
-        "type": "field"
+        "outboundTag": "block"
       }
     ]
-  },
-  "stats": {}
+  }
 }
