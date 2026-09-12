@@ -1,11 +1,26 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+    "loglevel": "warning"
   },
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -15,7 +30,21 @@
         "auth": "noauth",
         "udp": true
       },
-      "tag": "socks"
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
     }
   ],
   "outbounds": [
@@ -24,11 +53,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "all.rilqena.ir",
-            "port": 443,
+            "address": "135.125.143.19",
+            "port": 80,
             "users": [
               {
-                "id": "84350cb9-1c16-4768-8e31-51c0a9532770",
+                "id": "2dd2e766-2cb3-4c6d-b43e-40527f700ed1",
                 "encryption": "none"
               }
             ]
@@ -36,44 +65,57 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "rosa-92b6753d6d9acfb9.rilqena.ir",
-          "fingerprint": "chrome",
-          "alpn": [
-            "h2",
-            "http/1.1",
-            "h3"
-          ],
-          "echConfigList": "AHP+DQBvAAAgACCxDP974f6uWvb5sBz51KEMIl/nvjNcTtKqGrquXwJKDQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADACByb3NhLTkyYjY3NTNkNmQ5YWNmYjkucmlscWVuYS5pcgAA"
-        },
-        "xhttpSettings": {
-          "host": "rosa-92b6753d6d9acfb9.rilqena.ir",
-          "path": "/digital",
-          "mode": "stream-up",
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http"
           }
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4"
         }
       },
       "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
     }
   ],
-  "routing": {
-    "rules": []
-  },
-  "dns": {
-    "hosts": {
-      "all.rilqena.ir": "85.198.48.84"
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
     },
-    "servers": [
-      "1.1.1.1"
-    ],
-    "queryStrategy": "UseIPv4"
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      }
+    ]
   }
 }
