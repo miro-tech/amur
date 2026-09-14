@@ -1,63 +1,62 @@
 {
-  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
-  "dns": {
-    "hosts": {},
-    "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "0.0.0.0",
       "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
       }
     },
     {
-      "listen": "127.0.0.1",
+      "tag": "http",
       "port": 10809,
+      "listen": "0.0.0.0",
       "protocol": "http",
-      "settings": {}
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false
+      }
     }
   ],
   "outbounds": [
     {
       "protocol": "vless",
+      "tag": "proxy",
       "settings": {
         "vnext": [
           {
-            "address": "dee338dd.localip.ir",
-            "port": 2087,
+            "address": "199.232.78.150",
+            "port": 443,
             "users": [
               {
-                "id": "fd6fb48f-b324-4a82-9dcd-f8bdb1bd5301",
+                "id": "8e820f9d-718d-4563-865a-048b06ed4c6d",
                 "encryption": "none"
               }
             ]
@@ -68,56 +67,51 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "allsmart1.gsd14oomyx.space",
+          "serverName": "ssl.fastly.com",
           "alpn": [
             "h2"
           ]
+        },
+        "xhttpSettings": {
+          "mode": "auto",
+          "path": "/",
+          "host": "Xui-zerpo.global.ssl.fastly.net"
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
+      "tag": "DIRECT"
     },
     {
       "protocol": "blackhole",
-      "tag": "block"
+      "tag": "BLOCK"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "8.8.8.8"
+    ]
   },
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": [
+    "rules": []
+  },
+  "policy": {
+    "levels": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "statsUserUplink": true,
+        "statsUserDownlink": true
       }
-    ]
-  }
+    ],
+    "system": {
+      "statsInboundUplink": true,
+      "statsInboundDownlink": true,
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
+  "stats": {},
+  "remarks": "@shenvpn"
 }
