@@ -1,26 +1,22 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
+      "1.1.1.1",
       {
         "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
+        "domains": []
       },
-      "8.8.8.8"
+      {
+        "address": "223.5.5.5",
+        "domains": [],
+        "expectIPs": [],
+        "skipFallback": true
+      }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -28,92 +24,111 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
         "enabled": true,
         "routeOnly": false
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
+  },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "88.99.125.243",
-            "port": 80,
+            "address": "51.79.31.141",
+            "port": 8443,
             "users": [
               {
-                "id": "45933928-a410-4206-bd59-01016da08817",
-                "encryption": "none"
+                "encryption": "none",
+                "id": "39c1447c-4a4b-4684-bfdd-3b107e84a02d",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "wsSettings": {
-          "path": "/"
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "WUy821bHa6OPBSSIqpINMYjLPpCPOWgj4oSkF5afZy8",
+          "serverName": "www.wikipedia.org",
+          "shortId": "88818ce53840c992",
+          "show": false,
+          "spiderX": "/"
+        },
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",
+          "path": "/api/4a4e52aa75134cf1"
+        },
+        "sockopt": {
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 100,
+          "tcpNoDelay": true
         }
       },
       "tag": "proxy"
     },
     {
+      "tag": "fragment",
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "1",
+          "length": "1",
+          "interval": "0"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpKeepAliveIdle": 100,
+          "tcpNoDelay": true
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
-      }
-    ]
+    "rules": []
   }
 }
