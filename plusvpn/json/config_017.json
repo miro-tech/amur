@@ -1,22 +1,26 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "warning"
+  },
   "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
+    "hosts": {},
     "servers": [
-      "1.1.1.1",
       {
         "address": "1.1.1.1",
-        "domains": []
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
       },
-      {
-        "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
-      }
+      "8.8.8.8"
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -24,43 +28,37 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "65.109.178.249",
-            "port": 443,
+            "address": "update.download.pass.mycarservhpdd10.ir",
+            "port": 55805,
             "users": [
               {
-                "encryption": "none",
-                "id": "b08a44f5-abd5-456e-a2e1-db95dc9cf425",
-                "level": 8
+                "id": "527462f9-95a9-4470-ba22-ba1c45903954",
+                "encryption": "mlkem768x25519plus.native.0rtt.T3No9D-db3ZYQW3tbvZeqH0qgLXWDbN5FN9qIuxbPVA"
               }
             ]
           }
@@ -70,42 +68,56 @@
         "network": "xhttp",
         "security": "reality",
         "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
-        },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+          "serverName": "play.google.com",
+          "fingerprint": "firefox",
+          "publicKey": "ts76kMHodroAUFU4rwPnSAA4s-w7W8rNSmP2FMaI9xQ",
+          "shortId": "2f0611891b8613cc"
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
       "tag": "direct"
     },
     {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
       "tag": "block"
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      }
+    ]
   }
 }
