@@ -1,19 +1,17 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
-    "hosts": [],
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
     "servers": [
-      "1.1.1.1"
+      "https+local://dns.google/dns-query",
+      "1.1.1.1",
+      "8.8.8.8",
+      "localhost"
     ]
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -23,147 +21,140 @@
         "userLevel": 8
       },
       "sniffing": {
-        "enabled": false,
         "destOverride": [
           "http",
           "tls"
         ],
-        "routeOnly": false
-      }
-    },
-    {
-      "tag": "http",
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      }
-    },
-    {
-      "tag": "dns-in",
-      "listen": "127.0.0.1",
-      "port": 1053,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "1.1.1.1",
-        "network": "tcp,udp",
-        "port": 53
-      }
+        "enabled": true
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "153.76.122.179",
+            "address": "dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com",
             "port": 443,
             "users": [
               {
-                "id": "2188aab7-2881-4255-bd66-b592b5e072d5",
                 "encryption": "none",
                 "flow": "",
-                "level": 8,
-                "security": "auto"
+                "id": "712e95de-0511-4c67-a812-069f24be275f",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "help.steampowered.com",
-          "fingerprint": "chrome",
-          "publicKey": "zQL3JvY5JMOKoJhteIsvSIwSEuLdqIO_3Z4kYhUu0HE",
-          "shortId": "75ec41f096e23b73",
-          "spiderX": "/"
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "xhttpSettings": {
-          "path": "/42d4ea8022140ba935f04d21",
-          "mode": "stream-one"
-        },
+        "network": "grpc",
         "sockopt": {
-          "dialerProxy": "fragment"
+          "dialerProxy": "fragment",
+          "tcpKeepAliveIdle": 60,
+          "mark": 255,
+          "tcpNoDelay": true
         }
-      }
-    },
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": []
-    },
-    {
-      "tag": "blocked",
-      "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
-    },
-    {
-      "tag": "dns-out",
-      "protocol": "dns"
+      },
+      "tag": "proxy"
     },
     {
       "tag": "fragment",
       "protocol": "freedom",
       "settings": {
+        "domainStrategy": "AsIs",
         "fragment": {
-          "packets": "2",
-          "length": "8-10",
-          "interval": "4"
+          "packets": "1-1",
+          "length": "2-4",
+          "interval": "25"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 60
         }
       }
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "proxy"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "1.1.1.1"
-        ],
-        "port": "53",
-        "outboundTag": "proxy"
-      },
-      {
-        "type": "field",
-        "network": "udp",
-        "port": "443",
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
         "domain": [
           "geosite:private"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
         "port": "0-65535",
-        "outboundTag": "proxy"
+        "type": "field"
       }
     ]
   },
