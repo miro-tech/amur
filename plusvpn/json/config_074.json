@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:speedtest.org"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:speedtest.org"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:speedtest.org"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -153,11 +162,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "167.233.190.224",
-            "port": 443,
+            "address": "speedtest.org",
+            "port": 2053,
             "users": [
               {
-                "id": "9fa5b96f-02be-48f4-ab38-31a5f24c19ea",
+                "id": "8df2e661-6f46-471b-9133-7fc13a0daa35",
                 "encryption": "none",
                 "level": 8
               }
@@ -166,11 +175,18 @@
         ]
       },
       "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "grpc",
-          "multiMode": false
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "0iipe33ji.wkem.ir",
+          "allowInsecure": false,
+          "fingerprint": "firefox"
+        },
+        "wsSettings": {
+          "path": "/",
+          "headers": {
+            "Host": "0iipe33ji.wkem.ir"
+          }
         },
         "sockopt": {
           "tcpFastOpen": true,
@@ -180,7 +196,36 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true,
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -225,6 +270,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:speedtest.org"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
