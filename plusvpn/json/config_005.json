@@ -1,4 +1,10 @@
 {
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -129,30 +135,24 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "enabled": false,
+        "concurrency": -1
       },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "57.130.18.229",
-            "port": 2087,
+            "address": "188.114.97.6",
+            "port": 443,
             "users": [
               {
-                "encryption": "none",
-                "flow": "",
-                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
-                "level": 8
+                "id": "9f44d517-29f2-4c6d-cc06-a1268f13da58",
+                "security": "auto",
+                "encryption": "none"
               }
             ]
           }
@@ -160,26 +160,57 @@
       },
       "streamSettings": {
         "network": "xhttp",
+        "security": "tls",
         "xhttpSettings": {
+          "path": "/Meh?di=443",
+          "host": "kala.bestsellers1.site",
+          "mode": "auto",
           "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "",
-          "mode": "stream-up",
-          "path": "/api"
+            "scMaxBufferedPosts": 30,
+            "scMaxEachPostBytes": "1000000",
+            "scStreamUpServerSecs": "20-80",
+            "xPaddingBytes": "100-1000",
+            "scMinPostsIntervalMs": "30",
+            "xmux": {
+              "maxConcurrency": "16-32",
+              "maxConnections": 0,
+              "cMaxReuseTimes": 0,
+              "hMaxRequestTimes": "600-900",
+              "hMaxReusableSecs": "1800-3000",
+              "hKeepAlivePeriod": 0
+            }
+          }
         },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+        "tlsSettings": {
+          "serverName": "kala.bestsellers1.site",
+          "fingerprint": "unsafe",
+          "alpn": [
+            "h2"
+          ]
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -207,7 +238,6 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -253,16 +283,9 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
+  "metrics": {
+    "listen": "127.0.0.1:10812"
+  },
   "policy": {
     "levels": {
       "8": {
@@ -273,5 +296,16 @@
         "bufferSize": 64
       }
     }
-  }
+  },
+  "remarks": "@shenvpn",
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
