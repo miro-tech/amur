@@ -1,4 +1,5 @@
 {
+  "remarks": "@shenvpn",
   "log": {
     "access": "",
     "error": "",
@@ -21,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:edge4.cyrionflare.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:edge4.cyrionflare.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:edge4.cyrionflare.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -79,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -138,21 +158,17 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
+            "address": "edge4.cyrionflare.com",
             "port": 443,
             "users": [
               {
-                "id": "9f44d517-29f2-4c6d-cc06-a1268f13da58",
-                "security": "auto",
-                "encryption": "none"
+                "id": "41635fb4-6d7a-4bce-b614-fb0b122a5759",
+                "encryption": "none",
+                "level": 8
               }
             ]
           }
@@ -161,54 +177,31 @@
       "streamSettings": {
         "network": "xhttp",
         "security": "tls",
+        "tlsSettings": {
+          "serverName": "edge4.cyrionflare.com",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ]
+        },
         "xhttpSettings": {
-          "path": "/Meh?di=443",
-          "host": "kala.bestsellers1.site",
+          "path": "/api/v1/assets/",
+          "host": "edge4.cyrionflare.com",
           "mode": "auto",
           "extra": {
-            "scMaxBufferedPosts": 30,
-            "scMaxEachPostBytes": "1000000",
-            "scStreamUpServerSecs": "20-80",
-            "xPaddingBytes": "100-1000",
-            "scMinPostsIntervalMs": "30",
-            "xmux": {
-              "maxConcurrency": "16-32",
-              "maxConnections": 0,
-              "cMaxReuseTimes": 0,
-              "hMaxRequestTimes": "600-900",
-              "hMaxReusableSecs": "1800-3000",
-              "hKeepAlivePeriod": 0
-            }
+            "mode": "auto",
+            "xPaddingBytes": "100-1000"
           }
         },
-        "tlsSettings": {
-          "serverName": "kala.bestsellers1.site",
-          "fingerprint": "unsafe",
-          "alpn": [
-            "h2"
-          ]
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 25,
+          "tcpKeepAliveInterval": 20,
+          "tcpUserTimeout": 30000,
+          "domainStrategy": "UseIP"
         }
       }
     },
@@ -238,10 +231,29 @@
       }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:edge4.cyrionflare.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -282,30 +294,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "metrics": {
-    "listen": "127.0.0.1:10812"
-  },
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
-  "remarks": "@shenvpn",
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }

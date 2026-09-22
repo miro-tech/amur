@@ -149,18 +149,18 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vmess",
+      "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "66.163.113.176",
-            "port": 22324,
+            "address": "205.172.56.151",
+            "port": 5432,
             "users": [
               {
-                "id": "04621bae-ab36-11ec-b909-0242ac120002",
-                "alterId": 0,
-                "security": "auto",
-                "level": 8
+                "id": "cc01f435-d561-4525-bf1f-7a9876d33207",
+                "encryption": "none",
+                "level": 8,
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
@@ -168,7 +168,11 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "fingerprint": "safari"
+        },
         "tcpSettings": {
           "header": {
             "type": "none"
@@ -182,6 +186,28 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
