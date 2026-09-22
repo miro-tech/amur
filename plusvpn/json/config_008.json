@@ -1,5 +1,4 @@
 {
-  "remarks": "@shenvpn",
   "log": {
     "access": "",
     "error": "",
@@ -22,28 +21,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:test.keoplentuio.xyz"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:test.keoplentuio.xyz"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:test.keoplentuio.xyz"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -89,16 +79,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -158,45 +138,67 @@
   "outbounds": [
     {
       "tag": "proxy",
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "test.keoplentuio.xyz",
-            "port": 2053,
+            "address": "188.114.97.6",
+            "port": 443,
             "users": [
               {
-                "id": "9ef61079-6f7d-4911-9608-943da85d8e6f",
-                "encryption": "none",
-                "level": 8
+                "id": "44eae030-290b-4083-8102-6f8bab05701b",
+                "security": "auto",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "none",
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/?TELEGRAM--MARAMBASHI--MARAMBASHI?ed=512",
+          "host": "cfvvv-ev1.pages.dev"
+        },
+        "tlsSettings": {
+          "serverName": "cfvvv-ev1.pages.dev",
+          "fingerprint": "unsafe"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
         },
         "sockopt": {
-          "tcpFastOpen": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true,
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
+          "tcpMptcp": true
         }
       }
     },
@@ -226,29 +228,10 @@
       }
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:test.keoplentuio.xyz"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
@@ -289,5 +272,30 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "metrics": {
+    "listen": "127.0.0.1:10812"
+  },
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
+  "remarks": "@shenvpn",
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
