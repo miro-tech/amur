@@ -1,22 +1,24 @@
 {
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
     "hosts": {
-      "dns.google": [
-        "8.8.8.8",
-        "8.8.4.4",
-        "2001:4860:4860::8888",
-        "2001:4860:4860::8844"
-      ],
+      "domain:googleapis.cn": "googleapis.com",
       "dns.alidns.com": [
         "223.5.5.5",
         "223.6.6.6",
         "2400:3200::1",
         "2400:3200:baba::1"
+      ],
+      "dns.sse.cisco.com": [
+        "208.67.220.220",
+        "208.67.222.222",
+        "2620:119:35::35",
+        "2620:119:53::53"
+      ],
+      "dns.umbrella.com": [
+        "208.67.220.220",
+        "208.67.222.222",
+        "2620:119:35::35",
+        "2620:119:53::53"
       ],
       "one.one.one.one": [
         "1.1.1.1",
@@ -30,25 +32,35 @@
         "2606:4700:4700::1111",
         "2606:4700:4700::1001"
       ],
-      "cloudflare-dns.com": [
-        "104.16.249.249",
-        "104.16.248.249",
-        "2606:4700::6810:f8f9",
-        "2606:4700::6810:f9f9"
-      ],
       "dns.cloudflare.com": [
         "162.159.61.8",
         "172.64.41.8",
         "2a06:98c1:52::8",
         "2803:f800:53::8"
       ],
-      "dot.pub": [
-        "1.12.12.12",
-        "120.53.53.53"
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "engage.cloudflareclient.com": [
+        "162.159.192.1",
+        "2606:4700:d0::a29f:c001"
       ],
       "doh.pub": [
         "1.12.12.12",
         "120.53.53.53"
+      ],
+      "dot.pub": [
+        "1.12.12.12",
+        "120.53.53.53"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
       ],
       "dns.quad9.net": [
         "9.9.9.9",
@@ -56,233 +68,161 @@
         "2620:fe::fe",
         "2620:fe::9"
       ],
-      "dns.yandex.net": [
-        "77.88.8.8",
-        "77.88.8.1",
-        "2a02:6b8::feed:0ff",
-        "2a02:6b8:0:1::feed:0ff"
-      ],
       "dns.sb": [
         "45.11.45.11",
         "185.222.222.222",
         "2a09::",
         "2a11::"
       ],
-      "dns.umbrella.com": [
-        "208.67.220.220",
-        "208.67.222.222",
-        "2620:119:35::35",
-        "2620:119:53::53"
-      ],
-      "dns.sse.cisco.com": [
-        "208.67.220.220",
-        "208.67.222.222",
-        "2620:119:35::35",
-        "2620:119:53::53"
-      ],
-      "engage.cloudflareclient.com": [
-        "162.159.192.1",
-        "2606:4700:d0::a29f:c001"
+      "common.dot.dns.yandex.net": [
+        "77.88.8.8",
+        "77.88.8.1",
+        "2a02:6b8::feed:0ff",
+        "2a02:6b8:0:1::feed:0ff"
       ]
     },
     "servers": [
+      "1.1.1.1",
       {
-        "address": "119.29.29.29",
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:google"
+        ]
+      },
+      {
+        "address": "223.5.5.5",
         "domains": [
           "geosite:private"
         ],
         "skipFallback": true,
-        "tag": "direct-dns-1"
-      },
-      {
-        "address": "119.29.29.29",
-        "domains": [
-          "full:cloudflare-dns.com"
-        ],
-        "skipFallback": true
-      },
-      "https://cloudflare-dns.com/dns-query"
+        "tag": "domestic-dns_1_0"
+      }
     ],
     "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
+      "listen": "127.0.0.1",
       "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "mixed",
-      "sniffing": {
-        "enabled": false,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
+      "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": false,
-        "allowTransparent": false
-      }
-    },
-    {
-      "tag": "socks2",
-      "port": 10809,
-      "listen": "127.0.0.1",
-      "protocol": "mixed",
+        "udp": true,
+        "userLevel": 8
+      },
       "sniffing": {
-        "enabled": false,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
+        "enabled": true,
         "routeOnly": false
       },
-      "settings": {
-        "auth": "noauth",
-        "udp": false,
-        "allowTransparent": false
-      }
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "mux": {
-        "enabled": false,
-        "concurrency": -1
+        "concurrency": -1,
+        "enabled": false
       },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
-            "port": 443,
+            "address": "15.235.49.63",
+            "port": 2087,
             "users": [
               {
-                "id": "4c0b7280-76bb-495c-9c8b-f05712ebf805",
-                "security": "auto",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "wsSettings": {
-          "path": "/",
-          "host": "youxuanku.kdns.fr"
-        },
-        "tlsSettings": {
-          "serverName": "youxuanku.kdns.fr",
-          "fingerprint": "unsafe"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "0",
-                  "104",
-                  "1"
-                ],
-                "delays": [
-                  "0"
-                ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "114",
-                  "1"
-                ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "11"
-              }
-            }
-          ]
+        "network": "xhttp",
+        "xhttpSettings": {
+          "extra": {
+            "mode": "stream-up",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "",
+          "mode": "stream-up",
+          "path": "/api"
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
-        "port": "443",
-        "network": "udp",
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "outboundTag": "block",
         "domain": [
-          "geosite:category-ads-all"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "ip": [
-          "geoip:private"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "geosite:private"
-        ]
-      },
-      {
-        "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "direct-dns-1"
+          "domain:exirpro.org"
         ],
         "outboundTag": "direct"
       },
       {
-        "type": "field",
+        "domain": [
+          "geosite:google"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_1_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
         "inboundTag": [
           "dns-module"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  },
-  "metrics": {
-    "listen": "127.0.0.1:10812"
-  },
-  "policy": {
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "stats": [],
-  "remarks": "@shenvpn"
+  }
 }

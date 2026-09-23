@@ -1,4 +1,10 @@
 {
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -129,45 +135,61 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "enabled": false,
+        "concurrency": -1
       },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "54.38.138.95",
-            "port": 2087,
+            "address": "188.114.97.6",
+            "port": 443,
             "users": [
               {
-                "encryption": "none",
-                "flow": "",
-                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
-                "level": 8
+                "id": "9952b71a-6c86-4522-888f-ff9ea9b93536",
+                "security": "auto",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "xhttpSettings": {
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "",
-          "mode": "stream-up",
-          "path": "/api"
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/",
+          "host": "1.hshs8227shhshs.workers.dev"
+        },
+        "tlsSettings": {
+          "serverName": "1.hshs8227shhshs.workers.dev",
+          "fingerprint": "unsafe"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
         },
         "sockopt": {
           "domainStrategy": "UseIPv4v6",
@@ -178,8 +200,7 @@
           "tcpMaxSeg": 1200,
           "tcpMptcp": true
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -207,7 +228,6 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -253,16 +273,9 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
+  "metrics": {
+    "listen": "127.0.0.1:10812"
+  },
   "policy": {
     "levels": {
       "8": {
@@ -273,5 +286,16 @@
         "bufferSize": 64
       }
     }
-  }
+  },
+  "remarks": "@shenvpn",
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
