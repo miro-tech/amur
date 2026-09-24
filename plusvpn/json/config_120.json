@@ -149,27 +149,29 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "82.24.203.20",
-            "port": 2087,
-            "users": [
-              {
-                "id": "5fcdc9b7-e70f-4a5c-85c3-e018ad818326",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
+            "address": "104.18.9.83",
+            "port": 443,
+            "password": "humanity",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
         "network": "ws",
-        "security": "none",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.calmlunch.com",
+          "allowInsecure": false
+        },
         "wsSettings": {
-          "path": "/fd5ba98a3970"
+          "path": "/assignment",
+          "headers": {
+            "Host": "www.calmlunch.com"
+          }
         },
         "sockopt": {
           "tcpFastOpen": true,
@@ -179,6 +181,28 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
