@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -22,19 +15,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +82,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -146,51 +138,63 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "169.40.42.52",
+            "address": "uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com",
             "port": 443,
             "users": [
               {
-                "id": "d65cc14c-f53f-4fe2-b262-97856601319c",
                 "encryption": "none",
-                "level": 8,
-                "flow": "xtls-rprx-vision"
+                "flow": "",
+                "id": "712e95de-0511-4c67-a812-069f24be275f",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "yahoo.com",
-          "fingerprint": "chrome",
-          "publicKey": "e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg",
-          "shortId": "c39cc7310a"
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
-        },
+        "network": "grpc",
         "sockopt": {
-          "tcpFastOpen": true,
-          "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
+          "tcpNoDelay": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -229,10 +233,19 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -273,5 +286,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }

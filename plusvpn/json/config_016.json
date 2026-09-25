@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fra2.loozerp.wiki"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fra2.loozerp.wiki"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fra2.loozerp.wiki"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -149,19 +158,36 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "shadowsocks",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "193.29.139.202",
-            "port": 8080,
-            "method": "chacha20-ietf-poly1305",
-            "password": "oZIoA69Q8yhcQV8ka3Pa3A",
-            "level": 8
+            "address": "fra2.loozerp.wiki",
+            "port": 443,
+            "users": [
+              {
+                "id": "f495298f-2bdb-4fd8-9ac9-5dd33d1b482a",
+                "encryption": "none",
+                "level": 8,
+                "flow": "xtls-rprx-vision"
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "fra2.loozerp.wiki",
+          "publicKey": "W-zf_ncm9sYALF5EqvUsxqTkYGdAw-tQczT2SqwVMGE",
+          "shortId": "ff776ff77be48b88"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
@@ -170,7 +196,13 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -215,6 +247,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:fra2.loozerp.wiki"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [

@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -24,7 +17,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dey.lnmarketplace.net"
+          "full:wqaedxcwnjdcwebcvwyvdxyweyfdvyervf5.slicemain.com"
         ]
       },
       {
@@ -33,7 +26,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dey.lnmarketplace.net"
+          "full:wqaedxcwnjdcwebcvwyvdxyweyfdvyervf5.slicemain.com"
         ]
       },
       {
@@ -42,7 +35,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dey.lnmarketplace.net"
+          "full:wqaedxcwnjdcwebcvwyvdxyweyfdvyervf5.slicemain.com"
         ]
       },
       {
@@ -89,16 +82,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -155,19 +138,31 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "dey.lnmarketplace.net",
+            "address": "wqaedxcwnjdcwebcvwyvdxyweyfdvyervf5.slicemain.com",
             "port": 443,
             "users": [
               {
-                "id": "3536e1fa-0850-44d1-b123-925ce12476cf",
                 "encryption": "none",
+                "flow": "",
+                "id": "712e95de-0511-4c67-a812-069f24be275f",
                 "level": 8
               }
             ]
@@ -175,30 +170,31 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "dey.lnmarketplace.net",
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "alpn": [
-            "h2"
-          ]
+        "grpcSettings": {
+          "authority": "",
+          "health_check_timeout": 20,
+          "idle_timeout": 60,
+          "multiMode": false,
+          "serviceName": ""
         },
-        "xhttpSettings": {
-          "path": "/kavir",
-          "host": "dey.lnmarketplace.net",
-          "mode": "stream-one"
-        },
+        "network": "grpc",
         "sockopt": {
-          "tcpFastOpen": true,
+          "tcpKeepAliveIdle": 20,
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 25,
-          "tcpKeepAliveInterval": 20,
-          "tcpUserTimeout": 30000,
-          "domainStrategy": "UseIP"
+          "domainStrategy": "UseIPv4v6",
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -237,6 +233,7 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -244,7 +241,7 @@
       {
         "type": "field",
         "domain": [
-          "full:dey.lnmarketplace.net"
+          "full:wqaedxcwnjdcwebcvwyvdxyweyfdvyervf5.slicemain.com"
         ],
         "network": "tcp,udp",
         "outboundTag": "direct"
@@ -289,5 +286,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
