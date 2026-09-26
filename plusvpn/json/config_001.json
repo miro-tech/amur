@@ -80,16 +80,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -153,11 +143,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "82.47.63.156",
-            "port": 8080,
+            "address": "188.114.97.6",
+            "port": 443,
             "users": [
               {
-                "id": "6bceb548-d9b6-461f-8e37-a5a7fbcdc2c8",
+                "id": "e30917d9-a8e4-4dce-aabc-c2b28b9da672",
                 "encryption": "none",
                 "level": 8
               }
@@ -166,23 +156,60 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "none",
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.alicemush.online",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "fingerprint": "chrome"
+        },
+        "grpcSettings": {
+          "authority": "www.alicemush.online",
+          "serviceName": "google.internal.analytics.v1.Tracker",
+          "multiMode": true,
+          "idle_timeout": 60,
+          "health_check_timeout": 20
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
         },
         "sockopt": {
-          "tcpFastOpen": true,
+          "domainStrategy": "UseIPv4v6",
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true
         }
+      },
+      "mux": {
+        "enabled": true,
+        "concurrency": 8,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       }
     },
     {
@@ -211,17 +238,6 @@
       }
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
-  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -266,5 +282,26 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }

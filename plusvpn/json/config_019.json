@@ -80,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -138,62 +148,35 @@
   ],
   "outbounds": [
     {
-      "protocol": "trojan",
+      "tag": "proxy",
+      "protocol": "vmess",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "151.101.56.7",
-            "port": 443,
-            "password": "MiTiVPN",
-            "level": 8
+            "address": "82.198.246.37",
+            "port": 180,
+            "users": [
+              {
+                "id": "d13fc2f5-3e05-4795-81eb-44143a09e552",
+                "alterId": 0,
+                "security": "auto",
+                "level": 8
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
+        "network": "raw",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "UseIPv4",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        },
-        "wsSettings": {
-          "host": "mitivpn---de--s---mitivpn-2.global.ssl.fastly.net",
-          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/D-e2@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN"
-        },
-        "tlsSettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "alpn": [
-            "http/1.1"
-          ],
-          "serverName": "ssl.fastly.com"
-        }
-      },
-      "tag": "proxy"
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
@@ -279,15 +262,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }
