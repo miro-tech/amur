@@ -22,28 +22,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:bluesparkhub-yakuza.info"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:bluesparkhub-yakuza.info"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:bluesparkhub-yakuza.info"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -158,43 +149,60 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "bluesparkhub-yakuza.info",
+            "address": "208.85.19.141",
             "port": 443,
-            "users": [
-              {
-                "id": "4f0d7f98-9648-4b4e-82f6-2ad6d9e68ee2",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
+            "password": "Lz3NvQXwksB8",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.wikipedia.org",
-          "fingerprint": "chrome",
-          "publicKey": "pwxPeZlUrfZbKCcvU6AxfQyLUtmCkmX0YWz3ZETRsBo",
-          "shortId": "d0bfcbde",
-          "spiderX": "/"
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "ash.d50f6225-23b4-3a7b-9f15-a0fb2fc16803.kailib.com",
+          "allowInsecure": false
         },
-        "xhttpSettings": {
-          "path": "/hndr",
-          "mode": "auto"
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 25,
-          "tcpKeepAliveInterval": 20,
-          "tcpUserTimeout": 30000,
-          "domainStrategy": "UseIP"
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
       }
     },
@@ -239,14 +247,6 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:bluesparkhub-yakuza.info"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
