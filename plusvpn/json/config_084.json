@@ -1,10 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com",
@@ -88,23 +82,6 @@
       ]
     },
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "domain:exirpro.org"
-        ],
-        "skipFallback": true,
-        "tag": "exirpro-direct-dns"
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "domain:exirpro.org"
-        ],
-        "skipFallback": true,
-        "finalQuery": true,
-        "tag": "exirpro-direct-dns"
-      },
       "1.1.1.1",
       {
         "address": "1.1.1.1",
@@ -125,7 +102,6 @@
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -135,29 +111,39 @@
         "userLevel": 8
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
+        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
-            "port": 443,
+            "address": "57.128.51.227",
+            "port": 2087,
             "users": [
               {
-                "id": "e30917d9-a8e4-4dce-aabc-c2b28b9da672",
                 "encryption": "none",
+                "flow": "",
+                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
                 "level": 8
               }
             ]
@@ -165,68 +151,40 @@
         ]
       },
       "streamSettings": {
-        "network": "grpc",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "off702.site",
-          "allowInsecure": false,
-          "alpn": [
-            "h2"
-          ],
-          "fingerprint": "chrome"
-        },
-        "grpcSettings": {
-          "authority": "off702.site",
-          "serviceName": "google.internal.analytics.v1.Tracker",
-          "multiMode": true,
-          "idle_timeout": 60,
-          "health_check_timeout": 20
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "1-2"
-                ],
-                "delays": [
-                  "10-20"
-                ],
-                "maxSplit": "10"
-              }
-            }
-          ]
+        "network": "xhttp",
+        "xhttpSettings": {
+          "extra": {
+            "mode": "stream-up",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "",
+          "mode": "stream-up",
+          "path": "/api"
         }
       },
-      "mux": {
-        "enabled": true,
-        "concurrency": 8,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
       "streamSettings": {
         "network": "tcp",
         "sockopt": {
           "domainStrategy": "UseIP"
         }
-      }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
       "settings": {
         "response": {
           "type": "http"
         }
-      }
+      },
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "rules": [
@@ -238,67 +196,33 @@
         "outboundTag": "direct"
       },
       {
-        "type": "field",
-        "inboundTag": [
-          "exirpro-direct-dns"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "network": "udp",
-        "port": "443",
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
         "domain": [
           "geosite:google"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
-        "ip": [
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
         "domain": [
           "geosite:private"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "inboundTag": [
           "domestic-dns_1_0"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "direct",
+        "type": "field"
       },
       {
-        "type": "field",
         "inboundTag": [
           "dns-module"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  },
-  "policy": {
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "stats": []
+  }
 }

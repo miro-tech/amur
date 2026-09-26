@@ -1,7 +1,92 @@
 {
   "dns": {
+    "hosts": {
+      "geosite:category-ads-all": "127.0.0.1",
+      "domain:googleapis.cn": "googleapis.com",
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.sse.cisco.com": [
+        "208.67.220.220",
+        "208.67.222.222",
+        "2620:119:35::35",
+        "2620:119:53::53"
+      ],
+      "dns.umbrella.com": [
+        "208.67.220.220",
+        "208.67.222.222",
+        "2620:119:35::35",
+        "2620:119:53::53"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "1dot1dot1dot1.cloudflare-dns.com": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "engage.cloudflareclient.com": [
+        "162.159.192.1",
+        "2606:4700:d0::a29f:c001"
+      ],
+      "doh.pub": [
+        "1.12.12.12",
+        "120.53.53.53"
+      ],
+      "dot.pub": [
+        "1.12.12.12",
+        "120.53.53.53"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "dns.sb": [
+        "45.11.45.11",
+        "185.222.222.222",
+        "2a09::",
+        "2a11::"
+      ],
+      "common.dot.dns.yandex.net": [
+        "77.88.8.8",
+        "77.88.8.1",
+        "2a02:6b8::feed:0ff",
+        "2a02:6b8:0:1::feed:0ff"
+      ],
+      "arvancloud.ir": [
+        "78.159.111.56"
+      ]
+    },
     "servers": [
-      "https://cloudflare-dns.com/dns-query",
+      "1.1.1.1",
       {
         "address": "223.5.5.5",
         "domains": [
@@ -17,7 +102,7 @@
           "geosite:category-ir"
         ],
         "skipFallback": true,
-        "tag": "domestic-dns_1_0"
+        "tag": "domestic-dns_2_0"
       }
     ],
     "tag": "dns-module"
@@ -29,7 +114,8 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
@@ -41,22 +127,6 @@
         "routeOnly": false
       },
       "tag": "socks"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {},
-      "sniffing": {
-        "destOverride": [
-          "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
-      },
-      "tag": "http"
     }
   ],
   "log": {
@@ -64,55 +134,43 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "address": "104.24.22.118",
+        "address": "arvancloud.ir",
         "encryption": "none",
-        "id": "65c41bc2-5695-4322-8282-b53e253294e4",
-        "port": 443
+        "flow": "",
+        "id": "984b51c1-beca-4b9c-bf5c-df60750add53",
+        "level": 8,
+        "port": 115
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
+        "network": "tcp",
+        "realitySettings": {
           "allowInsecure": false,
-          "alpn": [
-            "h2"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "tahmine.kavino.space"
+          "fingerprint": "chrome",
+          "publicKey": "JoXIfc3fCE2vBr_a_gepeEE4o58bVgpB67Ef_xN2nHI",
+          "serverName": "android.clients.google.com",
+          "shortId": "813461e3624d89",
+          "spiderX": "/ymupZP4SAgHLspD"
         },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "tahmine.kavino.space",
-          "path": "/4c7b491482e04014ac21f5089400c8e5",
-          "mode": "stream-up"
+        "security": "reality",
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
+          }
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         }
       },
       "tag": "proxy"
@@ -122,7 +180,12 @@
       "streamSettings": {
         "network": "tcp",
         "sockopt": {
-          "domainStrategy": "UseIP"
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "tryDelayMs": 250
+          }
         }
       },
       "tag": "direct"
@@ -131,24 +194,22 @@
       "protocol": "blackhole",
       "settings": {},
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "tag": "dns-out"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    }
+  },
   "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
-      {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
-        "port": "53",
-        "type": "field"
-      },
       {
         "network": "udp",
         "outboundTag": "block",
@@ -157,20 +218,27 @@
       },
       {
         "ip": [
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16",
-          "127.0.0.0/8",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
+          "geoip:private"
         ],
         "outboundTag": "direct",
         "type": "field"
       },
       {
         "domain": [
-          "geosite:private",
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "domain": [
           "domain:ir",
           "geosite:category-ir"
         ],
@@ -187,7 +255,7 @@
       {
         "inboundTag": [
           "domestic-dns_0_0",
-          "domestic-dns_1_0"
+          "domestic-dns_2_0"
         ],
         "outboundTag": "direct",
         "type": "field"
