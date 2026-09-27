@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -17,7 +24,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:skystonenode-zendani.sbs"
+          "full:greenfieldnet-zendani.sbs"
         ]
       },
       {
@@ -26,7 +33,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:skystonenode-zendani.sbs"
+          "full:greenfieldnet-zendani.sbs"
         ]
       },
       {
@@ -35,7 +42,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:skystonenode-zendani.sbs"
+          "full:greenfieldnet-zendani.sbs"
         ]
       },
       {
@@ -82,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -138,28 +155,19 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "skystonenode-zendani.sbs",
+            "address": "greenfieldnet-zendani.sbs",
             "port": 443,
             "users": [
               {
+                "id": "ffa39da5-c70b-40e9-b62a-e753c8919bcf",
                 "encryption": "none",
-                "id": "6ae80c25-b550-40fa-a22f-2941eab431d9",
                 "level": 8
               }
             ]
@@ -170,25 +178,25 @@
         "network": "xhttp",
         "security": "reality",
         "realitySettings": {
-          "allowInsecure": false,
+          "serverName": "www.wikipedia.org",
           "fingerprint": "chrome",
           "publicKey": "pwxPeZlUrfZbKCcvU6AxfQyLUtmCkmX0YWz3ZETRsBo",
-          "serverName": "www.wikipedia.org",
           "shortId": "d0bfcbde",
-          "show": false,
           "spiderX": "/"
         },
         "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/hndr"
+          "path": "/hndr",
+          "mode": "auto"
         },
         "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 25,
+          "tcpKeepAliveInterval": 20,
+          "tcpUserTimeout": 30000,
+          "domainStrategy": "UseIP"
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -216,7 +224,17 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -224,7 +242,7 @@
       {
         "type": "field",
         "domain": [
-          "full:skystonenode-zendani.sbs"
+          "full:greenfieldnet-zendani.sbs"
         ],
         "network": "tcp,udp",
         "outboundTag": "direct"
@@ -269,26 +287,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }
