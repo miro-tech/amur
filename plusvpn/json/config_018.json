@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:xn--gabjkk-hta.bizimoglan.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:xn--gabjkk-hta.bizimoglan.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:xn--gabjkk-hta.bizimoglan.ir"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -149,28 +158,44 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "shadowsocks",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "51.255.13.232",
-            "port": 8388,
-            "method": "chacha20-ietf-poly1305",
-            "password": "BqnqToih0PbU",
-            "level": 8
+            "address": "xn--gabjkk-hta.bizimoglan.ir",
+            "port": 4060,
+            "users": [
+              {
+                "id": "162ff214-21c8-4963-a80a-6200cbad787e",
+                "encryption": "mlkem768x25519plus.native.0rtt.0MBuXdIHo3Oja0bIySO5Y0xBalo340cN5ZJLM5F-Jnw",
+                "level": 8
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
+        "network": "httpupgrade",
+        "security": "none",
+        "httpupgradeSettings": {
+          "path": "/",
+          "host": "play.google.com"
+        },
         "sockopt": {
-          "tcpFastOpen": true,
+          "tcpFastOpen": false,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -215,6 +240,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:xn--gabjkk-hta.bizimoglan.ir"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
