@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -73,6 +80,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -129,70 +146,50 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "address": "104.16.1.108",
-        "encryption": "none",
-        "id": "fc2f89c8-eaeb-4fb0-9574-cafbdad4d0cc",
-        "port": 2087
+        "vnext": [
+          {
+            "address": "172.239.19.53",
+            "port": 56890,
+            "users": [
+              {
+                "id": "d00d9d18-20cf-4191-be76-6f73d43a27ec",
+                "encryption": "none",
+                "level": 8,
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.cloudflare.com",
+          "publicKey": "rLwUhSlO07MqPfOOvNjRfmFSHrByCO7r4NpgTt2YkCE",
+          "shortId": "13500590"
         },
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "terminate.a2e5pewh2mw9b3.dpdns.org"
-        },
-        "wsSettings": {
-          "host": "terminate.a2e5pewh2mw9b3.dpdns.org",
-          "path": "/b8fc93b4b1054c7b82c7d154ff7a8a3b"
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -220,7 +217,17 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -265,26 +272,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
-  "policy": {
-    "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
-      }
-    }
   }
 }

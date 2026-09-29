@@ -1,10 +1,4 @@
 {
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -135,21 +129,30 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
-            "port": 443,
+            "address": "57.128.26.150",
+            "port": 2087,
             "users": [
               {
-                "id": "e30917d9-a8e4-4dce-aabc-c2b28b9da672",
-                "email": "t@t.tt",
-                "security": "auto",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
+                "level": 8
               }
             ]
           }
@@ -157,47 +160,26 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "sync.exirhub.site",
-          "alpn": [
-            "h2"
-          ],
-          "fingerprint": "unsafe",
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
-        },
         "xhttpSettings": {
-          "path": "/journal/",
-          "host": "sync.exirhub.site",
-          "mode": "stream-one"
+          "extra": {
+            "mode": "stream-up",
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "",
+          "mode": "stream-up",
+          "path": "/api"
         },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
+        "sockopt": {
+          "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
       "tag": "direct",
@@ -225,6 +207,7 @@
       }
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -270,9 +253,16 @@
       }
     ]
   },
-  "metrics": {
-    "listen": "127.0.0.1:10812"
-  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "policy": {
     "levels": {
       "8": {
@@ -283,16 +273,5 @@
         "bufferSize": 64
       }
     }
-  },
-  "remarks": "@shenvpn",
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }
