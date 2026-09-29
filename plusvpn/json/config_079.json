@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -17,7 +24,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+          "full:bg3.univesalsrv.com"
         ]
       },
       {
@@ -26,7 +33,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+          "full:bg3.univesalsrv.com"
         ]
       },
       {
@@ -35,7 +42,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+          "full:bg3.univesalsrv.com"
         ]
       },
       {
@@ -82,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -138,31 +155,19 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com",
+            "address": "bg3.univesalsrv.com",
             "port": 443,
             "users": [
               {
+                "id": "2f35965a-9a9b-45fd-ba32-987296dfb6be",
                 "encryption": "none",
-                "flow": "",
-                "id": "712e95de-0511-4c67-a812-069f24be275f",
                 "level": 8
               }
             ]
@@ -170,20 +175,25 @@
         ]
       },
       "streamSettings": {
-        "grpcSettings": {
-          "authority": "",
-          "health_check_timeout": 20,
-          "idle_timeout": 60,
-          "multiMode": false,
-          "serviceName": ""
-        },
         "network": "grpc",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "bg3.univesalsrv.com",
+          "fingerprint": "chrome",
+          "publicKey": "XBfCioniAKXgKYBUVnvBXu80AIaIa4SpAB3w8qeF7Gk",
+          "shortId": "1be1bd931c98c84a"
+        },
+        "grpcSettings": {
+          "serviceName": "home.v1.ApiService",
+          "multiMode": false
+        },
         "sockopt": {
-          "tcpKeepAliveIdle": 20,
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "domainStrategy": "UseIPv4v6",
+          "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true,
           "happyEyeballs": {
@@ -193,8 +203,7 @@
             "maxConcurrentTry": 4
           }
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -233,7 +242,6 @@
       }
     }
   },
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -241,7 +249,7 @@
       {
         "type": "field",
         "domain": [
-          "full:dsamhfbjewhsrbvfjewsrhbfkwnskfnjekiwfbcsdf1.slicemain.com"
+          "full:bg3.univesalsrv.com"
         ],
         "network": "tcp,udp",
         "outboundTag": "direct"
@@ -286,15 +294,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }

@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -17,7 +24,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+          "full:api.noneok.com"
         ]
       },
       {
@@ -26,7 +33,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+          "full:api.noneok.com"
         ]
       },
       {
@@ -35,7 +42,7 @@
         "queryStrategy": "UseIP",
         "skipFallback": false,
         "domains": [
-          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+          "full:api.noneok.com"
         ]
       },
       {
@@ -82,6 +89,16 @@
       }
     ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -138,31 +155,19 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com",
+            "address": "api.noneok.com",
             "port": 443,
             "users": [
               {
+                "id": "a8e3155b-ceb1-4fcb-bc0c-2e77ec005401",
                 "encryption": "none",
-                "flow": "",
-                "id": "712e95de-0511-4c67-a812-069f24be275f",
                 "level": 8
               }
             ]
@@ -170,20 +175,24 @@
         ]
       },
       "streamSettings": {
-        "grpcSettings": {
-          "authority": "",
-          "health_check_timeout": 20,
-          "idle_timeout": 60,
-          "multiMode": false,
-          "serviceName": ""
-        },
         "network": "grpc",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "api.noneok.com",
+          "publicKey": "S8O8R938N960cpQfIIDXsJTxeGAkbVv6PlIqP0-d30w",
+          "shortId": "1ea59febb8d4fc8e"
+        },
+        "grpcSettings": {
+          "serviceName": "api.v1.StreamService",
+          "multiMode": false
+        },
         "sockopt": {
-          "tcpKeepAliveIdle": 20,
+          "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "domainStrategy": "UseIPv4v6",
+          "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
           "tcpMptcp": true,
           "happyEyeballs": {
@@ -193,8 +202,7 @@
             "maxConcurrentTry": 4
           }
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
       "tag": "direct",
@@ -233,7 +241,6 @@
       }
     }
   },
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -241,7 +248,7 @@
       {
         "type": "field",
         "domain": [
-          "full:uyufegrtgvytvxdhegwjhvbfhegrvfcgvwyxdweydvwyt3.slicemain.com"
+          "full:api.noneok.com"
         ],
         "network": "tcp,udp",
         "outboundTag": "direct"
@@ -286,15 +293,5 @@
         "outboundTag": "proxy"
       }
     ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  }
 }
