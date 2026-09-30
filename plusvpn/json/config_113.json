@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:zz9.supermb.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:zz9.supermb.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:zz9.supermb.ir"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -149,16 +158,17 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "vmess",
       "settings": {
         "vnext": [
           {
-            "address": "162.55.167.245",
-            "port": 21494,
+            "address": "zz9.supermb.ir",
+            "port": 2083,
             "users": [
               {
-                "id": "48bc1038-c5ac-41c3-b772-5a70865be6fd",
-                "encryption": "none",
+                "id": "9de84bc6-869b-4006-954e-f3aaa1975786",
+                "alterId": 0,
+                "security": "auto",
                 "level": 8
               }
             ]
@@ -166,26 +176,26 @@
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.cloudflare.com",
-          "fingerprint": "chrome",
-          "publicKey": "0VVpeYmHacnvockx-IWry5MOrZtzmKXbAD2FJNs58Bc",
-          "shortId": "e6f3eebd736b4d28",
-          "spiderX": "/"
-        },
-        "xhttpSettings": {
-          "path": "/xhttp",
-          "mode": "packet-up"
+        "network": "httpupgrade",
+        "security": "none",
+        "httpupgradeSettings": {
+          "path": "/"
         },
         "sockopt": {
-          "tcpFastOpen": true,
+          "tcpFastOpen": false,
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 25,
-          "tcpKeepAliveInterval": 20,
-          "tcpUserTimeout": 30000,
-          "domainStrategy": "UseIP"
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -230,6 +240,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:zz9.supermb.ir"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
