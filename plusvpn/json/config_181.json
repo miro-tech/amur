@@ -1,130 +1,124 @@
 {
-  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
-  "dns": {
-    "hosts": {},
-    "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
+      "tag": "socks",
       "port": 10808,
+      "listen": "127.0.0.1",
       "protocol": "socks",
       "settings": {
-        "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "auth": "noauth"
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+          "tls"
+        ]
       }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
     }
   ],
   "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "194.195.247.36",
+            "address": "172.67.217.240",
             "port": 443,
             "users": [
               {
-                "id": "876b907f-86bc-46b2-95cc-212e06b61ff0",
+                "id": "089bb4e8-3b5e-4db3-98b8-89851c45a446",
                 "encryption": "none",
-                "flow": "xtls-rprx-vision"
+                "flow": "",
+                "level": 0
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "amp-api-edge.apps.apple.com",
-          "fingerprint": "chrome",
-          "publicKey": "VTTnRTBNfFU0K7B9tgSdHhDoJi6NeMVoNq7nAvfHuHw",
-          "shortId": "e86b13abbec6ec5a",
-          "spiderX": "/oXOlhVnPFAiy"
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "dancing-videos.asia",
+          "allowInsecure": false,
+          "fingerprint": "unsafe",
+          "alpn": [
+            "h2"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "grpcSettings": {
+          "serviceName": "kp98ecqlx98u",
+          "multiMode": false,
+          "user_agent": "chrome"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "355"
+              }
+            }
+          ]
         }
       },
-      "tag": "proxy"
+      "mux": {
+        "enabled": false
+      }
     },
     {
-      "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "protocol": "freedom"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
+      "tag": "block",
+      "protocol": "blackhole"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
+        "type": "field",
+        "outboundTag": "block",
+        "protocol": [
+          "bittorrent"
+        ]
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
