@@ -1,63 +1,60 @@
 {
-  "remarks": "@shenvpn",
+  "dns": {
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
+    },
+    "servers": [
+      "https://cloudflare-dns.com/dns-query"
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      },
+      "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": [],
+      "tag": "http"
+    }
+  ],
   "log": {
     "loglevel": "none",
     "access": "",
     "error": "",
     "dnsLog": false
   },
-  "inbounds": [
-    {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
-    },
-    {
-      "tag": "http",
-      "port": 10809,
-      "listen": "127.0.0.1",
-      "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
-    }
-  ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.org",
+            "address": "172.67.141.182",
             "port": 443,
             "users": [
               {
-                "id": "38454a9f-41ee-410a-8826-3e3b2e0c20b2",
+                "id": "ffbe9473-6871-4230-8aa2-0b84e25bda46",
                 "encryption": "none"
               }
             ]
@@ -68,38 +65,47 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "server2.hillcloudgate.sbs",
+          "serverName": "vipusersapn.vfhw.ir",
           "alpn": [
             "http/1.1"
           ],
           "fingerprint": "chrome"
         },
         "wsSettings": {
-          "path": "/rally",
-          "headers": {
-            "Host": "server2.hillcloudgate.sbs"
-          }
+          "host": "vipusersapn.vfhw.ir",
+          "path": "/armiti500mona"
         },
         "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+          "dialerProxy": "fragment"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
+      "tag": "proxy"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "fragment": {
+          "packets": "tlshello",
+          "length": "5-94",
+          "interval": "0-1"
+        }
+      },
+      "streamSettings": {
+        "sockopt": {
+          "tcpNoDelay": true
+        }
       }
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": []
+      "settings": [],
+      "tag": "block"
     }
   ],
   "routing": {
@@ -107,9 +113,11 @@
     "rules": [
       {
         "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }

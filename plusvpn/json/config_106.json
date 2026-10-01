@@ -1,16 +1,29 @@
 {
-  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
     "access": "",
     "error": "",
+    "loglevel": "none",
     "dnsLog": false
+  },
+  "policy": {
+    "system": {
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    },
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    }
   },
   "inbounds": [
     {
       "tag": "socks",
       "port": 10808,
-      "listen": "127.0.0.1",
+      "listen": "0.0.0.0",
       "protocol": "socks",
       "sniffing": {
         "enabled": true,
@@ -29,7 +42,7 @@
     {
       "tag": "http",
       "port": 10809,
-      "listen": "127.0.0.1",
+      "listen": "0.0.0.0",
       "protocol": "http",
       "sniffing": {
         "enabled": true,
@@ -48,16 +61,16 @@
   ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
+      "tag": "proxy",
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.org",
+            "address": "199.232.245.150",
             "port": 443,
             "users": [
               {
-                "id": "8376d7b4-90c3-457d-89eb-ff99ce73f5f7",
+                "id": "e548f821-b286-4264-a9f9-63eb5c4a38b2",
                 "encryption": "none"
               }
             ]
@@ -65,51 +78,41 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
+        "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "server12.pinecloudgate.sbs",
+          "serverName": "speedtest.net",
+          "fingerprint": "edge",
+          "pinnedPeerCertSha256": "cd6e838b9bfe31cab8b3d5c858b0d6223fe84ece236c1fdb281be93c302e1e6e",
           "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "chrome"
+            "h2"
+          ]
         },
-        "wsSettings": {
-          "path": "/rally",
-          "headers": {
-            "Host": "server12.pinecloudgate.sbs"
-          }
-        },
-        "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "mode": "auto",
+          "path": "/",
+          "host": "gm25251hs.global.ssl.fastly.net"
         }
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
       }
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "tag": "DIRECT"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": []
+      "tag": "BLOCK"
     }
   ],
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "8.8.8.8"
+    ]
+  },
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
-      }
-    ]
-  }
+    "rules": []
+  },
+  "remarks": "@shenvpn"
 }
