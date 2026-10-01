@@ -22,28 +22,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:dl-sr1.pamelasli.ir"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:dl-sr1.pamelasli.ir"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:dl-sr1.pamelasli.ir"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -158,47 +149,60 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "dl-sr1.pamelasli.ir",
-            "port": 1443,
-            "users": [
-              {
-                "id": "e548f821-b286-4264-a9f9-63eb5c4a38b2",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
+            "address": "192.248.177.39",
+            "port": 443,
+            "password": "Lz3NvQXwksB8",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "usga.org",
-          "fingerprint": "chrome",
-          "publicKey": "Mq_V9-y4dEBkkeQGIQEFOTd4eFQzmhg91rtoItxzuTA",
-          "shortId": "99d467e821df14eb",
-          "spiderX": "/"
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "ash.d50f6225-23b4-3a7b-9f15-a0fb2fc16803.kailib.com",
+          "allowInsecure": false
         },
-        "xhttpSettings": {
-          "path": "/xhttp",
-          "mode": "stream-one",
-          "extra": {
-            "xPaddingBytes": "100-1000",
-            "xPaddingObfsMode": true
+        "tcpSettings": {
+          "header": {
+            "type": "none"
           }
         },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 25,
-          "tcpKeepAliveInterval": 20,
-          "tcpUserTimeout": 30000,
-          "domainStrategy": "UseIP"
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
       }
     },
@@ -243,14 +247,6 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:dl-sr1.pamelasli.ir"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
