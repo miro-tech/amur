@@ -1,115 +1,111 @@
 {
-  "remarks": "@shenvpn",
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "servers": [
+      "1.1.1.1",
+      {
+        "address": "1.1.1.1",
+        "domains": []
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [],
+        "expectIPs": [],
+        "skipFallback": true
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "socks"
+    }
+  ],
   "log": {
     "loglevel": "none",
     "access": "",
     "error": "",
     "dnsLog": false
   },
-  "inbounds": [
-    {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
-    },
-    {
-      "tag": "http",
-      "port": 10809,
-      "listen": "127.0.0.1",
-      "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
-    }
-  ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.org",
+            "address": "65.109.204.232",
             "port": 443,
             "users": [
               {
-                "id": "38454a9f-41ee-410a-8826-3e3b2e0c20b2",
-                "encryption": "none"
+                "encryption": "none",
+                "id": "be13535a-4bf8-4289-b362-165205fc2444",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
           "allowInsecure": false,
-          "serverName": "server2.oceancloudgate.sbs",
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "chrome"
+          "fingerprint": "chrome",
+          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
+          "serverName": "www.wikipedia.org",
+          "shortId": "1c213fd68e13",
+          "show": false,
+          "spiderX": "/"
         },
-        "wsSettings": {
-          "path": "/rally",
-          "headers": {
-            "Host": "server2.oceancloudgate.sbs"
-          }
-        },
-        "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",
+          "path": "/farasati1"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": []
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
-      }
-    ]
+    "rules": []
   }
 }

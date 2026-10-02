@@ -1,114 +1,187 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+  "dns": {
+    "servers": [
+      "https://cloudflare-dns.com/dns-query",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_1_0"
+      }
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "socks"
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
+      "settings": {},
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
+        "enabled": true,
         "routeOnly": false
       },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "warning"
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "speedtest.org",
-            "port": 443,
-            "users": [
-              {
-                "id": "9355e95b-5dfd-4d98-8cc0-f787c7961e33",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "reaza.localip.ir",
+        "encryption": "none",
+        "id": "dc3acdd4-bfc0-4033-b170-f65d6e8fc8cf",
+        "port": 2096
       },
       "streamSettings": {
-        "network": "ws",
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
+        },
+        "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "server14.stonecloudgate.sbs",
           "alpn": [
-            "http/1.1"
+            "h2"
           ],
-          "fingerprint": "chrome"
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "istra.ah9u75un0lw.dpdns.org"
         },
-        "wsSettings": {
-          "path": "/rally",
-          "headers": {
-            "Host": "server14.stonecloudgate.sbs"
-          }
-        },
-        "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+        "xhttpSettings": {
+          "host": "istra.ah9u75un0lw.dpdns.org",
+          "path": "/89c1ea3a0ec1493baa50012cadf6c165",
+          "mode": "stream-one"
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": []
+      "settings": {},
+      "tag": "block"
     }
   ],
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private",
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_1_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   }

@@ -1,48 +1,148 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
     "access": "",
     "error": "",
+    "loglevel": "none",
     "dnsLog": false
   },
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
+    "servers": [
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      }
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false,
+        "userLevel": 8
+      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
+        "metadataOnly": false,
         "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
       }
     },
     {
       "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
+        "metadataOnly": false,
         "routeOnly": false
-      },
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 10853,
+      "protocol": "dokodemo-door",
       "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "address": "1.1.1.1",
+        "port": 53,
+        "network": "tcp,udp"
       }
     }
   ],
@@ -53,61 +153,124 @@
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.org",
-            "port": 443,
+            "address": "172.236.6.109",
+            "port": 31146,
             "users": [
               {
-                "id": "99b139bb-04a4-459f-be01-52a79bdafdf6",
-                "encryption": "none"
+                "id": "f0466557-2fd5-442e-94cb-12c6b764155e",
+                "encryption": "none",
+                "level": 8,
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "server9.sunsetcloudgate.sbs",
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "chrome"
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "play-fe.googleapis.com",
+          "fingerprint": "chrome",
+          "publicKey": "QAoJHZT6_DZsBu-jH74uYZUTpGgxmvN2tXpRKj4CygE",
+          "shortId": "cf4e6f8338",
+          "spiderX": "/"
         },
-        "wsSettings": {
-          "path": "/rally",
-          "headers": {
-            "Host": "server9.sunsetcloudgate.sbs"
+        "tcpSettings": {
+          "header": {
+            "type": "none"
           }
         },
         "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
       }
     },
     {
       "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
+    },
+    {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
     },
     {
       "tag": "block",
       "protocol": "blackhole",
-      "settings": []
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "hybrid",
     "rules": [
       {
         "type": "field",
-        "port": "0-65535",
+        "inboundTag": [
+          "dns-proxy"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-direct"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "dns"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
         "outboundTag": "proxy"
       }
     ]

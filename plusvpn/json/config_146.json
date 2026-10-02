@@ -1,66 +1,61 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
+    "loglevel": "warning"
   },
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
       "listen": "127.0.0.1",
+      "port": 10808,
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
-      "port": 10809,
       "listen": "127.0.0.1",
+      "port": 10809,
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "speedtest.org",
+            "address": "www.calmlunch.com",
             "port": 443,
-            "users": [
-              {
-                "id": "76b1e392-6892-46d2-b44f-40769d7d2327",
-                "encryption": "none"
-              }
-            ]
+            "password": "humanity"
           }
         ]
       },
@@ -68,47 +63,58 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "server11.stonecloudgate.sbs",
-          "alpn": [
-            "http/1.1"
-          ],
-          "fingerprint": "chrome"
+          "serverName": "www.calmlunch.com"
         },
         "wsSettings": {
-          "path": "/rally",
+          "path": "/assignment",
           "headers": {
-            "Host": "server11.stonecloudgate.sbs"
+            "Host": "www.calmlunch.com"
           }
-        },
-        "sockopt": {
-          "tcpKeepAliveIdle": 100,
-          "tcpNoDelay": true
         }
       },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
       "protocol": "freedom",
-      "settings": []
+      "tag": "direct"
     },
     {
-      "tag": "block",
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": []
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "port": "0-65535",
-        "outboundTag": "proxy"
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
     ]
   }
