@@ -1,76 +1,63 @@
 {
+  "remarks": "@shenvpn",
   "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
+    "loglevel": "warning"
   },
-  "policy": {
-    "system": {
-      "statsOutboundDownlink": true,
-      "statsOutboundUplink": true
-    },
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
     }
-  },
+  ],
   "inbounds": [
     {
-      "tag": "socks",
+      "listen": "127.0.0.1",
       "port": 10808,
-      "listen": "0.0.0.0",
       "protocol": "socks",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
+      "listen": "127.0.0.1",
       "port": 10809,
-      "listen": "0.0.0.0",
       "protocol": "http",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+      "settings": {}
     }
   ],
   "outbounds": [
     {
       "protocol": "vless",
-      "tag": "proxy",
       "settings": {
         "vnext": [
           {
-            "address": "dl1.digifixmobile.ir",
-            "port": 2001,
+            "address": "206.1.103.51",
+            "port": 24847,
             "users": [
               {
-                "id": "77b79508-0efb-4e50-9c1a-2e25b6f315fc",
+                "id": "de377cde-61e6-4ebd-a54f-c46451ae2891",
                 "encryption": "none"
               }
             ]
@@ -78,41 +65,60 @@
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "dl1.digifixmobile.ir",
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "play.google.com",
           "fingerprint": "chrome",
-          "alpn": [
-            "h3",
-            "h2",
-            "http/1.1"
-          ]
-        },
-        "wsSettings": {
-          "path": "/live",
-          "host": "dl1.digifixmobile.ir"
+          "publicKey": "PAIC5eQw5uNpZZ57RJSGS7TiYstON17-khLVcjeaGD4",
+          "shortId": "cdc859",
+          "spiderX": "/55c51b19b4c903f"
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "tag": "DIRECT"
+      "tag": "direct"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
     },
     {
       "protocol": "blackhole",
-      "tag": "BLOCK"
+      "tag": "block"
     }
   ],
-  "dns": {
-    "servers": [
-      "1.1.1.1",
-      "8.8.8.8"
-    ]
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
   },
   "routing": {
     "domainStrategy": "AsIs",
-    "rules": []
-  },
-  "remarks": "@shenvpn"
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      }
+    ]
+  }
 }
