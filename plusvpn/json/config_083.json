@@ -1,162 +1,280 @@
 {
-  "remarks": "⚓️Filterboro 2",
+  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
   "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
     "servers": [
-      "fakedns",
       {
-        "address": "https://dns.google/dns-query",
-        "tag": "remote-dns"
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
       }
-    ],
-    "queryStrategy": "UseIPv4",
-    "tag": "dns"
+    ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
+      "tag": "socks",
+      "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
         "udp": true,
+        "allowTransparent": false,
         "userLevel": 8
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
+          "quic",
           "fakedns"
         ],
-        "enabled": true,
-        "routeOnly": true
-      },
-      "tag": "socks-in"
+        "metadataOnly": false,
+        "routeOnly": false
+      }
     },
     {
+      "tag": "http",
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "metadataOnly": false,
+        "routeOnly": false
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
       "port": 10853,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "1.1.1.1",
-        "network": "tcp,udp",
-        "port": 53
-      },
-      "tag": "dns-in"
+        "port": 53,
+        "network": "tcp,udp"
+      }
     }
   ],
   "outbounds": [
     {
-      "protocol": "trojan",
+      "tag": "proxy",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "199.232.78.160",
+            "address": "167.99.247.111",
             "port": 443,
-            "password": "mitivpn",
-            "level": 8
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "level": 8
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "clarity.ms"
+                ]
+              }
+            }
+          }
+        },
         "sockopt": {
-          "domainStrategy": "UseIPv4"
-        },
-        "wsSettings": {
-          "host": "mitivpn---deb--s---mitivpn-2.global.ssl.fastly.net",
-          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/D-e1i@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN"
-        },
-        "tlsSettings": {
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "http/1.1"
-          ],
-          "serverName": "ssl.fastly.com"
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
-      },
-      "tag": "proxy"
+      }
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
+      "tag": "direct",
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
+      }
     },
     {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
+    },
+    {
+      "tag": "block",
       "protocol": "blackhole",
       "settings": {
         "response": {
           "type": "http"
         }
-      },
-      "tag": "block"
+      }
     }
   ],
   "policy": {
     "levels": {
       "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
         "handshake": 4,
-        "uplinkOnly": 1
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
       }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
     }
   },
   "routing": {
     "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "hybrid",
     "rules": [
       {
+        "type": "field",
         "inboundTag": [
-          "socks-in"
+          "dns-proxy"
         ],
-        "port": 53,
-        "outboundTag": "dns-out",
-        "type": "field"
+        "outboundTag": "proxy"
       },
       {
+        "type": "field",
+        "inboundTag": [
+          "dns-direct"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
         "inboundTag": [
           "dns-in"
         ],
-        "outboundTag": "dns-out",
-        "type": "field"
+        "outboundTag": "dns-out"
       },
       {
-        "inboundTag": [
-          "remote-dns"
-        ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
+        "type": "field",
+        "protocol": [
           "dns"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "dns-out"
       },
       {
-        "network": "udp",
-        "outboundTag": "proxy",
-        "type": "field"
+        "type": "field",
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
       },
       {
-        "network": "tcp",
-        "outboundTag": "proxy",
-        "type": "field"
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
       }
     ]
-  },
-  "stats": {}
+  }
 }

@@ -1,118 +1,280 @@
 {
+  "remarks": "@shenvpn",
   "log": {
     "access": "",
     "error": "",
     "loglevel": "none",
     "dnsLog": false
   },
-  "policy": {
-    "system": {
-      "statsOutboundDownlink": true,
-      "statsOutboundUplink": true
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
     },
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
+    "servers": [
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
       }
-    }
+    ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "tag": "socks",
+      "listen": "127.0.0.1",
       "port": 10808,
-      "listen": "0.0.0.0",
       "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "allowTransparent": false,
+        "userLevel": 8
+      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
+        "metadataOnly": false,
         "routeOnly": false
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
       }
     },
     {
       "tag": "http",
+      "listen": "127.0.0.1",
       "port": 10809,
-      "listen": "0.0.0.0",
       "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic",
+          "fakedns"
         ],
+        "metadataOnly": false,
         "routeOnly": false
-      },
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 10853,
+      "protocol": "dokodemo-door",
       "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
+        "address": "1.1.1.1",
+        "port": 53,
+        "network": "tcp,udp"
       }
     }
   ],
   "outbounds": [
     {
-      "protocol": "vless",
       "tag": "proxy",
+      "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "dl4.digifixmobile.ir",
-            "port": 1004,
+            "address": "64.227.36.0",
+            "port": 443,
             "users": [
               {
-                "id": "77b79508-0efb-4e50-9c1a-2e25b6f315fc",
-                "encryption": "none"
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "dl1.digifixmobile.ir",
-          "fingerprint": "chrome",
-          "alpn": [
-            "h3",
-            "h2",
-            "http/1.1"
-          ]
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "dns.shecan.ir"
+                ]
+              }
+            }
+          }
         },
-        "wsSettings": {
-          "path": "/live",
-          "host": "dl1.digifixmobile.ir"
+        "sockopt": {
+          "tcpFastOpen": true,
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
       }
     },
     {
+      "tag": "direct",
       "protocol": "freedom",
-      "tag": "DIRECT"
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
     },
     {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
+    },
+    {
+      "tag": "block",
       "protocol": "blackhole",
-      "tag": "BLOCK"
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
-  "dns": {
-    "servers": [
-      "1.1.1.1",
-      "8.8.8.8"
-    ]
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
+      }
+    }
   },
   "routing": {
-    "domainStrategy": "AsIs",
-    "rules": []
-  },
-  "remarks": "@shenvpn"
+    "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "hybrid",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-proxy"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-direct"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "dns"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
+      }
+    ]
+  }
 }
