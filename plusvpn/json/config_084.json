@@ -1,188 +1,162 @@
 {
+  "remarks": "⚓️Filterboro 3",
+  "log": {
+    "loglevel": "warning"
+  },
   "dns": {
     "servers": [
-      "https://cloudflare-dns.com/dns-query",
+      "fakedns",
       {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_1_0"
+        "address": "https://dns.google/dns-query",
+        "tag": "remote-dns"
       }
     ],
-    "tag": "dns-module"
+    "queryStrategy": "UseIPv4",
+    "tag": "dns"
   },
   "inbounds": [
     {
-      "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "fakedns"
         ],
         "enabled": true,
-        "routeOnly": false
+        "routeOnly": true
       },
-      "tag": "socks"
+      "tag": "socks-in"
     },
     {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {},
-      "sniffing": {
-        "destOverride": [
-          "http",
-          "tls",
-          "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+      "port": 10853,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "network": "tcp,udp",
+        "port": 53
       },
-      "tag": "http"
+      "tag": "dns-in"
     }
   ],
-  "log": {
-    "loglevel": "warning"
-  },
   "outbounds": [
     {
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "address": "pourmand.bond",
-        "encryption": "none",
-        "id": "dc3acdd4-bfc0-4033-b170-f65d6e8fc8cf",
-        "port": 2096
+        "servers": [
+          {
+            "address": "167.82.76.7",
+            "port": 443,
+            "password": "mitivpn",
+            "level": 8
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "network": "xhttp",
+        "network": "ws",
         "security": "tls",
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "wsSettings": {
+          "host": "mitivpn---deb--s---mitivpn-4.global.ssl.fastly.net",
+          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/NLSs---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN"
+        },
         "tlsSettings": {
           "allowInsecure": false,
+          "fingerprint": "chrome",
           "alpn": [
-            "h2"
+            "http/1.1"
           ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "stiker.yrdyt.dpdns.org"
-        },
-        "xhttpSettings": {
-          "host": "stiker.yrdyt.dpdns.org",
-          "path": "/89c1ea3a0ec1493baa50012cadf6c165",
-          "mode": "stream-one"
+          "serverName": "ssl.fastly.com"
         }
       },
       "tag": "proxy"
     },
     {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "freedom",
-      "streamSettings": {
-        "network": "tcp",
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        }
+      "settings": {
+        "domainStrategy": "UseIP"
       },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": {},
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
     }
   ],
-  "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
+        "inboundTag": [
+          "socks-in"
+        ],
+        "port": 53,
+        "outboundTag": "dns-out",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-in"
+        ],
+        "outboundTag": "dns-out",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "remote-dns"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
         "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
+        "outboundTag": "proxy",
         "type": "field"
       },
       {
-        "ip": [
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16",
-          "127.0.0.0/8",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private",
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "geoip:ir"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0",
-          "domestic-dns_1_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "dns-module"
-        ],
+        "network": "tcp",
         "outboundTag": "proxy",
         "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }

@@ -1,97 +1,102 @@
 {
-  "remarks": "@shenvpn",
+  "remarks": "⚓️Filterboro 2",
   "log": {
     "loglevel": "warning"
   },
   "dns": {
-    "hosts": {},
     "servers": [
+      "fakedns",
       {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
+        "address": "https://dns.google/dns-query",
+        "tag": "remote-dns"
+      }
+    ],
+    "queryStrategy": "UseIPv4",
+    "tag": "dns"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
-      "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "fakedns"
         ],
         "enabled": true,
-        "routeOnly": false
-      }
+        "routeOnly": true
+      },
+      "tag": "socks-in"
     },
     {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
+      "port": 10853,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "network": "tcp,udp",
+        "port": 53
+      },
+      "tag": "dns-in"
     }
   ],
   "outbounds": [
     {
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "megariverport-nayab.org",
+            "address": "199.232.78.160",
             "port": 443,
-            "users": [
-              {
-                "id": "abadf589-1560-4277-8cc2-f6de00bcc9ba",
-                "encryption": "none"
-              }
-            ]
+            "password": "mitivpn",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
         "network": "ws",
         "security": "tls",
-        "tlsSettings": {
-          "serverName": "bcxar.redwolfline-balam.site",
-          "alpn": [
-            "h2http/1.1"
-          ]
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
         },
         "wsSettings": {
-          "path": "/home",
-          "headers": {
-            "Host": "bcxar.redwolfline-balam.site"
-          }
+          "host": "mitivpn---deb--s---mitivpn-2.global.ssl.fastly.net",
+          "path": "/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/D-e1i@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN/---@MiTiVPN---@MiTiVPN"
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "fingerprint": "firefox",
+          "alpn": [
+            "http/1.1"
+          ],
+          "serverName": "ssl.fastly.com"
         }
       },
       "tag": "proxy"
-    },
-    {
-      "protocol": "freedom",
-      "tag": "direct"
     },
     {
       "protocol": "dns",
       "tag": "dns-out"
     },
     {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "tag": "direct"
+    },
+    {
       "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
       "tag": "block"
     }
   ],
@@ -105,25 +110,53 @@
       }
     },
     "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
     }
   },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "inboundTag": [
+          "socks-in"
         ],
-        "outboundTag": "direct"
+        "port": 53,
+        "outboundTag": "dns-out",
+        "type": "field"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
+        "inboundTag": [
+          "dns-in"
         ],
-        "outboundTag": "block"
+        "outboundTag": "dns-out",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "remote-dns"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "network": "udp",
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
+        "network": "tcp",
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }
