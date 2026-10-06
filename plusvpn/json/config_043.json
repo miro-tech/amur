@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:milan.adaspoloandco.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:milan.adaspoloandco.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:milan.adaspoloandco.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -153,11 +162,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "198.251.78.29",
-            "port": 2053,
+            "address": "milan.adaspoloandco.com",
+            "port": 8443,
             "users": [
               {
-                "id": "c423cc1b-f88e-421c-9a16-c480d84da20f",
+                "id": "69ac162b-1643-4acb-9f49-09d8b0fad609",
                 "encryption": "none",
                 "level": 8
               }
@@ -166,17 +175,17 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.cloudflare.com",
-          "fingerprint": "chrome",
-          "publicKey": "Uk5b-Wh_uxeCc7R8NS9iWE40xc0h9wWC04rSB9yhgAw",
-          "shortId": "b5d625695ec82c7e"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "milan.adaspoloandco.com",
+          "allowInsecure": false,
+          "fingerprint": "chrome"
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
+        "wsSettings": {
+          "path": "/RoBeRt",
+          "headers": {
+            "Host": "milan.adaspoloandco.com"
           }
         },
         "sockopt": {
@@ -187,7 +196,36 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true,
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -232,6 +270,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:milan.adaspoloandco.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
