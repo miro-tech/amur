@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fmwf6gbnad0a.dop16.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fmwf6gbnad0a.dop16.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:fmwf6gbnad0a.dop16.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -149,43 +158,70 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "2.28.142.170",
+            "address": "fmwf6gbnad0a.dop16.com",
             "port": 443,
-            "users": [
-              {
-                "id": "f774f037-6320-42e3-a97b-6d4a1f018dd5",
-                "encryption": "mlkem768x25519plus.native.0rtt.Y0-j5e-CpehUKzhEeat1dTYevroKyHV4g9HML3ujmlQ",
-                "level": 8
-              }
-            ]
+            "password": "2e631f0c-226a-484b-9e7c-d6c9c444ef13",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "germanytest.tulnaro.ir",
-          "fingerprint": "chrome",
-          "publicKey": "IqFTx4k5VQydmffvavaOHDXBtdgDxX26A6NtsVvDfhw",
-          "shortId": "d485c3d5248d6b51"
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "fmwf6gbnad0a.dop16.com",
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ]
         },
-        "xhttpSettings": {
-          "path": "/",
-          "host": "germanytest.tulnaro.ir",
-          "mode": "auto"
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 25,
-          "tcpKeepAliveInterval": 20,
-          "tcpUserTimeout": 30000,
-          "domainStrategy": "UseIP"
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "domainStrategy": "UseIP",
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true,
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -230,6 +266,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:fmwf6gbnad0a.dop16.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
