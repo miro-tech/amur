@@ -22,28 +22,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:c5fl8w.api-gate.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:c5fl8w.api-gate.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:c5fl8w.api-gate.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -162,31 +153,34 @@
       "settings": {
         "vnext": [
           {
-            "address": "c5fl8w.api-gate.org",
+            "address": "162.159.135.234",
             "port": 443,
             "users": [
               {
-                "id": "e75ad2eb-6c1f-45ce-8023-f5f10875df66",
+                "id": "495c7195-85b8-498a-bf20-2ea9ce9175b5",
                 "encryption": "none",
-                "level": 8,
-                "flow": "xtls-rprx-vision"
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "ca9.eu-cdn294.com",
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "snip.edgeoneai.cc.cd",
+          "allowInsecure": false,
           "fingerprint": "chrome",
-          "publicKey": "B1g2P-3yW3cQW0WZweSPKUP3lZSQ5pgr8doCYvA0cRg",
-          "shortId": "df3dc12b0b9b0c93"
+          "alpn": [
+            "h3",
+            "h2"
+          ]
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
+        "wsSettings": {
+          "path": "/fdip=sstp://vpn:vpn@public-vpn-200.opengw.net:443",
+          "headers": {
+            "Host": "snip.edgeoneai.cc.cd"
           }
         },
         "sockopt": {
@@ -197,13 +191,29 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true,
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
       }
     },
@@ -248,14 +258,6 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:c5fl8w.api-gate.org"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
