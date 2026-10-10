@@ -1,259 +1,204 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "HEAD",
-      "interval": "5m",
-      "sampling": 2,
-      "timeout": "30s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
-  },
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "servers": [
-      {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
-      },
-      "8.8.8.8",
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "finalQuery": true,
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      }
-    ],
-    "tag": "dns-module"
+  "log": {
+    "loglevel": "warning"
   },
   "inbounds": [
     {
-      "listen": "127.0.0.1",
-      "port": 10808,
-      "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true
-      },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic",
-          "fakedns"
+          "quic"
         ],
         "enabled": true,
         "routeOnly": false
       },
-      "tag": "socks"
+      "tag": "socks",
+      "port": 10808,
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "protocol": "socks",
+      "listen": "127.0.0.1"
+    },
+    {
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http",
+      "port": 10809,
+      "settings": {},
+      "protocol": "http",
+      "listen": "127.0.0.1"
     }
   ],
-  "log": {
-    "loglevel": "warning"
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
       "settings": {
-        "address": "shortbig.ir",
+        "port": 2087,
+        "address": "kirtof.eviilo.ir",
         "encryption": "none",
+        "id": "846d6c6a-11e8-43e1-b852-7b2f4496be6a",
         "flow": "",
-        "id": "09d73ab1-1308-45d3-8d11-1331fb53f07d",
-        "port": 443
+        "level": 8
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "network": "xhttp",
         "security": "tls",
+        "network": "xhttp",
+        "xhttpSettings": {
+          "path": "/9e68164b08c0e9e30c631ddb9fe41436",
+          "mode": "stream-one",
+          "extra": {
+            "xPaddingBytes": "100-1000",
+            "mode": "stream-one"
+          },
+          "host": "kirtof.eviilo.ir"
+        },
         "tlsSettings": {
-          "allowInsecure": false,
           "alpn": [
             "h2"
           ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "allowInsecure": false,
           "fingerprint": "unsafe",
-          "serverName": "derman.ytuhjbnmk.dpdns.org"
+          "serverName": "kirtof.eviilo.ir",
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA256:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
         },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
+        "sockopt": {
+          "fragment": {
+            "interval": "1-1",
+            "length": "5-94",
+            "packets": "tlshello"
           },
-          "host": "derman.ytuhjbnmk.dpdns.org",
-          "mode": "stream-up",
-          "path": "/hokm"
+          "domainStrategy": "UseIP",
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false
+          }
         }
-      },
-      "tag": "proxy-proxy-1-443-T"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
       },
       "protocol": "vless",
-      "settings": {
-        "address": "shortbig.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "09d73ab1-1308-45d3-8d11-1331fb53f07d",
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "cloudflare-ech.com+udp://1.1.1.1",
-          "fingerprint": "chrome",
-          "serverName": "derman.ytuhjbnmk.dpdns.org"
-        },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "derman.ytuhjbnmk.dpdns.org",
-          "mode": "stream-up",
-          "path": "/hokm"
-        }
-      },
-      "tag": "proxy-proxy-2-443-M"
+      "tag": "proxy",
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
+      }
     },
     {
+      "tag": "direct",
       "protocol": "freedom",
-      "tag": "direct"
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "network": "tcp"
+      }
     },
     {
       "protocol": "blackhole",
-      "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "settings": {
-        "userLevel": 12
-      },
-      "tag": "dns-out"
+      "tag": "block",
+      "settings": {}
     }
   ],
-  "policy": {
-    "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      }
-    }
-  },
-  "remarks": "@shenvpn",
-  "routing": {
-    "balancers": [
+  "dns": {
+    "tag": "dns-module",
+    "servers": [
       {
-        "selector": [
-          "proxy-proxy-"
+        "tag": "bootstrap-dns",
+        "domains": [
+          "domain:kirtof.eviilo.ir"
         ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
+        "address": "223.5.5.5",
+        "skipFallback": true
+      },
+      "https://cloudflare-dns.com/dns-query",
+      {
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0",
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ]
+      },
+      {
+        "skipFallback": true,
+        "tag": "domestic-dns_1_0",
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:alidns.com",
+          "domain:doh.pub",
+          "domain:dot.pub"
+        ]
       }
-    ],
+    ]
+  },
+  "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
+        "type": "field",
         "inboundTag": [
-          "socks"
+          "bootstrap-dns"
         ],
-        "outboundTag": "dns-out",
-        "port": "53",
+        "outboundTag": "direct"
+      },
+      {
+        "port": "443",
+        "network": "udp",
+        "outboundTag": "block",
         "type": "field"
       },
       {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
         "outboundTag": "direct",
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
+        ],
         "type": "field"
       },
       {
-        "balancerTag": "balancer-main",
+        "outboundTag": "direct",
+        "type": "field",
+        "domain": [
+          "geosite:private"
+        ]
+      },
+      {
+        "outboundTag": "direct",
+        "ip": [
+          "geoip:ir"
+        ],
+        "type": "field"
+      },
+      {
+        "outboundTag": "direct",
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_1_0"
+        ],
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
         "inboundTag": [
           "dns-module"
         ],
         "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "ext:geoip-only-cn-private.dat:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "network": "tcp,udp",
-        "type": "field"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
