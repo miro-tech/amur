@@ -149,19 +149,35 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "shadowsocks",
+      "protocol": "vless",
       "settings": {
-        "servers": [
+        "vnext": [
           {
-            "address": "149.102.132.184",
-            "port": 80,
-            "method": "aes-256-gcm",
-            "password": "g5h5jleTRSyO3Rk4",
-            "level": 8
+            "address": "139.162.27.96",
+            "port": 2096,
+            "users": [
+              {
+                "id": "6e59d5c5-7aa3-4c36-a4c4-e3b899525ed2",
+                "encryption": "none",
+                "level": 8
+              }
+            ]
           }
         ]
       },
       "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "free-server.techsonic.dev",
+          "allowInsecure": false
+        },
+        "wsSettings": {
+          "path": "/free-server.techsonic.dev",
+          "headers": {
+            "Host": "free-server.techsonic.dev"
+          }
+        },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
@@ -170,6 +186,28 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
