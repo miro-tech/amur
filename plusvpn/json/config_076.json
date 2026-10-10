@@ -1,122 +1,204 @@
 {
-  "remarks": "@shenvpn",
   "log": {
     "loglevel": "warning"
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "listen": "127.0.0.1",
-      "port": 10808,
-      "protocol": "socks",
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
-      },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
+        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks",
+      "port": 10808,
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "protocol": "socks",
+      "listen": "127.0.0.1"
+    },
+    {
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "http",
+      "port": 10809,
+      "settings": {},
+      "protocol": "http",
+      "listen": "127.0.0.1"
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "146.75.122.20",
-            "port": 80,
-            "users": [
-              {
-                "id": "54fec156-11d4-454f-b7de-0e51009c5539",
-                "encryption": "none",
-                "flow": "",
-                "level": 8
-              }
-            ]
-          }
-        ]
+        "port": 2087,
+        "address": "thank.molopol.info",
+        "encryption": "none",
+        "id": "846d6c6a-11e8-43e1-b852-7b2f4496be6a",
+        "flow": "",
+        "level": 8
       },
       "streamSettings": {
+        "security": "tls",
         "network": "xhttp",
-        "security": "none",
+        "xhttpSettings": {
+          "path": "/9e68164b08c0e9e30c631ddb9fe41436",
+          "mode": "stream-one",
+          "extra": {
+            "xPaddingBytes": "100-1000",
+            "mode": "stream-one"
+          },
+          "host": "thank.molopol.info"
+        },
+        "tlsSettings": {
+          "alpn": [
+            "h2"
+          ],
+          "allowInsecure": false,
+          "fingerprint": "unsafe",
+          "serverName": "thank.molopol.info",
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA256:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+        },
         "sockopt": {
+          "fragment": {
+            "interval": "1-1",
+            "length": "5-94",
+            "packets": "tlshello"
+          },
           "domainStrategy": "UseIP",
           "happyEyeballs": {
+            "tryDelayMs": 250,
             "interleave": 2,
             "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          }
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "xhttpSettings": {
-          "host": "ascx-1a10625bab5000-task-1a107bf5617001-57f8c2a713.global.ssl.fastly.net",
-          "path": "/",
-          "mode": "auto",
-          "extra": {
-            "xPaddingBytes": "100-1000"
+            "prioritizeIPv6": false
           }
         }
+      },
+      "protocol": "vless",
+      "tag": "proxy",
+      "mux": {
+        "enabled": false,
+        "concurrency": -1
       }
     },
     {
       "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "network": "tcp"
+      }
     },
     {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "tag": "block",
+      "settings": {}
     }
   ],
+  "dns": {
+    "tag": "dns-module",
+    "servers": [
+      {
+        "tag": "bootstrap-dns",
+        "domains": [
+          "domain:thank.molopol.info"
+        ],
+        "address": "223.5.5.5",
+        "skipFallback": true
+      },
+      "https://cloudflare-dns.com/dns-query",
+      {
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0",
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ]
+      },
+      {
+        "skipFallback": true,
+        "tag": "domestic-dns_1_0",
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:alidns.com",
+          "domain:doh.pub",
+          "domain:dot.pub"
+        ]
+      }
+    ]
+  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
         "type": "field",
+        "inboundTag": [
+          "bootstrap-dns"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "port": "443",
+        "network": "udp",
         "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "outboundTag": "direct",
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10"
+        ],
+        "type": "field"
+      },
+      {
+        "outboundTag": "direct",
+        "type": "field",
         "domain": [
-          "geosite:category-ads-all"
+          "geosite:private"
         ]
+      },
+      {
+        "outboundTag": "direct",
+        "ip": [
+          "geoip:ir"
+        ],
+        "type": "field"
+      },
+      {
+        "outboundTag": "direct",
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_1_0"
+        ],
+        "type": "field"
+      },
+      {
+        "outboundTag": "proxy",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "type": "field"
       }
     ]
   },
-  "dns": {
-    "hosts": [],
-    "servers": []
-  }
+  "remarks": "@shenvpn"
 }
