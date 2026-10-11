@@ -22,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:c3.nastuh.link"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:c3.nastuh.link"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:c3.nastuh.link"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -149,36 +158,19 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vmess",
+      "protocol": "shadowsocks",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "47.243.65.243",
+            "address": "c3.nastuh.link",
             "port": 443,
-            "users": [
-              {
-                "id": "f23bb427-c1f9-4373-876c-2f43e9f790f3",
-                "alterId": 0,
-                "security": "auto",
-                "level": 8
-              }
-            ]
+            "method": "chacha20-ietf-poly1305",
+            "password": "y7KeRTzmH0vXT2kp",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "lcv8v9l7oyamxxfz.v.3dns.vip",
-          "allowInsecure": false
-        },
-        "wsSettings": {
-          "path": "/ws-vmess",
-          "headers": {
-            "Host": "lcv8v9l7oyamxxfz.v.3dns.vip"
-          }
-        },
         "sockopt": {
           "tcpFastOpen": true,
           "tcpNoDelay": true,
@@ -187,29 +179,13 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "fragment",
-      "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "",
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMptcp": true
+          "tcpMptcp": true,
+          "happyEyeballs": {
+            "tryDelayMs": 250,
+            "prioritizeIPv6": false,
+            "interleave": 1,
+            "maxConcurrentTry": 4
+          }
         }
       }
     },
@@ -254,6 +230,14 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:c3.nastuh.link"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
