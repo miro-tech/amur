@@ -22,28 +22,19 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:sg2-8sb.6121999.dpdns.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:sg2-8sb.6121999.dpdns.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false,
-        "domains": [
-          "full:sg2-8sb.6121999.dpdns.org"
-        ]
+        "skipFallback": false
       },
       {
         "tag": "dns-proxy",
@@ -158,35 +149,34 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "vmess",
       "settings": {
         "vnext": [
           {
-            "address": "sg2-8sb.6121999.dpdns.org",
-            "port": 19825,
+            "address": "212.135.211.242",
+            "port": 443,
             "users": [
               {
-                "id": "2d1ad594-80a4-4bfb-87a6-038e39701f51",
-                "encryption": "none",
-                "level": 8,
-                "flow": "xtls-rprx-vision"
+                "id": "235e318a-8bcb-4480-b256-7b65cc5d0b0a",
+                "alterId": 0,
+                "security": "auto",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "sg2-8sb.6121999.dpdns.org",
-          "fingerprint": "chrome",
-          "publicKey": "GvvkY8xYb9QjvwvzYq_uNC4tOGd0DCxRnz6770-xgkI",
-          "shortId": "6ba85179e30d4fc2"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "aus.lovehk.xyz",
+          "allowInsecure": false
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
+        "wsSettings": {
+          "path": "/Sydney3",
+          "headers": {
+            "Host": "aus.lovehk.xyz"
           }
         },
         "sockopt": {
@@ -197,13 +187,29 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true,
-          "happyEyeballs": {
-            "tryDelayMs": 250,
-            "prioritizeIPv6": false,
-            "interleave": 1,
-            "maxConcurrentTry": 4
-          }
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
       }
     },
@@ -248,14 +254,6 @@
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
-      {
-        "type": "field",
-        "domain": [
-          "full:sg2-8sb.6121999.dpdns.org"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "inboundTag": [
