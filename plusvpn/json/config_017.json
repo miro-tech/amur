@@ -1,26 +1,23 @@
 {
-  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
+    },
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
+      "cloudflare-ech.com+udp://8.8.8.8",
+      "1.1.1.1",
       "8.8.8.8"
-    ]
+    ],
+    "queryStrategy": "UseIP"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -31,20 +28,21 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": [],
+      "tag": "http"
     }
   ],
   "outbounds": [
@@ -53,13 +51,12 @@
       "settings": {
         "vnext": [
           {
-            "address": "152.42.215.4",
-            "port": 443,
+            "address": "172.67.217.240",
+            "port": 2087,
             "users": [
               {
-                "id": "77546e68-22f7-4666-b857-739f2309ad99",
-                "encryption": "mlkem768x25519plus.native.0rtt.zMscqYcMA69GtKsinq_aA3DFEbvtsUFMbJSPk3IbBBw",
-                "flow": "xtls-rprx-vision-udp443"
+                "id": "125057bd-22b7-4680-95cc-c00bbe5cbe54",
+                "encryption": "none"
               }
             ]
           }
@@ -67,58 +64,76 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "ai.android",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "multi-96ba07.finfiamet.info",
+          "alpn": [
+            "h2"
+          ],
           "fingerprint": "chrome",
-          "publicKey": "_szwTss6LNVh4DbRnK3F81e8ipaBzRBDAcLWY-a33lo",
-          "shortId": "470b80c8"
+          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
+          "echSockopt": {
+            "dialerProxy": "direct"
+          }
+        },
+        "xhttpSettings": {
+          "host": "multi-96ba07.finfiamet.info",
+          "path": "/psi",
+          "mode": "stream-one"
+        },
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": [],
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geosite:category-ads-all"
+        ]
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
         "ip": [
-          "geoip:private"
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4",
+          "104.16.248.249",
+          "104.16.249.249"
         ],
         "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
+        "type": "field",
+        "network": "udp",
+        "port": "443",
         "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
