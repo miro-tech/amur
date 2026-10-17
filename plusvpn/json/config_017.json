@@ -1,4 +1,10 @@
 {
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -15,19 +21,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:chatgpt.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:chatgpt.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:chatgpt.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -129,30 +144,18 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "139.162.166.83",
+            "address": "chatgpt.com",
             "port": 2087,
             "users": [
               {
-                "encryption": "none",
-                "flow": "",
-                "id": "3d0256f2-75fd-41eb-b338-fc0ab75afe64",
-                "level": 8
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
               }
             ]
           }
@@ -160,23 +163,26 @@
       },
       "streamSettings": {
         "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "liveista-uk-b10b3b.majtakhgam.info",
+          "alpn": [
+            "h2"
+          ],
+          "fingerprint": "chrome",
+          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
+          "echSockopt": {
+            "dialerProxy": "direct"
+          }
+        },
         "xhttpSettings": {
-          "extra": {
-            "mode": "stream-up",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "",
-          "mode": "stream-up",
-          "path": "/api"
+          "host": "liveista-uk-b10b3b.majtakhgam.info",
+          "path": "/Reset.You1",
+          "mode": "stream-one"
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
           "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "tcpKeepAliveIdle": 100
         }
       },
       "tag": "proxy"
@@ -207,11 +213,18 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
     "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "full:chatgpt.com"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "inboundTag": [
@@ -253,6 +266,7 @@
       }
     ]
   },
+  "remarks": "@shenvpn",
   "fakedns": [
     {
       "ipPool": "198.18.0.0/15",
