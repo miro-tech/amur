@@ -1,40 +1,22 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "GET",
-      "interval": "30m",
-      "sampling": 2,
-      "timeout": "10s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
     },
     "servers": [
-      {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
-      },
-      "8.8.8.8",
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "finalQuery": true,
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      }
+      "https://cloudflare-dns.com/dns-query",
+      "1.1.1.1",
+      "8.8.8.8"
     ],
-    "tag": "dns-module"
+    "queryStrategy": "UseIP"
   },
   "inbounds": [
     {
@@ -46,94 +28,34 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic",
-          "fakedns"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": [],
+      "tag": "http"
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
+            "address": "reaza.localip.ir",
             "port": 2087,
             "users": [
               {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "length": "1-104",
-                "interval": "0",
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "length": "1-114",
-                "interval": "1",
-                "maxSplit": "11"
-              }
-            }
-          ]
-        },
-        "tlsSettings": {
-          "alpn": [
-            "h2"
-          ],
-          "fingerprint": "chrome",
-          "serverName": "liveista-de-5e1391.majtakhgam.info"
-        },
-        "xhttpSettings": {
-          "host": "liveista-de-5e1391.majtakhgam.info",
-          "path": "/Reset.You1",
-          "mode": "stream-one"
-        },
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 100
-        }
-      },
-      "tag": "proxy-proxy-1-2087-Nconn"
-    },
-    {
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "188.114.97.6",
-            "port": 2087,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "id": "42cdebb3-4440-4719-9aa1-53ada6bf8be3",
                 "encryption": "none"
               }
             ]
@@ -144,19 +66,19 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "waitgnngxd.varzeshfotsal.ir",
           "alpn": [
             "h2"
           ],
           "fingerprint": "chrome",
-          "serverName": "liveista-de-5e1391.majtakhgam.info",
-          "echConfigList": "cloudflare-ech.com+udp://1.1.1.1",
+          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
           "echSockopt": {
             "dialerProxy": "direct"
           }
         },
         "xhttpSettings": {
-          "host": "liveista-de-5e1391.majtakhgam.info",
-          "path": "/Reset.You1",
+          "host": "waitgnngxd.varzeshfotsal.ir",
+          "path": "/",
           "mode": "stream-one"
         },
         "sockopt": {
@@ -164,50 +86,22 @@
           "tcpKeepAliveIdle": 100
         }
       },
-      "tag": "proxy-proxy-2-2087-Nconn"
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
+      "settings": [],
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "settings": {
-        "userLevel": 12
-      },
-      "tag": "dns-out"
     }
   ],
-  "policy": {
-    "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      }
-    }
-  },
-  "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "proxy-proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
-      }
-    ],
     "domainStrategy": "AsIs",
     "rules": [
       {
@@ -218,57 +112,28 @@
         ]
       },
       {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
+        "type": "field",
         "port": "53",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
+        "type": "field",
         "ip": [
-          "geoip:private"
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4",
+          "104.16.248.249",
+          "104.16.249.249"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "network": "tcp,udp",
-        "type": "field"
+        "type": "field",
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
