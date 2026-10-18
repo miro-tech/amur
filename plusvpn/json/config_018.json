@@ -1,26 +1,15 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
+    },
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
+      "https://cloudflare-dns.com/dns-query"
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -31,49 +20,83 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
-        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": [],
+      "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "40.160.14.147",
-            "port": 31146,
+            "address": "188.114.97.6",
+            "port": 2087,
             "users": [
               {
-                "id": "f0466557-2fd5-442e-94cb-12c6b764155e",
+                "id": "42cdebb3-4440-4719-9aa1-53ada6bf8be3",
                 "encryption": "none",
-                "flow": "xtls-rprx-vision"
+                "flow": "",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "play-fe.googleapis.com",
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "alpn": [
+            "h2"
+          ],
           "fingerprint": "chrome",
-          "publicKey": "QAoJHZT6_DZsBu-jH74uYZUTpGgxmvN2tXpRKj4CygE",
-          "shortId": "cf4e6f8338",
-          "spiderX": "/"
+          "serverName": "xdaarnfyfm.varzeshfotsal.ir"
+        },
+        "xhttpSettings": {
+          "extra": {
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "xdaarnfyfm.varzeshfotsal.ir",
+          "mode": "stream-one",
+          "path": "/"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "0",
+                  "104"
+                ]
+              },
+              "type": "fragment"
+            }
+          ]
         }
       },
       "tag": "proxy"
@@ -83,43 +106,21 @@
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": [],
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
+        "type": "field",
+        "network": "udp",
+        "port": "443",
         "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
