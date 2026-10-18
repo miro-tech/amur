@@ -1,9 +1,4 @@
 {
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
     "hosts": {
       "cloudflare-dns.com": [
@@ -12,10 +7,8 @@
       ]
     },
     "servers": [
-      "1.1.1.1",
-      "8.8.8.8"
-    ],
-    "queryStrategy": "UseIP"
+      "https://cloudflare-dns.com/dns-query"
+    ]
   },
   "inbounds": [
     {
@@ -30,7 +23,8 @@
         "enabled": true,
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
         "routeOnly": false
       },
@@ -44,18 +38,29 @@
       "tag": "http"
     }
   ],
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.67.158.119",
+            "address": "188.114.97.6",
             "port": 2087,
             "users": [
               {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
+                "id": "42cdebb3-4440-4719-9aa1-53ada6bf8be3",
+                "encryption": "none",
+                "flow": "",
+                "level": 8
               }
             ]
           }
@@ -65,33 +70,39 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "liveista-uk-05e699.majtakhgam.info",
           "alpn": [
             "h2"
           ],
           "fingerprint": "chrome",
-          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
-          "echSockopt": {
-            "dialerProxy": "direct"
-          }
+          "serverName": "jhsmpfogfk.varzeshfotsal.ir"
         },
         "xhttpSettings": {
-          "host": "liveista-uk-05e699.majtakhgam.info",
-          "path": "/Reset.You1",
-          "mode": "stream-one"
+          "extra": {
+            "xPaddingBytes": "100-1000"
+          },
+          "host": "jhsmpfogfk.varzeshfotsal.ir",
+          "mode": "stream-one",
+          "path": "/"
         },
-        "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 100
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "0",
+                  "104"
+                ]
+              },
+              "type": "fragment"
+            }
+          ]
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
       "tag": "direct"
     },
     {
@@ -103,29 +114,6 @@
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
-      {
-        "type": "field",
-        "outboundTag": "block",
-        "domain": [
-          "geosite:category-ads-all"
-        ]
-      },
-      {
-        "type": "field",
-        "port": "53",
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "1.1.1.1",
-          "8.8.8.8",
-          "8.8.4.4",
-          "104.16.248.249",
-          "104.16.249.249"
-        ],
-        "outboundTag": "direct"
-      },
       {
         "type": "field",
         "network": "udp",
