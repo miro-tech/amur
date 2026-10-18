@@ -1,4 +1,9 @@
 {
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
+  },
   "dns": {
     "hosts": {
       "cloudflare-dns.com": [
@@ -7,8 +12,11 @@
       ]
     },
     "servers": [
-      "https://cloudflare-dns.com/dns-query"
-    ]
+      "https://cloudflare-dns.com/dns-query",
+      "1.1.1.1",
+      "8.8.8.8"
+    ],
+    "queryStrategy": "UseIP"
   },
   "inbounds": [
     {
@@ -23,8 +31,7 @@
         "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
         "routeOnly": false
       },
@@ -38,29 +45,18 @@
       "tag": "http"
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.114.97.6",
+            "address": "reaza.localip.ir",
             "port": 2087,
             "users": [
               {
                 "id": "42cdebb3-4440-4719-9aa1-53ada6bf8be3",
-                "encryption": "none",
-                "flow": "",
-                "level": 8
+                "encryption": "none"
               }
             ]
           }
@@ -70,39 +66,33 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "dyiquionhs.varzeshfotsal.ir",
           "alpn": [
             "h2"
           ],
           "fingerprint": "chrome",
-          "serverName": "xdaarnfyfm.varzeshfotsal.ir"
+          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
+          "echSockopt": {
+            "dialerProxy": "direct"
+          }
         },
         "xhttpSettings": {
-          "extra": {
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "xdaarnfyfm.varzeshfotsal.ir",
-          "mode": "stream-one",
-          "path": "/"
+          "host": "dyiquionhs.varzeshfotsal.ir",
+          "path": "/",
+          "mode": "stream-one"
         },
-        "finalmask": {
-          "tcp": [
-            {
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "0",
-                  "104"
-                ]
-              },
-              "type": "fragment"
-            }
-          ]
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
@@ -114,6 +104,29 @@
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geosite:category-ads-all"
+        ]
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4",
+          "104.16.248.249",
+          "104.16.249.249"
+        ],
+        "outboundTag": "direct"
+      },
       {
         "type": "field",
         "network": "udp",
