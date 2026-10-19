@@ -1,67 +1,37 @@
 {
+  "burstObservatory": {
+    "pingConfig": {
+      "destination": "https://www.gstatic.com/generate_204",
+      "httpMethod": "HEAD",
+      "interval": "5m",
+      "sampling": 2,
+      "timeout": "30s"
+    },
+    "subjectSelector": [
+      "proxy-proxy-"
+    ]
+  },
   "dns": {
     "hosts": {
-      "geosite:category-ads-all": "127.0.0.1",
-      "domain:googleapis.cn": "googleapis.com",
-      "dns.alidns.com": [
-        "223.5.5.5",
-        "223.6.6.6",
-        "2400:3200::1",
-        "2400:3200:baba::1"
-      ],
-      "dns.cloudflare.com": [
-        "162.159.61.8",
-        "172.64.41.8",
-        "2a06:98c1:52::8",
-        "2803:f800:53::8"
-      ],
-      "cloudflare-dns.com": [
-        "104.16.248.249",
-        "104.16.249.249",
-        "2606:4700::6810:f8f9",
-        "2606:4700::6810:f9f9"
-      ],
-      "dns.google": [
-        "8.8.8.8",
-        "8.8.4.4",
-        "2001:4860:4860::8888",
-        "2001:4860:4860::8844"
-      ],
-      "dns.quad9.net": [
-        "9.9.9.9",
-        "149.112.112.112",
-        "2620:fe::fe",
-        "2620:fe::9"
-      ],
-      "one.one.one.one": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "2606:4700:4700::1111",
-        "2606:4700:4700::1001"
-      ],
-      "dekapost.com": "5.230.78.63",
-      "samanbourse.com": "5.230.155.48",
-      "snappshop.ir": "5.230.250.33",
-      "mizito.ir": "5.230.135.9"
+      "domain:googleapis.cn": "googleapis.com"
     },
     "servers": [
-      "1.1.1.1",
+      {
+        "address": "fakedns",
+        "domains": [
+          "geosite:cn",
+          "geosite:private"
+        ]
+      },
+      "8.8.8.8",
       {
         "address": "223.5.5.5",
         "domains": [
           "geosite:private"
         ],
+        "finalQuery": true,
         "skipFallback": true,
         "tag": "domestic-dns_0_0"
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_2_0"
       }
     ],
     "tag": "dns-module"
@@ -73,14 +43,14 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
         "enabled": true,
         "routeOnly": false
@@ -103,43 +73,73 @@
       "settings": {
         "vnext": [
           {
-            "address": "dekapost.com",
-            "port": 443,
+            "address": "reaza.localip.ir",
+            "port": 2087,
             "users": [
               {
-                "id": "3497e6cf-2f5a-48f5-ab9d-680b47855bb0",
+                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
                 "encryption": "none",
-                "flow": "",
-                "level": 8
+                "flow": ""
               }
             ]
           }
         ]
       },
       "streamSettings": {
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "lengths": [
+                  "0",
+                  "104",
+                  "1"
+                ],
+                "delays": [
+                  "0"
+                ],
+                "maxSplit": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "lengths": [
+                  "114",
+                  "1"
+                ],
+                "delays": [
+                  "1"
+                ],
+                "maxSplit": "11"
+              }
+            }
+          ]
+        },
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "ipw1.violetara.ir",
-          "fingerprint": "firefox",
           "alpn": [
             "h2"
-          ]
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
+          ],
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "leaseweb15-3nc3e6i0.nitrowar.org"
         },
         "xhttpSettings": {
-          "path": "/api/v1/94399a24f3206dfd9746",
-          "mode": "auto",
-          "host": "ipw1.violetara.ir",
           "extra": {
             "mode": "auto",
             "xPaddingBytes": "100-1000"
-          }
+          },
+          "host": "leaseweb15-3nc3e6i0.nitrowar.org",
+          "mode": "auto",
+          "path": "/mori1996"
         }
       },
-      "tag": "proxy-1"
+      "tag": "proxy-proxy-1-443-T"
     },
     {
       "mux": {
@@ -150,14 +150,13 @@
       "settings": {
         "vnext": [
           {
-            "address": "samanbourse.com",
-            "port": 443,
+            "address": "reaza.localip.ir",
+            "port": 2087,
             "users": [
               {
-                "id": "3497e6cf-2f5a-48f5-ab9d-680b47855bb0",
+                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
                 "encryption": "none",
-                "flow": "",
-                "level": 8
+                "flow": ""
               }
             ]
           }
@@ -167,167 +166,91 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "ipw2.violetara.ir",
-          "fingerprint": "firefox",
           "alpn": [
             "h2"
-          ]
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
+          ],
+          "echConfigList": "cloudflare-ech.com+udp://1.1.1.1",
+          "fingerprint": "chrome",
+          "serverName": "leaseweb15-3nc3e6i0.nitrowar.org"
         },
         "xhttpSettings": {
-          "path": "/api/v1/94399a24f3206dfd9746",
-          "mode": "auto",
-          "host": "ipw2.violetara.ir",
           "extra": {
             "mode": "auto",
             "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-2"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "snappshop.ir",
-            "port": 443,
-            "users": [
-              {
-                "id": "3497e6cf-2f5a-48f5-ab9d-680b47855bb0",
-                "encryption": "none",
-                "flow": "",
-                "level": 8
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "ipw3.violetara.ir",
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ]
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/94399a24f3206dfd9746",
+          },
+          "host": "leaseweb15-3nc3e6i0.nitrowar.org",
           "mode": "auto",
-          "host": "ipw3.violetara.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
+          "path": "/mori1996"
         }
       },
-      "tag": "proxy-3"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "mizito.ir",
-            "port": 443,
-            "users": [
-              {
-                "id": "3497e6cf-2f5a-48f5-ab9d-680b47855bb0",
-                "encryption": "none",
-                "flow": "",
-                "level": 8
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "ipw4.violetara.ir",
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ]
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/94399a24f3206dfd9746",
-          "mode": "auto",
-          "host": "ipw4.violetara.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-4"
+      "tag": "proxy-proxy-2-443-M"
     },
     {
       "protocol": "freedom",
-      "streamSettings": {
-        "network": "tcp",
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        }
-      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "settings": [],
       "tag": "block"
+    },
+    {
+      "protocol": "dns",
+      "settings": {
+        "userLevel": 12
+      },
+      "tag": "dns-out"
     }
   ],
   "policy": {
     "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
+      "0": {
+        "downlinkOnly": 0,
+        "uplinkOnly": 0
+      },
+      "12": {
+        "connIdle": 12,
+        "downlinkOnly": 0,
+        "uplinkOnly": 0
       }
     }
   },
   "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
     "balancers": [
       {
-        "tag": "proxy-balancer",
         "selector": [
-          "proxy-"
+          "proxy-proxy-"
         ],
         "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 2,
-            "maxRTT": "1s",
-            "tolerance": 0.1
-          }
-        }
+          "type": "leastLoad"
+        },
+        "tag": "balancer-main"
       }
     ],
+    "domainStrategy": "AsIs",
     "rules": [
+      {
+        "inboundTag": [
+          "socks"
+        ],
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "balancerTag": "balancer-main",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "type": "field"
+      },
       {
         "network": "udp",
         "outboundTag": "block",
@@ -349,60 +272,15 @@
         "type": "field"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block",
+        "balancerTag": "balancer-main",
+        "port": "0-65535",
         "type": "field"
       },
       {
-        "domain": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "geoip:ir"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0",
-          "domestic-dns_2_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "dns-module"
-        ],
-        "balancerTag": "proxy-balancer",
-        "type": "field"
-      },
-      {
+        "balancerTag": "balancer-main",
         "network": "tcp,udp",
-        "balancerTag": "proxy-balancer",
         "type": "field"
       }
     ]
-  },
-  "burstObservatory": {
-    "subjectSelector": [
-      "proxy-"
-    ],
-    "pingConfig": {
-      "destination": "https://connectivitycheck.gstatic.com/generate_204",
-      "connectivity": "",
-      "interval": "30s",
-      "sampling": 5,
-      "timeout": "3s",
-      "httpMethod": "HEAD"
-    }
   }
 }
