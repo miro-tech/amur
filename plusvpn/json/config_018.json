@@ -1,26 +1,22 @@
 {
-  "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
+    },
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
+      "1.1.1.1",
       "8.8.8.8"
-    ]
+    ],
+    "queryStrategy": "UseIP"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -31,20 +27,21 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     },
     {
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": [],
+      "tag": "http"
     }
   ],
   "outbounds": [
@@ -53,11 +50,11 @@
       "settings": {
         "vnext": [
           {
-            "address": "milo.networkforexir.site",
-            "port": 8080,
+            "address": "172.64.144.78",
+            "port": 2087,
             "users": [
               {
-                "id": "6bceb548-d9b6-461f-8e37-a5a7fbcdc2c8",
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
                 "encryption": "none"
               }
             ]
@@ -65,57 +62,77 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "none"
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "liveista-uk-bb5c81.majtakhgam.info",
+          "alpn": [
+            "h2"
+          ],
+          "fingerprint": "chrome",
+          "echConfigList": "cloudflare-ech.com+udp://8.8.8.8",
+          "echSockopt": {
+            "dialerProxy": "direct"
           }
+        },
+        "xhttpSettings": {
+          "host": "liveista-uk-bb5c81.majtakhgam.info",
+          "path": "/Reset.You1",
+          "mode": "stream-one"
+        },
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
       "protocol": "blackhole",
+      "settings": [],
       "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geosite:category-ads-all"
+        ]
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
         "ip": [
-          "geoip:private"
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4",
+          "104.16.248.249",
+          "104.16.249.249"
         ],
         "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
+        "type": "field",
+        "network": "udp",
+        "port": "443",
         "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
