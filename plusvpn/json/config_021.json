@@ -1,40 +1,21 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "HEAD",
-      "interval": "5m",
-      "sampling": 2,
-      "timeout": "30s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249"
+      ]
     },
     "servers": [
-      {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
-      },
-      "8.8.8.8",
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "finalQuery": true,
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      }
+      "1.1.1.1",
+      "8.8.8.8"
     ],
-    "tag": "dns-module"
+    "queryStrategy": "UseIP"
   },
   "inbounds": [
     {
@@ -46,117 +27,35 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic",
-          "fakedns"
+          "tls"
         ],
-        "enabled": true,
         "routeOnly": false
       },
       "tag": "socks"
-    }
-  ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
-  "outbounds": [
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "reaza.localip.ir",
-            "port": 2087,
-            "users": [
-              {
-                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "0",
-                  "104",
-                  "1"
-                ],
-                "delays": [
-                  "0"
-                ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "114",
-                  "1"
-                ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "11"
-              }
-            }
-          ]
-        },
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "alpn": [
-            "h2"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "leaseweb15-txe46k86.nitrowar.org"
-        },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "leaseweb15-txe46k86.nitrowar.org",
-          "mode": "auto",
-          "path": "/mori1996"
-        }
-      },
-      "tag": "proxy-proxy-1-443-T"
     },
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": [],
+      "tag": "http"
+    }
+  ],
+  "outbounds": [
+    {
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "reaza.localip.ir",
+            "address": "172.64.144.78",
             "port": 2087,
             "users": [
               {
-                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                "encryption": "none",
-                "flow": ""
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
               }
             ]
           }
@@ -166,121 +65,67 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "netrino-nl-ef64f3.majtakhgam.info",
           "alpn": [
             "h2"
           ],
-          "echConfigList": "cloudflare-ech.com+udp://1.1.1.1",
           "fingerprint": "chrome",
-          "serverName": "leaseweb15-txe46k86.nitrowar.org"
+          "echConfigList": "Nazar.ac.ir+udp://8.8.8.8",
+          "echSockopt": {
+            "dialerProxy": "direct"
+          }
         },
         "xhttpSettings": {
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "leaseweb15-txe46k86.nitrowar.org",
-          "mode": "auto",
-          "path": "/mori1996"
+          "host": "netrino-nl-ef64f3.majtakhgam.info",
+          "path": "/Reset.You1",
+          "mode": "stream-one"
+        },
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 100
         }
       },
-      "tag": "proxy-proxy-2-443-M"
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
+      "settings": [],
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "settings": {
-        "userLevel": 12
-      },
-      "tag": "dns-out"
     }
   ],
-  "policy": {
-    "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      }
-    }
-  },
-  "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "proxy-proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
-      }
-    ],
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
+        "type": "field",
         "port": "53",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
+        "type": "field",
         "ip": [
-          "geoip:private"
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4",
+          "104.16.248.249",
+          "104.16.249.249"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "network": "tcp,udp",
-        "type": "field"
+        "type": "field",
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "block"
       }
     ]
-  }
+  },
+  "remarks": "@shenvpn"
 }
