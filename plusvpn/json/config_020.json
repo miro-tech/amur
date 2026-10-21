@@ -1,13 +1,28 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
+    "loglevel": "warning"
   },
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -16,36 +31,34 @@
         "udp": true
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
-        ]
+        ],
+        "enabled": true,
+        "routeOnly": false
       }
     },
     {
-      "tag": "http",
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": []
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "151.101.1.194",
+            "address": "aule.manwe.ir",
             "port": 443,
             "users": [
               {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none",
-                "level": 0
+                "id": "924bc126-2f7b-4111-ba37-28384a253857",
+                "encryption": "none"
               }
             ]
           }
@@ -55,43 +68,54 @@
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.firefox.com",
-          "fingerprint": "chrome",
-          "alpn": [
-            "http/1.1"
-          ],
-          "verifyPeerCertByName": "*.freetls.fastly.net"
-        },
-        "xhttpSettings": {
-          "host": "netrinode14b7883your-name.global.ssl.fastly.net",
-          "path": "/",
-          "mode": "auto"
+          "serverName": "Varda.Manwe.ir",
+          "fingerprint": "randomized"
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "tag": "direct"
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
     }
   ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
   "routing": {
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
         "ip": [
           "geoip:private"
         ],
         "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
-    ]
-  },
-  "dns": {
-    "servers": [
-      "8.8.8.8"
     ]
   }
 }
