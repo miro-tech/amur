@@ -1,745 +1,371 @@
 {
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com",
-      "dns.alidns.com": [
-        "223.5.5.5",
-        "223.6.6.6",
-        "2400:3200::1",
-        "2400:3200:baba::1"
-      ],
-      "dns.cloudflare.com": [
-        "162.159.61.8",
-        "172.64.41.8",
-        "2a06:98c1:52::8",
-        "2803:f800:53::8"
-      ],
-      "cloudflare-dns.com": [
-        "104.16.248.249",
-        "104.16.249.249",
-        "2606:4700::6810:f8f9",
-        "2606:4700::6810:f9f9"
-      ],
-      "dns.google": [
-        "8.8.8.8",
-        "8.8.4.4",
-        "2001:4860:4860::8888",
-        "2001:4860:4860::8844"
-      ],
-      "dns.quad9.net": [
-        "9.9.9.9",
-        "149.112.112.112",
-        "2620:fe::fe",
-        "2620:fe::9"
-      ],
-      "one.one.one.one": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "2606:4700:4700::1111",
-        "2606:4700:4700::1001"
-      ],
-      "rozblog.com": "213.193.252.250",
-      "jobinja.ir": "5.230.132.52",
-      "radioquran.ir": "5.230.132.3",
-      "ikco.ir": "5.230.251.172",
-      "kayhan.ir": "5.230.135.56",
-      "loxblog.com": "5.230.251.164",
-      "ipna.ir": "5.230.155.60",
-      "farsnews.ir": "5.230.155.105",
-      "mahex.com": "178.107.60.130",
-      "resalat-news.com": "5.230.132.195",
-      "iraneconomist.com": "5.230.248.154",
-      "afranet.com": "5.230.250.200"
+      "domain:googleapis.cn": "googleapis.com"
     },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
     "servers": [
-      "1.1.1.1",
       {
-        "address": "223.5.5.5",
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
         "domains": [
-          "geosite:private"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
+          "full:shortbig.ir"
+        ]
       },
       {
-        "address": "223.5.5.5",
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
         "domains": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_2_0"
+          "full:shortbig.ir"
+        ]
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
+        "domains": [
+          "full:shortbig.ir"
+        ]
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
       }
-    ],
-    "tag": "dns-module"
+    ]
   },
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
         "udp": true,
+        "allowTransparent": false,
         "userLevel": 8
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
-        "enabled": true,
+        "metadataOnly": false,
         "routeOnly": false
+      }
+    },
+    {
+      "tag": "http",
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
       },
-      "tag": "socks"
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "metadataOnly": false,
+        "routeOnly": false
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 10853,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "port": 53,
+        "network": "tcp,udp"
+      }
     }
   ],
   "log": {
-    "loglevel": "warning"
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
   },
   "outbounds": [
     {
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       },
       "protocol": "vless",
       "settings": {
-        "address": "rozblog.com",
+        "address": "shortbig.ir",
         "encryption": "none",
         "flow": "",
-        "id": "35a5c934-dc7e-46dc-bca1-197f6e1ae5a7",
-        "level": 8,
-        "port": 443
+        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
+        "port": 2087
       },
       "streamSettings": {
-        "network": "xhttp",
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
+        },
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "download.kaltrio.ir",
           "allowInsecure": false,
-          "fingerprint": "firefox",
           "alpn": [
-            "h2"
+            "http/1.1"
           ],
-          "echConfigList": "AGb+DQBiAAAgACB3MXq9wV+jJio6wrRJPPm7cMbqcTUjBx4T+gQl/D0IXgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABNkb3dubG9hZC5rYWx0cmlvLmlyAAA="
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "nader.qavrix.ir"
+        },
+        "wsSettings": {
+          "host": "nader.qavrix.ir",
+          "path": "/hokm"
         },
         "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/579f0416f67693f0a094",
-          "mode": "auto",
-          "host": "download.kaltrio.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
+          "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "tcpMptcp": true
         }
       },
-      "tag": "proxy-1"
+      "tag": "proxy"
     },
     {
       "mux": {
-        "concurrency": -1,
-        "enabled": false
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "reject"
       },
       "protocol": "vless",
       "settings": {
-        "address": "jobinja.ir",
+        "address": "shortbig.ir",
         "encryption": "none",
         "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
+        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
+        "port": 2087
       },
       "streamSettings": {
-        "network": "xhttp",
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "gateway.duivert.ir",
           "allowInsecure": false,
-          "fingerprint": "firefox",
           "alpn": [
-            "h2"
+            "http/1.1"
           ],
-          "echConfigList": "AGX+DQBhAAAgACCYl8/fxflTYxylJ4HX+nhebNpSf2UwPhlPKO4RCEVxBAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJnYXRld2F5LmR1aXZlcnQuaXIAAA=="
+          "echConfigList": "iranva.ir+udp://1.1.1.1",
+          "fingerprint": "unsafe",
+          "serverName": "nader.qavrix.ir"
+        },
+        "wsSettings": {
+          "host": "nader.qavrix.ir",
+          "path": "/hokm"
         },
         "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/a3f018e58aebe9602d6c",
-          "mode": "auto",
-          "host": "gateway.duivert.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
+          "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
         }
       },
-      "tag": "proxy-2"
+      "tag": "proxy-proxy-2-8443-Nconn"
     },
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "radioquran.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "app.borzino.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGH+DQBdAAAgACDeVA5cVIJOVBerM3jbVg38OTcd9lJUMBlspQc2QhrULQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5hcHAuYm9yemluby5pcgAA"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/1ccdb678ff792e3b4360",
-          "mode": "auto",
-          "host": "app.borzino.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-3"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "ikco.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "app.kalvixo.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGH+DQBdAAAgACCi34MNOe2UUZbj5t88FBu45GE+kPKkRbuL0WiJzG6aDQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5hcHAua2Fsdml4by5pcgAA"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/f59a2501b1505806009a",
-          "mode": "auto",
-          "host": "app.kalvixo.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-4"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "kayhan.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "media.luivert.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGP+DQBfAAAgACC+wMZp/WN0IPdSwbIShnSS0i8kdFYOJ9tSe6BGZeqwWgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBtZWRpYS5sdWl2ZXJ0LmlyAAA="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/ace89e899ede144cf323",
-          "mode": "auto",
-          "host": "media.luivert.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-5"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "loxblog.com",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "assets.cuivert.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGT+DQBgAAAgACBqLxZiUVWpPGjI5bnMdRtPyXpAKgiTaIY7Zm1oI/blSgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFhc3NldHMuY3VpdmVydC5pcgAA"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/afbd1202eb4a2838a861",
-          "mode": "auto",
-          "host": "assets.cuivert.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-6"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "ipna.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "app.juivert.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGH+DQBdAAAgACCopIX3uABfPp+jQT02DneeX0CHE2kBRq/xqLz+5io1HQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5hcHAuanVpdmVydC5pcgAA"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/4cedda354e653e42242d",
-          "mode": "auto",
-          "host": "app.juivert.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-7"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "farsnews.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "gateway.borzino.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGX+DQBhAAAgACALXpI1ia27yhuW+inLQh/rEepf0K0Ptm6Ynq/C40uVPAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJnYXRld2F5LmJvcnppbm8uaXIAAA=="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/24929c884111a58f324e",
-          "mode": "auto",
-          "host": "gateway.borzino.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-8"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "mahex.com",
-        "encryption": "none",
-        "flow": "",
-        "id": "cd88c3f2-1fb6-4b7a-be74-aca84d636e0e",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "static.shoplixo.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGX+DQBhAAAgACDz2G+o6BRTk3eqNvg1HKIxJjrms3ox8O7W13ktbk9GFwAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJzdGF0aWMuc2hvcGxpeG8uaXIAAA=="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/246f01aecaef6f7c1ac2",
-          "mode": "auto",
-          "host": "static.shoplixo.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-9"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "resalat-news.com",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "assets.mavexa.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGP+DQBfAAAgACA9MLMHjijUw09vmOdxvsGWiemGWVxxgl3LSSVTnccmWAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBhc3NldHMubWF2ZXhhLmlyAAA="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/95974c8f75f2ac797f3b",
-          "mode": "auto",
-          "host": "assets.mavexa.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-10"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "iraneconomist.com",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "api.kafshino1.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGP+DQBfAAAgACBRPbh6XXK5Rw/pAA+UxhIq6c96oz9LwMdYcv9WiA/+UAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBhcGkua2Fmc2hpbm8xLmlyAAA="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/f05d1af712ee4840d362",
-          "mode": "auto",
-          "host": "api.kafshino1.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-11"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "afranet.com",
-        "encryption": "none",
-        "flow": "",
-        "id": "e6e8cdf4-297f-4044-8436-f85d6ddcca65",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "portal.auivert.ir",
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGT+DQBgAAAgACDxTTNMFGGSDhs3bffrPWq1g1IRE7tBpL1JO0GTi+cTUgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFwb3J0YWwuYXVpdmVydC5pcgAA"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/api/v1/f9f9f96b61ef40807000",
-          "mode": "auto",
-          "host": "portal.auivert.ir",
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          }
-        }
-      },
-      "tag": "proxy-12"
-    },
-    {
+      "tag": "fragment",
       "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
       "streamSettings": {
         "network": "tcp",
+        "security": "",
         "sockopt": {
-          "domainStrategy": "UseIP"
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
-      },
-      "tag": "direct"
+      }
     },
     {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
+    },
+    {
+      "tag": "dns-out",
+      "protocol": "dns",
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
+    },
+    {
+      "tag": "block",
       "protocol": "blackhole",
-      "settings": {},
-      "tag": "block"
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
   "policy": {
     "levels": {
       "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
         "handshake": 4,
-        "uplinkOnly": 1
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
       }
     }
   },
   "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
-    "balancers": [
-      {
-        "tag": "proxy-balancer",
-        "selector": [
-          "proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 4,
-            "maxRTT": "1.5s",
-            "tolerance": 0.25
-          }
-        }
-      }
-    ],
+    "domainMatcher": "hybrid",
     "rules": [
       {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "geoip:private"
+        "type": "field",
+        "inboundTag": [
+          "dns-proxy"
         ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "proxy"
       },
       {
         "type": "field",
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:category-ir",
-          "domain:ir"
+        "inboundTag": [
+          "dns-direct"
         ],
         "outboundTag": "direct"
       },
       {
         "type": "field",
-        "ip": [
-          "geoip:ir"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:category-ru"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:ru"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:cn"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:cn"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
         "inboundTag": [
-          "domestic-dns_0_0",
-          "domestic-dns_2_0"
+          "dns-in"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "dns-out"
       },
       {
-        "inboundTag": [
-          "dns-module"
+        "type": "field",
+        "protocol": [
+          "dns"
         ],
-        "balancerTag": "proxy-balancer",
-        "type": "field"
+        "outboundTag": "dns-out"
       },
       {
+        "type": "field",
+        "port": "53",
         "network": "tcp,udp",
-        "balancerTag": "proxy-balancer",
-        "type": "field"
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
       }
     ]
   },
-  "burstObservatory": {
-    "subjectSelector": [
-      "proxy-"
-    ],
-    "pingConfig": {
-      "destination": "https://connectivitycheck.gstatic.com/generate_204",
-      "connectivity": "",
-      "interval": "25s",
-      "sampling": 2,
-      "timeout": "3s",
-      "httpMethod": "HEAD"
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
     }
-  }
+  ]
 }

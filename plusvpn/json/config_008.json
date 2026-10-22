@@ -1,11 +1,4 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -22,19 +15,34 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:blogsky.com",
+          "full:ibna.ir",
+          "full:telewebion.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:blogsky.com",
+          "full:ibna.ir",
+          "full:telewebion.com"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:blogsky.com",
+          "full:ibna.ir",
+          "full:telewebion.com"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -80,16 +88,6 @@
       }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "tag": "socks",
@@ -146,48 +144,157 @@
       }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "44.248.233.99",
-            "port": 443,
-            "users": [
-              {
-                "id": "37615d66-5467-44a3-bc23-f2c3bef7f761",
-                "encryption": "none",
-                "level": 8,
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
+        "address": "blogsky.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "9e31cb44-69f3-44c8-a9c6-229d08306daf",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "aws.amazon.com",
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "download.kaltrio.ir",
+          "allowInsecure": false,
           "fingerprint": "chrome",
-          "publicKey": "p8VhFzvFOBAhWAEAeWmwDxT3xBSRsGYixqi0qnLFnBM",
-          "shortId": "21270a66"
-        },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGb+DQBiAAAgACCZIuzl3rMB/xTofaTxsKWj7Ym24/ldOu0BdeNnwkEpQwAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABNkb3dubG9hZC5rYWx0cmlvLmlyAAA="
         },
         "sockopt": {
-          "tcpFastOpen": true,
+          "domainStrategy": "UseIP",
           "tcpNoDelay": true,
           "tcpKeepAliveIdle": 20,
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
-          "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-8312ca4fa5bc98a61cd3",
+          "authority": "download.kaltrio.ir"
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "ibna.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "c34ee9f4-d6ff-49a9-8bb4-ea34aafcadb1",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "assets.borzino.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGT+DQBgAAAgACByUKGbmulWfJEKRLi8SjSlpjqTLBloMpNdBHYOqkoPCQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFhc3NldHMuYm9yemluby5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-ed04a0950752369aa497",
+          "authority": "assets.borzino.ir"
+        }
+      },
+      "tag": "proxy-2"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "telewebion.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "0b7f2d43-8ac9-4cec-b35b-f0b35f860ac0",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "static.shoplixo.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGX+DQBhAAAgACD/zb7N6eTVMP0m+dsnyqx2Cx7R6v7nrMePgbsldneQKAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJzdGF0aWMuc2hvcGxpeG8uaXIAAA=="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-a1377c0492d9c8b3356c",
+          "authority": "static.shoplixo.ir"
+        }
+      },
+      "tag": "proxy-3"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
@@ -229,6 +336,7 @@
       }
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
@@ -273,5 +381,15 @@
         "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
