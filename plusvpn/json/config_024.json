@@ -13,8 +13,7 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "enabled": true,
@@ -22,9 +21,15 @@
           "http",
           "tls",
           "quic"
-        ],
-        "routeOnly": false
+        ]
       }
+    },
+    {
+      "tag": "http",
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": []
     }
   ],
   "outbounds": [
@@ -34,14 +39,13 @@
       "settings": {
         "vnext": [
           {
-            "address": "speedtest.net",
-            "port": 80,
+            "address": "146.75.117.194",
+            "port": 443,
             "users": [
               {
-                "id": "dcae26dd-b17a-4424-aea0-42ffee21ae60",
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
                 "encryption": "none",
-                "flow": "",
-                "level": 8
+                "level": 0
               }
             ]
           }
@@ -49,56 +53,19 @@
       },
       "streamSettings": {
         "network": "xhttp",
-        "security": "none",
-        "sockopt": {
-          "domainStrategy": "UseIP",
-          "happyEyeballs": {
-            "interleave": 2,
-            "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          }
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "0",
-                  "104",
-                  "1"
-                ],
-                "delays": [
-                  "0"
-                ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "114",
-                  "1"
-                ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "11"
-              }
-            }
-          ]
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.firefox.com",
+          "fingerprint": "chrome",
+          "alpn": [
+            "http/1.1"
+          ],
+          "verifyPeerCertByName": "*.freetls.fastly.net"
         },
         "xhttpSettings": {
-          "host": "fastlysmart1209b08your-name.global.ssl.fastly.net",
+          "host": "netrinouk1b21768your-name.global.ssl.fastly.net",
           "path": "/",
-          "mode": "auto",
-          "extra": {
-            "xPaddingBytes": "100-1000"
-          }
+          "mode": "auto"
         }
       }
     },
@@ -108,28 +75,23 @@
     },
     {
       "tag": "block",
-      "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "protocol": "blackhole"
     }
   ],
   "routing": {
-    "domainStrategy": "AsIs",
     "rules": [
       {
         "type": "field",
-        "outboundTag": "block",
-        "domain": [
-          "geosite:category-ads-all"
-        ]
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
       }
     ]
   },
   "dns": {
-    "hosts": [],
-    "servers": []
+    "servers": [
+      "8.8.8.8"
+    ]
   }
 }
