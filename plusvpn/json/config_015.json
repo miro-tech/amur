@@ -64,38 +64,69 @@
   ],
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "vless",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "151.101.245.194",
+            "level": 8,
+            "address": "188.114.97.6",
             "port": 443,
-            "users": [
-              {
-                "id": "dcae26dd-b17a-4424-aea0-42ffee21ae60",
-                "encryption": "none",
-                "level": 0
-              }
-            ]
+            "password": "humanity"
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.firefox.com",
-          "fingerprint": "chrome",
           "alpn": [
             "http/1.1"
           ],
-          "verifyPeerCertByName": "*.freetls.fastly.net"
+          "echConfigList": "cloudflare-ech.com+udp://1.1.1.1",
+          "fingerprint": "chrome",
+          "serverName": "www.pleadcourt.org"
         },
-        "xhttpSettings": {
-          "host": "inboundnew443fastly1cacdebyour-name.global.ssl.fastly.net",
-          "path": "/",
-          "mode": "auto"
+        "wsSettings": {
+          "path": "/assignment",
+          "headers": {
+            "Host": "www.pleadcourt.org"
+          }
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
         }
       }
     },
