@@ -1,37 +1,74 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "GET",
-      "interval": "30m",
-      "sampling": 2,
-      "timeout": "10s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
-  },
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
+      "domain:googleapis.cn": "googleapis.com",
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "tap30.services": "5.230.41.55",
+      "niniweblog.com": "5.230.155.50",
+      "aftabeyazd.ir": "213.193.252.254",
+      "flightio.com": "5.230.155.66",
+      "sarzamindownload.com": "130.78.218.73",
+      "asriran.com": "5.230.253.173",
+      "refah-bank.ir": "5.230.253.178",
+      "shana.ir": "5.230.249.203",
+      "hibank24.com": "5.230.155.8",
+      "balad.ir": "5.230.253.168",
+      "tv5.ir": "5.230.67.121",
+      "neshan.org": "5.230.41.101"
     },
     "servers": [
-      {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
-      },
-      "8.8.8.8",
+      "1.1.1.1",
       {
         "address": "223.5.5.5",
         "domains": [
           "geosite:private"
         ],
-        "finalQuery": true,
         "skipFallback": true,
         "tag": "domestic-dns_0_0"
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_2_0"
       }
     ],
     "tag": "dns-module"
@@ -43,14 +80,14 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
           "tls",
-          "quic",
-          "fakedns"
+          "quic"
         ],
         "enabled": true,
         "routeOnly": false
@@ -64,160 +101,482 @@
   "outbounds": [
     {
       "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
+        "concurrency": -1,
+        "enabled": false
       },
       "protocol": "vless",
       "settings": {
-        "address": "shortbig.ir",
+        "address": "tap30.services",
         "encryption": "none",
         "flow": "",
-        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
-        "port": 2087
+        "id": "5b83f3af-dcdb-4025-a499-6958aac7f921",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "network": "ws",
+        "network": "grpc",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "download.auivert.ir",
           "allowInsecure": false,
+          "fingerprint": "chrome",
           "alpn": [
-            "http/1.1"
+            "h2"
           ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "nader.qavrix.ir"
+          "echConfigList": "AGb+DQBiAAAgACBgN4EXQwLyDnlPxeKMdMlVQYpaDvzJSxnJ1ubDy2UpIwAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABNkb3dubG9hZC5hdWl2ZXJ0LmlyAAA="
         },
-        "wsSettings": {
-          "host": "nader.qavrix.ir",
-          "path": "/hokm"
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-19951aabd93416c81a8b",
+          "authority": "download.auivert.ir"
         }
       },
-      "tag": "proxy-proxy-1-8443-Nconn"
+      "tag": "proxy-1"
     },
     {
       "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
+        "concurrency": -1,
+        "enabled": false
       },
       "protocol": "vless",
       "settings": {
-        "address": "shortbig.ir",
+        "address": "niniweblog.com",
         "encryption": "none",
         "flow": "",
-        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
-        "port": 2087
+        "id": "a1370f82-01c6-4f75-8550-bada4f2ba793",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "ws",
+        "network": "grpc",
         "security": "tls",
         "tlsSettings": {
+          "serverName": "media.borzino.ir",
           "allowInsecure": false,
+          "fingerprint": "chrome",
           "alpn": [
-            "http/1.1"
+            "h2"
           ],
-          "echConfigList": "iranva.ir+udp://1.1.1.1",
-          "fingerprint": "unsafe",
-          "serverName": "nader.qavrix.ir"
+          "echConfigList": "AGP+DQBfAAAgACA8LNgjVLCgxc4t9mWBVrh7FQ7Or9L9bzNaucJE+ZTTKAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBtZWRpYS5ib3J6aW5vLmlyAAA="
         },
-        "wsSettings": {
-          "host": "nader.qavrix.ir",
-          "path": "/hokm"
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-cf4c6ff2a59dc37511db",
+          "authority": "media.borzino.ir"
         }
       },
-      "tag": "proxy-proxy-2-8443-Nconn"
+      "tag": "proxy-2"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "aftabeyazd.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "fc9dab5b-044f-44ae-a267-43d7bbdad506",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "static.kaltrio.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGT+DQBgAAAgACCJariJY7eqwvyaLjZE3sxwMY6RUxZU/bvPdKP+Xc4hdAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFzdGF0aWMua2FsdHJpby5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-c7aefd623b1605ab45ef",
+          "authority": "static.kaltrio.ir"
+        }
+      },
+      "tag": "proxy-3"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "flightio.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "f4456cde-bf70-41b8-a734-2d87dff97ced",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "portal.luivert.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGT+DQBgAAAgACDXBlFMIUZKxSGfI4Y56+5x4HDWXHdKa+7gNk7dgLO/VQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFwb3J0YWwubHVpdmVydC5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-2d9f06dc001a0d602cc5",
+          "authority": "portal.luivert.ir"
+        }
+      },
+      "tag": "proxy-4"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "sarzamindownload.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "ddaf8e80-3873-4d0d-b23a-1173093e509c",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "gateway.shoplixo.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGb+DQBiAAAgACBdreC9h31wL4XUKcuvh1OPQAFI6jSaKVkeCxNUuPpANQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABNnYXRld2F5LnNob3BsaXhvLmlyAAA="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-612e4ef1465238d9829a",
+          "authority": "gateway.shoplixo.ir"
+        }
+      },
+      "tag": "proxy-5"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "asriran.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "85da81d0-5785-4097-b2c1-d7fb0632cf70",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "api.cuivert.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGH+DQBdAAAgACDkkXjdPh9YEsta9EQAsCrTTLxa663NM4rKMk0fnGblSgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5hcGkuY3VpdmVydC5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-4b70117a4ae2b9a3daac",
+          "authority": "api.cuivert.ir"
+        }
+      },
+      "tag": "proxy-6"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "refah-bank.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "0185d159-0a86-4a47-a799-03050229eb66",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "status.kalvixo.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGT+DQBgAAAgACCRU3wq1OU98udE1SS5CV+3YHIBjyXdtKUfRFxR2m5EMgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFzdGF0dXMua2Fsdml4by5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-e91d4eb23286448fc184",
+          "authority": "status.kalvixo.ir"
+        }
+      },
+      "tag": "proxy-7"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "shana.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "77e12d70-d45d-436e-9aa9-d2a2db2b8bbc",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "dl.mavexa.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AF/+DQBbAAAgACAEp2PrQOC4PnXKWSIiw6wwPGYyBP63V7sxDp1g+pSwbgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAAxkbC5tYXZleGEuaXIAAA=="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-87ebadeb24b785b9a5f8",
+          "authority": "dl.mavexa.ir"
+        }
+      },
+      "tag": "proxy-8"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "hibank24.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "a9f22b59-0e2a-4f9d-9cbd-3017f4d62c33",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "media.duivert.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGP+DQBfAAAgACDyZUV1MrSxSneLAuc+lqKmVPCM+IiQBwQCaY7WOXlnfAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBtZWRpYS5kdWl2ZXJ0LmlyAAA="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-ef8f1f5433397d31ade1",
+          "authority": "media.duivert.ir"
+        }
+      },
+      "tag": "proxy-9"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "balad.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "16bbfa9e-5ac0-40da-86c5-5a913ff57696",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "app.kafshino1.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGP+DQBfAAAgACB3I+Ql/vKFEJEmAwoRqQ3nAF3JkkIZr5RDfogS/MiICgAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABBhcHAua2Fmc2hpbm8xLmlyAAA="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-7bac218c5d5cd2615fab",
+          "authority": "app.kafshino1.ir"
+        }
+      },
+      "tag": "proxy-10"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "tv5.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "b1e038fc-e1e0-4877-ac19-3fd07bdbce9c",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "dl.borzino.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGD+DQBcAAAgACB+2QjdQNlIsXVfGXHyq2jj0MKV4Y3K3JUsYHXjqgMaaAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA1kbC5ib3J6aW5vLmlyAAA="
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-ab18d00e9afed3283662",
+          "authority": "dl.borzino.ir"
+        }
+      },
+      "tag": "proxy-11"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "neshan.org",
+        "encryption": "none",
+        "flow": "",
+        "id": "92e766cd-839a-4353-8eba-b44c5ca92643",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "api.juivert.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGH+DQBdAAAgACCBrTxQhBkkfzt7aaeq6R7LvZLWH4052aaRDWbi+Ov/ZAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5hcGkuanVpdmVydC5pcgAA"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-e113914568ca48f17188",
+          "authority": "api.juivert.ir"
+        }
+      },
+      "tag": "proxy-12"
     },
     {
       "protocol": "freedom",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
+      "settings": {},
       "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "settings": {
-        "userLevel": 12
-      },
-      "tag": "dns-out"
     }
   ],
   "policy": {
     "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
       }
     }
   },
   "remarks": "@shenvpn",
   "routing": {
+    "domainStrategy": "IPIfNonMatch",
     "balancers": [
       {
+        "tag": "proxy-balancer",
         "selector": [
-          "proxy-proxy-"
+          "proxy-"
         ],
         "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
+          "type": "leastLoad",
+          "settings": {
+            "expected": 4,
+            "maxRTT": "1.5s",
+            "tolerance": 0.25
+          }
+        }
       }
     ],
-    "domainStrategy": "AsIs",
     "rules": [
-      {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "type": "field"
-      },
       {
         "network": "udp",
         "outboundTag": "block",
@@ -226,7 +585,7 @@
       },
       {
         "ip": [
-          "ext:geoip-only-cn-private.dat:private"
+          "geoip:private"
         ],
         "outboundTag": "direct",
         "type": "field"
@@ -239,15 +598,88 @@
         "type": "field"
       },
       {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
+        "type": "field",
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ir",
+          "domain:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_2_0"
+        ],
+        "outboundTag": "direct",
         "type": "field"
       },
       {
-        "balancerTag": "balancer-main",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "balancerTag": "proxy-balancer",
+        "type": "field"
+      },
+      {
         "network": "tcp,udp",
+        "balancerTag": "proxy-balancer",
         "type": "field"
       }
     ]
+  },
+  "burstObservatory": {
+    "subjectSelector": [
+      "proxy-"
+    ],
+    "pingConfig": {
+      "destination": "https://connectivitycheck.gstatic.com/generate_204",
+      "connectivity": "",
+      "interval": "25s",
+      "sampling": 2,
+      "timeout": "3s",
+      "httpMethod": "HEAD"
+    }
   }
 }
