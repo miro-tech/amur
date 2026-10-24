@@ -5,9 +5,14 @@
     "access": "",
     "error": ""
   },
+  "dns": {
+    "servers": [
+      "1.1.1.1"
+    ],
+    "tag": "dns-module"
+  },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -16,82 +21,194 @@
         "udp": true
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
-        ]
-      }
-    },
-    {
-      "tag": "http",
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": []
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "socks"
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "tag": "door6",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "2604:a880:5:1::49cc:f000",
+        "port": 30150
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "5a9bfcad613898d488ea85b7a59495e1e79258c7329ab3d16dde89ece06f704a"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "c365d5144f1b2106178cf2d1c20f953d"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "door4",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "129.212.184.125",
+        "port": 30150
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "5a9bfcad613898d488ea85b7a59495e1e79258c7329ab3d16dde89ece06f704a"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "c365d5144f1b2106178cf2d1c20f953d"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "doorT6",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "199.232.61.194",
-            "port": 443,
+            "address": "2604:a880:5:1::49cc:f000",
+            "port": 30151,
             "users": [
               {
-                "id": "dcae26dd-b17a-4424-aea0-42ffee21ae60",
-                "encryption": "none",
-                "level": 0
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
+        "network": "tcp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.firefox.com",
-          "fingerprint": "chrome",
+          "serverName": "www.bing.com",
           "alpn": [
             "http/1.1"
           ],
-          "verifyPeerCertByName": "*.freetls.fastly.net"
-        },
-        "xhttpSettings": {
-          "host": "inboundnew443fastly17fdd7cyour-name.global.ssl.fastly.net",
-          "path": "/",
-          "mode": "auto"
+          "pinnedPeerCertSha256": "5a9bfcad613898d488ea85b7a59495e1e79258c7329ab3d16dde89ece06f704a"
         }
       }
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "tag": "doorT4",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "129.212.184.125",
+            "port": 30151,
+            "users": [
+              {
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "5a9bfcad613898d488ea85b7a59495e1e79258c7329ab3d16dde89ece06f704a"
+        }
+      }
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
     }
   ],
+  "observatory": {
+    "subjectSelector": [
+      "door6",
+      "door4",
+      "doorT6",
+      "doorT4"
+    ],
+    "probeUrl": "https://www.gstatic.com/generate_204",
+    "probeInterval": "15s",
+    "enableConcurrency": true
+  },
   "routing": {
+    "domainStrategy": "IPOnDemand",
+    "balancers": [
+      {
+        "tag": "doors",
+        "selector": [
+          "door6",
+          "door4",
+          "doorT6",
+          "doorT4"
+        ],
+        "strategy": {
+          "type": "leastPing"
+        }
+      }
+    ],
     "rules": [
       {
         "type": "field",
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
+        "port": "0-65535",
+        "balancerTag": "doors"
       }
-    ]
-  },
-  "dns": {
-    "servers": [
-      "8.8.8.8"
     ]
   }
 }

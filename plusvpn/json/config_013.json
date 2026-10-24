@@ -6,80 +6,6 @@
     "loglevel": "none",
     "dnsLog": false
   },
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "queryStrategy": "UseIP",
-    "disableCache": false,
-    "serveStale": true,
-    "serveExpiredTTL": 86400,
-    "enableParallelQuery": true,
-    "disableFallback": false,
-    "disableFallbackIfMatch": false,
-    "servers": [
-      {
-        "tag": "dns-direct",
-        "address": "1.1.1.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.8.8",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "9.9.9.9",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://1.1.1.1/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://8.8.8.8/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "1.0.0.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.4.4",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "149.112.112.112",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://cloudflare-dns.com/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://dns.quad9.net/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      }
-    ]
-  },
   "inbounds": [
     {
       "tag": "socks",
@@ -138,117 +64,33 @@
   ],
   "outbounds": [
     {
-      "tag": "proxy",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2604:a880:5:1::49cd:0",
-        "port": 30150
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
       },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "door4",
-      "protocol": "hysteria",
+      "protocol": "trojan",
       "settings": {
-        "version": 2,
-        "address": "129.212.189.35",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "doorT6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "2604:a880:5:1::49cd:0",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
+            "level": 8,
+            "address": "188.114.97.6",
+            "port": 443,
+            "password": "humanity"
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
+          "echConfigList": "ip.gs+udp://8.8.8.8",
+          "serverName": "www.calmlunch.com"
+        },
+        "wsSettings": {
+          "path": "/assignment",
+          "headers": {
+            "Host": "www.calmlunch.com"
+          }
         },
         "sockopt": {
           "domainStrategy": "UseIPv4v6",
@@ -259,45 +101,8 @@
           "tcpMaxSeg": 1200,
           "dialerProxy": "fragment"
         }
-      }
-    },
-    {
-      "tag": "doorT4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "129.212.189.35",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
       },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
+      "tag": "proxy"
     },
     {
       "tag": "fragment",
@@ -389,6 +194,80 @@
         "type": "field",
         "network": "tcp,udp",
         "outboundTag": "proxy"
+      }
+    ]
+  },
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
+    "servers": [
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
       }
     ]
   },
