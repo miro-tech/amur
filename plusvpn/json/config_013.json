@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -129,30 +136,105 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
+      "tag": "proxy",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "2604:a880:5:1::49cd:0",
+        "port": 30150
       },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tag": "door4",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "129.212.189.35",
+        "port": 30150
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tag": "doorT6",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "94.103.168.174",
-            "port": 31146,
+            "address": "2604:a880:5:1::49cd:0",
+            "port": 30151,
             "users": [
               {
-                "id": "82b1ea76-c87d-4cd8-9795-59d102f12b07",
-                "encryption": "none",
-                "flow": "",
-                "level": 8
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
               }
             ]
           }
@@ -160,18 +242,13 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "realitySettings": {
-          "fingerprint": "chrome",
-          "publicKey": "vs10U0RP4Sq1GTT83EY7yGfNJUyklGvMat3PbsTmgiQ",
-          "serverName": "play-fe.googleapis.com",
-          "shortId": "cf4e6f8338",
-          "spiderX": "/07db352efbe0522"
-        },
-        "security": "reality",
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
         },
         "sockopt": {
           "domainStrategy": "UseIPv4v6",
@@ -180,10 +257,69 @@
           "tcpKeepAliveInterval": 15,
           "tcpUserTimeout": 20000,
           "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "doorT4",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "129.212.189.35",
+            "port": 30151,
+            "users": [
+              {
+                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "b4b71e68c2ccdfd16074128b4ca65c4ec45362af3ba5c816bcef37dadf095931"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4v6",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
         }
       },
-      "tag": "proxy"
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
+        }
+      }
     },
     {
       "tag": "direct",
@@ -211,7 +347,6 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
