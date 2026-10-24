@@ -1,1631 +1,346 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
+      "domain:googleapis.cn": "googleapis.com",
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "irancell.ir": "178.107.55.134",
+      "bsi.ir": "164.37.102.146",
+      "radiotehran.ir": "130.78.218.68"
     },
-    "queryStrategy": "UseIP",
-    "disableCache": false,
-    "serveStale": true,
-    "serveExpiredTTL": 86400,
-    "enableParallelQuery": true,
-    "disableFallback": false,
-    "disableFallbackIfMatch": false,
     "servers": [
+      "1.1.1.1",
       {
-        "tag": "dns-direct",
-        "address": "1.1.1.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
       },
       {
-        "tag": "dns-direct",
-        "address": "8.8.8.8",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "9.9.9.9",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://1.1.1.1/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://8.8.8.8/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "1.0.0.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.4.4",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "149.112.112.112",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://cloudflare-dns.com/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://dns.quad9.net/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_2_0"
       }
-    ]
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
         "udp": true,
-        "allowTransparent": false,
         "userLevel": 8
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic",
-          "fakedns"
+          "quic"
         ],
-        "metadataOnly": false,
+        "enabled": true,
         "routeOnly": false
-      }
-    },
-    {
-      "tag": "http",
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {
-        "userLevel": 8
       },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls",
-          "quic",
-          "fakedns"
-        ],
-        "metadataOnly": false,
-        "routeOnly": false
-      }
-    },
-    {
-      "tag": "dns-in",
-      "listen": "127.0.0.1",
-      "port": 10853,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "1.1.1.1",
-        "port": 53,
-        "network": "tcp,udp"
-      }
+      "tag": "socks"
     }
   ],
+  "log": {
+    "loglevel": "warning"
+  },
   "outbounds": [
     {
-      "tag": "proxy",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.21",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "irancell.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "b4466dfb-85e2-4af6-9b57-a8955269af10",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "grpc",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.bing.com",
+          "serverName": "console.borzino.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
           "alpn": [
-            "http/1.1"
+            "h2"
           ],
-          "pinnedPeerCertSha256": "0b7261c083d950c5eabdb8ed43eaefdd5d028e93b331558dbda6720b084a2013"
+          "echConfigList": "AGX+DQBhAAAgACCxWP11z+NajST1sMiNKv20utdaM/wperO47ZoUdwpLWQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJjb25zb2xlLmJvcnppbm8uaXIAAA=="
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
+          "domainStrategy": "UseIP"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-3441c1e893e82f638b93",
+          "authority": "console.borzino.ir"
         }
-      }
-    },
-    {
-      "tag": "s1-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.21",
-        "port": 30150
       },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "0b7261c083d950c5eabdb8ed43eaefdd5d028e93b331558dbda6720b084a2013"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
+      "tag": "proxy-1"
     },
     {
-      "tag": "s2-tcp4",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.22",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
+        "address": "bsi.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "ddaf8e80-3873-4d0d-b23a-1173093e509c",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "www.bing.com",
+          "serverName": "portal.shoplixo.ir",
+          "allowInsecure": false,
+          "fingerprint": "chrome",
           "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "4b22d9981ad53d5e9ea82d643698b1b56e563afe17e7b774c5cca6044cc6c021"
+            "h2"
+          ]
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s2-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:44ff:fe00:f67",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
+          "domainStrategy": "UseIP"
+        },
+        "xhttpSettings": {
+          "path": "/assets/v4/8f4ac1d79b5e42e6",
+          "mode": "packet-up",
+          "host": "portal.shoplixo.ir",
+          "extra": {
+            "xPaddingBytes": "100-1000",
+            "scMaxEachPostBytes": "500000-1000000",
+            "scMinPostsIntervalMs": "20-40",
+            "downloadSettings": {
+              "address": "radiotehran.ir",
+              "port": 443,
+              "network": "xhttp",
+              "security": "tls",
+              "tlsSettings": {
+                "serverName": "portal.shoplixo.ir",
+                "allowInsecure": false,
+                "fingerprint": "chrome",
+                "alpn": [
+                  "h2"
+                ]
+              },
+              "xhttpSettings": {
+                "path": "/assets/v4/8f4ac1d79b5e42e6",
+                "mode": "auto",
+                "host": "portal.shoplixo.ir",
+                "extra": {
+                  "xPaddingBytes": "100-1000"
+                }
+              },
+              "sockopt": {
+                "domainStrategy": "UseIP"
               }
-            ]
+            }
           }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "4b22d9981ad53d5e9ea82d643698b1b56e563afe17e7b774c5cca6044cc6c021"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
         }
-      }
+      },
+      "tag": "proxy-2"
     },
     {
-      "tag": "s2-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:44ff:fe00:f67",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "4b22d9981ad53d5e9ea82d643698b1b56e563afe17e7b774c5cca6044cc6c021"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s2-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.22",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "4b22d9981ad53d5e9ea82d643698b1b56e563afe17e7b774c5cca6044cc6c021"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s3-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.23",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "ebc2ba13c32d891b83a8e8101ee4ce7668c51c66767bda65496b85746934d7b6"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s3-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:a4ff:fe00:f68",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "ebc2ba13c32d891b83a8e8101ee4ce7668c51c66767bda65496b85746934d7b6"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s3-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:a4ff:fe00:f68",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "ebc2ba13c32d891b83a8e8101ee4ce7668c51c66767bda65496b85746934d7b6"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s3-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.23",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "ebc2ba13c32d891b83a8e8101ee4ce7668c51c66767bda65496b85746934d7b6"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s4-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.24",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "bdf8c1bc0a159b0f21d7c27e3de14439bd53d0f551a8beb77693887f3671c993"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s4-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:c3ff:fe00:f69",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "bdf8c1bc0a159b0f21d7c27e3de14439bd53d0f551a8beb77693887f3671c993"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s4-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:c3ff:fe00:f69",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "bdf8c1bc0a159b0f21d7c27e3de14439bd53d0f551a8beb77693887f3671c993"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s4-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.24",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "bdf8c1bc0a159b0f21d7c27e3de14439bd53d0f551a8beb77693887f3671c993"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s5-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.25",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "3d54b8c34382145f8e3a72c5369282089cd29dc54fbeefa5e55774988e067184"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s5-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:4aff:fe00:f6a",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "3d54b8c34382145f8e3a72c5369282089cd29dc54fbeefa5e55774988e067184"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s5-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:4aff:fe00:f6a",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "3d54b8c34382145f8e3a72c5369282089cd29dc54fbeefa5e55774988e067184"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s5-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.25",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "3d54b8c34382145f8e3a72c5369282089cd29dc54fbeefa5e55774988e067184"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s6-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.26",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "3f51b6ddf899438fc59eeefce3a0731acef2919e80fb2c6aac4e1a1a15002582"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s6-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:b8ff:fe00:f6b",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "3f51b6ddf899438fc59eeefce3a0731acef2919e80fb2c6aac4e1a1a15002582"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s6-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:b8ff:fe00:f6b",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "3f51b6ddf899438fc59eeefce3a0731acef2919e80fb2c6aac4e1a1a15002582"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s6-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.26",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "3f51b6ddf899438fc59eeefce3a0731acef2919e80fb2c6aac4e1a1a15002582"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s7-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.27",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "d1a9ffb94ef1f5d03c285970950635c91968200b37e78183de63b38f16e32a9e"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s7-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:e5ff:fe00:f6c",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "d1a9ffb94ef1f5d03c285970950635c91968200b37e78183de63b38f16e32a9e"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s7-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:e5ff:fe00:f6c",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "d1a9ffb94ef1f5d03c285970950635c91968200b37e78183de63b38f16e32a9e"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s7-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.27",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "d1a9ffb94ef1f5d03c285970950635c91968200b37e78183de63b38f16e32a9e"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s8-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "82.192.72.28",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "1dedeeb27f564bf2d8cffefd8af595d53f124a89f2b4201e5535b835d2b30498"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s8-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:117:1c00:a3ff:fe00:f6d",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "1dedeeb27f564bf2d8cffefd8af595d53f124a89f2b4201e5535b835d2b30498"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s8-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:117:1c00:a3ff:fe00:f6d",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "1dedeeb27f564bf2d8cffefd8af595d53f124a89f2b4201e5535b835d2b30498"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s8-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "82.192.72.28",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "1dedeeb27f564bf2d8cffefd8af595d53f124a89f2b4201e5535b835d2b30498"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s9-tcp4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "83.149.105.205",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "b146722cb50d99bacfbb2950ecfa8263818fcd6aade6d545a76b71d450290199"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s9-tcp6",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "2001:1af8:5301:118:1c00:2fff:fe00:1119",
-            "port": 30151,
-            "users": [
-              {
-                "id": "8ed7cd7d-aa57-4024-8805-561ae8921284",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "b146722cb50d99bacfbb2950ecfa8263818fcd6aade6d545a76b71d450290199"
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4v6",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "dialerProxy": "fragment"
-        }
-      }
-    },
-    {
-      "tag": "s9-hy6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "2001:1af8:5301:118:1c00:2fff:fe00:1119",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "b146722cb50d99bacfbb2950ecfa8263818fcd6aade6d545a76b71d450290199"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "s9-hy4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "83.149.105.205",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "8ed7cd7d-aa57-4024-8805-561ae8921284"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "b146722cb50d99bacfbb2950ecfa8263818fcd6aade6d545a76b71d450290199"
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "fragment",
       "protocol": "freedom",
-      "settings": {
-        "fragment": {
-          "packets": "tlshello",
-          "length": "50-100",
-          "interval": "5-10"
-        }
-      },
       "streamSettings": {
         "network": "tcp",
-        "security": "",
         "sockopt": {
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMptcp": true
+          "domainStrategy": "UseIP"
         }
-      }
+      },
+      "tag": "direct"
     },
     {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      }
-    },
-    {
-      "tag": "dns-out",
-      "protocol": "dns",
-      "settings": {
-        "network": "tcp,udp",
-        "address": "1.1.1.1",
-        "port": 53
-      }
-    },
-    {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "domainMatcher": "hybrid",
-    "rules": [
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-proxy"
-        ],
-        "outboundTag": "proxy"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-direct"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "dns-out"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "dns"
-        ],
-        "outboundTag": "dns-out"
-      },
-      {
-        "type": "field",
-        "port": "53",
-        "network": "tcp,udp",
-        "outboundTag": "dns-out"
-      },
-      {
-        "type": "field",
-        "network": "tcp,udp",
-        "outboundTag": "proxy"
-      }
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
+      "settings": {},
+      "tag": "block"
     }
   ],
   "policy": {
     "levels": {
       "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
+        "connIdle": 300,
         "downlinkOnly": 1,
-        "bufferSize": 64
+        "handshake": 4,
+        "uplinkOnly": 1
       }
+    }
+  },
+  "remarks": "@shenvpn",
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "balancers": [
+      {
+        "tag": "proxy-balancer",
+        "selector": [
+          "proxy-"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 2,
+            "maxRTT": "1.5s",
+            "tolerance": 0.25
+          }
+        }
+      }
+    ],
+    "rules": [
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ir",
+          "domain:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_2_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dns-module"
+        ],
+        "balancerTag": "proxy-balancer",
+        "type": "field"
+      },
+      {
+        "network": "tcp,udp",
+        "balancerTag": "proxy-balancer",
+        "type": "field"
+      }
+    ]
+  },
+  "burstObservatory": {
+    "subjectSelector": [
+      "proxy-"
+    ],
+    "pingConfig": {
+      "destination": "https://connectivitycheck.gstatic.com/generate_204",
+      "connectivity": "",
+      "interval": "15s",
+      "sampling": 2,
+      "timeout": "3s",
+      "httpMethod": "HEAD"
     }
   }
 }
