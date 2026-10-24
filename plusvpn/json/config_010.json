@@ -4,11 +4,23 @@
     "loglevel": "warning"
   },
   "dns": {
+    "hosts": {},
     "servers": [
-      "1.1.1.1"
-    ],
-    "tag": "dns-module"
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
   },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -26,110 +38,85 @@
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
     }
   ],
   "outbounds": [
     {
-      "tag": "door6",
-      "protocol": "hysteria",
+      "protocol": "vless",
       "settings": {
-        "version": 2,
-        "address": "only.pryvanto.ir",
-        "port": 30150
+        "vnext": [
+          {
+            "address": "158.247.193.194",
+            "port": 443,
+            "users": [
+              {
+                "id": "da90da8f-4f00-4410-a680-822985c5f78e",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "4f18d6df725bd2580fc4ce89ebbfd9e2"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "725c2d03bdf270fcc6da8f152160f1ad00a1c6bc67b5b2c41fd0965957945d70"
-        },
-        "finalmask": {
-          "udp": [
-            {
-              "type": "salamander",
-              "settings": {
-                "password": "ed58fd49be83da9d76ccaa249f3e0c0b"
-              }
-            }
-          ]
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.cloudflare.com",
+          "fingerprint": "chrome",
+          "publicKey": "hnZBzdesRpQyiJX4zrr8Aex-52ImtwYTRcWuhbSLUgk",
+          "shortId": "15abb273c999a8e5"
         }
-      }
-    },
-    {
-      "tag": "door4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "only.pryvanto.ir",
-        "port": 30150
       },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "4f18d6df725bd2580fc4ce89ebbfd9e2"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "725c2d03bdf270fcc6da8f152160f1ad00a1c6bc67b5b2c41fd0965957945d70"
-        },
-        "finalmask": {
-          "udp": [
-            {
-              "type": "salamander",
-              "settings": {
-                "password": "ed58fd49be83da9d76ccaa249f3e0c0b"
-              }
-            }
-          ]
-        }
-      }
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
       "tag": "direct"
     },
     {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
       "tag": "block"
     }
   ],
-  "observatory": {
-    "subjectSelector": [
-      "door6",
-      "door4"
-    ],
-    "probeUrl": "https://www.gstatic.com/generate_204",
-    "probeInterval": "15s",
-    "enableConcurrency": true
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
   },
   "routing": {
-    "domainStrategy": "IPOnDemand",
-    "balancers": [
-      {
-        "tag": "doors",
-        "selector": [
-          "door6",
-          "door4"
-        ],
-        "strategy": {
-          "type": "leastPing"
-        }
-      }
-    ],
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "port": "0-65535",
-        "balancerTag": "doors"
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
       }
     ]
   }

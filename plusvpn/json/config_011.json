@@ -1,69 +1,26 @@
 {
-  "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com",
-      "dns.alidns.com": [
-        "223.5.5.5",
-        "223.6.6.6",
-        "2400:3200::1",
-        "2400:3200:baba::1"
-      ],
-      "dns.cloudflare.com": [
-        "162.159.61.8",
-        "172.64.41.8",
-        "2a06:98c1:52::8",
-        "2803:f800:53::8"
-      ],
-      "cloudflare-dns.com": [
-        "104.16.248.249",
-        "104.16.249.249",
-        "2606:4700::6810:f8f9",
-        "2606:4700::6810:f9f9"
-      ],
-      "dns.google": [
-        "8.8.8.8",
-        "8.8.4.4",
-        "2001:4860:4860::8888",
-        "2001:4860:4860::8844"
-      ],
-      "dns.quad9.net": [
-        "9.9.9.9",
-        "149.112.112.112",
-        "2620:fe::fe",
-        "2620:fe::9"
-      ],
-      "one.one.one.one": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "2606:4700:4700::1111",
-        "2606:4700:4700::1001"
-      ],
-      "irancell.ir": "178.107.55.134",
-      "bsi.ir": "164.37.102.146",
-      "radiotehran.ir": "130.78.218.68"
-    },
-    "servers": [
-      "1.1.1.1",
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      },
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "domain:ir",
-          "geosite:category-ir"
-        ],
-        "skipFallback": true,
-        "tag": "domestic-dns_2_0"
-      }
-    ],
-    "tag": "dns-module"
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "warning"
   },
+  "dns": {
+    "hosts": {},
+    "servers": [
+      {
+        "address": "1.1.1.1",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      "8.8.8.8"
+    ]
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    }
+  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -71,8 +28,7 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "destOverride": [
@@ -82,129 +38,57 @@
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
-    }
-  ],
-  "log": {
-    "loglevel": "warning"
-  },
-  "outbounds": [
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "irancell.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "b4466dfb-85e2-4af6-9b57-a8955269af10",
-        "level": 8,
-        "port": 443
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "console.borzino.ir",
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "AGX+DQBhAAAgACCxWP11z+NajST1sMiNKv20utdaM/wperO47ZoUdwpLWQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJjb25zb2xlLmJvcnppbm8uaXIAAA=="
-        },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "grpcSettings": {
-          "serviceName": "grpc-3441c1e893e82f638b93",
-          "authority": "console.borzino.ir"
-        }
-      },
-      "tag": "proxy-1"
+      }
     },
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {}
+    }
+  ],
+  "outbounds": [
+    {
       "protocol": "vless",
       "settings": {
-        "address": "bsi.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "ddaf8e80-3873-4d0d-b23a-1173093e509c",
-        "level": 8,
-        "port": 443
+        "vnext": [
+          {
+            "address": "assets-stream-delivery-03b0287572ead95f837625da122aff88.exircanary.nl",
+            "port": 2087,
+            "users": [
+              {
+                "id": "a12a2d80-2caf-45c7-82b3-eb2fecf12410",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "network": "xhttp",
+        "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "serverName": "portal.shoplixo.ir",
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "alpn": [
-            "h2"
-          ]
+          "serverName": "assets-stream-delivery-03b0287572ead95f837625da122aff88.exircanary.nl"
         },
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        },
-        "xhttpSettings": {
-          "path": "/assets/v4/8f4ac1d79b5e42e6",
-          "mode": "packet-up",
-          "host": "portal.shoplixo.ir",
-          "extra": {
-            "xPaddingBytes": "100-1000",
-            "scMaxEachPostBytes": "500000-1000000",
-            "scMinPostsIntervalMs": "20-40",
-            "downloadSettings": {
-              "address": "radiotehran.ir",
-              "port": 443,
-              "network": "xhttp",
-              "security": "tls",
-              "tlsSettings": {
-                "serverName": "portal.shoplixo.ir",
-                "allowInsecure": false,
-                "fingerprint": "chrome",
-                "alpn": [
-                  "h2"
-                ]
-              },
-              "xhttpSettings": {
-                "path": "/assets/v4/8f4ac1d79b5e42e6",
-                "mode": "auto",
-                "host": "portal.shoplixo.ir",
-                "extra": {
-                  "xPaddingBytes": "100-1000"
-                }
-              },
-              "sockopt": {
-                "domainStrategy": "UseIP"
-              }
-            }
+        "wsSettings": {
+          "path": "/d4de56eca58acaafa740eba6260a79bb",
+          "headers": {
+            "Host": "assets-stream-delivery-03b0287572ead95f837625da122aff88.exircanary.nl"
           }
         }
       },
-      "tag": "proxy-2"
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "streamSettings": {
-        "network": "tcp",
-        "sockopt": {
-          "domainStrategy": "UseIP"
-        }
-      },
       "tag": "direct"
     },
     {
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
       "protocol": "blackhole",
-      "settings": {},
       "tag": "block"
     }
   ],
@@ -216,131 +100,27 @@
         "handshake": 4,
         "uplinkOnly": 1
       }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
     }
   },
-  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "balancers": [
-      {
-        "tag": "proxy-balancer",
-        "selector": [
-          "proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 2,
-            "maxRTT": "1.5s",
-            "tolerance": 0.25
-          }
-        }
-      }
-    ],
+    "domainStrategy": "AsIs",
     "rules": [
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
       {
         "ip": [
           "geoip:private"
         ],
-        "outboundTag": "direct",
-        "type": "field"
+        "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "type": "field",
         "domain": [
           "geosite:category-ads-all"
         ],
         "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:category-ir",
-          "domain:ir"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:ir"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:category-ru"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:ru"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:cn"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:cn"
-        ],
-        "balancerTag": "proxy-balancer"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0",
-          "domestic-dns_2_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "dns-module"
-        ],
-        "balancerTag": "proxy-balancer",
-        "type": "field"
-      },
-      {
-        "network": "tcp,udp",
-        "balancerTag": "proxy-balancer",
-        "type": "field"
       }
     ]
-  },
-  "burstObservatory": {
-    "subjectSelector": [
-      "proxy-"
-    ],
-    "pingConfig": {
-      "destination": "https://connectivitycheck.gstatic.com/generate_204",
-      "connectivity": "",
-      "interval": "15s",
-      "sampling": 2,
-      "timeout": "3s",
-      "httpMethod": "HEAD"
-    }
   }
 }
