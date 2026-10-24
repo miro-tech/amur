@@ -1,123 +1,512 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "queryStrategy": "UseIP",
+    "disableCache": false,
+    "serveStale": true,
+    "serveExpiredTTL": 86400,
+    "enableParallelQuery": true,
+    "disableFallback": false,
+    "disableFallbackIfMatch": false,
     "servers": [
       {
+        "tag": "dns-direct",
         "address": "1.1.1.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
         "domains": [
-          "geosite:geolocation-!cn"
+          "full:sinabank.ir",
+          "full:jjtvn.ir",
+          "full:loxblog.com",
+          "full:radio.ir",
+          "full:ibena.ir",
+          "full:mihanwebhost.com"
         ]
       },
-      "8.8.8.8"
+      {
+        "tag": "dns-direct",
+        "address": "8.8.8.8",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
+        "domains": [
+          "full:sinabank.ir",
+          "full:jjtvn.ir",
+          "full:loxblog.com",
+          "full:radio.ir",
+          "full:ibena.ir",
+          "full:mihanwebhost.com"
+        ]
+      },
+      {
+        "tag": "dns-direct",
+        "address": "9.9.9.9",
+        "queryStrategy": "UseIP",
+        "skipFallback": false,
+        "domains": [
+          "full:sinabank.ir",
+          "full:jjtvn.ir",
+          "full:loxblog.com",
+          "full:radio.ir",
+          "full:ibena.ir",
+          "full:mihanwebhost.com"
+        ]
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://1.1.1.1/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://8.8.8.8/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.0.0.1",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "8.8.4.4",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-direct",
+        "address": "149.112.112.112",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      },
+      {
+        "tag": "dns-proxy",
+        "address": "https://dns.quad9.net/dns-query",
+        "queryStrategy": "UseIP",
+        "skipFallback": false
+      }
     ]
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "allowTransparent": false,
+        "userLevel": 8
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic"
+          "quic",
+          "fakedns"
         ],
-        "enabled": true,
+        "metadataOnly": false,
         "routeOnly": false
       }
     },
     {
+      "tag": "http",
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": {
+        "userLevel": 8
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic",
+          "fakedns"
+        ],
+        "metadataOnly": false,
+        "routeOnly": false
+      }
+    },
+    {
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "port": 10853,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "1.1.1.1",
+        "port": 53,
+        "network": "tcp,udp"
+      }
     }
   ],
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "172.232.235.163",
-            "port": 443,
-            "users": [
-              {
-                "id": "d90087c3-54f5-4283-a13f-615260c8b0c7",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
+        "address": "sinabank.ir",
+        "port": 443,
+        "id": "ddaf8e80-3873-4d0d-b23a-1173093e509c",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "googleapis.com",
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "gateway.shoplixo.ir",
           "fingerprint": "chrome",
-          "publicKey": "hTweFDvbSucrGERtiiwDfoqD3vo_Z9cuaqboff3FTXQ"
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGb+DQBiAAAgACBdreC9h31wL4XUKcuvh1OPQAFI6jSaKVkeCxNUuPpANQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABNnYXRld2F5LnNob3BsaXhvLmlyAAA="
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-612e4ef1465238d9829a",
+          "authority": "gateway.shoplixo.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
         }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
       },
       "tag": "proxy"
     },
     {
+      "protocol": "vless",
+      "settings": {
+        "address": "jjtvn.ir",
+        "port": 443,
+        "id": "fc9dab5b-044f-44ae-a267-43d7bbdad506",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cover-only01.kaltrio.ir",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ]
+        },
+        "xhttpSettings": {
+          "path": "/edge/v7/002eb8f0db29d53726512ac6a1c74a20",
+          "mode": "auto",
+          "host": "cover-only01.kaltrio.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "tag": "proxy-2"
+    },
+    {
+      "protocol": "vless",
+      "settings": {
+        "address": "loxblog.com",
+        "port": 443,
+        "id": "b4466dfb-85e2-4af6-9b57-a8955269af10",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "console.borzino.ir",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGX+DQBhAAAgACCxWP11z+NajST1sMiNKv20utdaM/wperO47ZoUdwpLWQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABJjb25zb2xlLmJvcnppbm8uaXIAAA=="
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-3441c1e893e82f638b93",
+          "authority": "console.borzino.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "tag": "proxy-3"
+    },
+    {
+      "protocol": "vless",
+      "settings": {
+        "address": "radio.ir",
+        "port": 443,
+        "id": "b80f8763-e0f6-4c1b-8bfd-ecf852cc8571",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cover-only02.shoplixo.ir",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ]
+        },
+        "xhttpSettings": {
+          "path": "/api/v8/671f4c592db84fefac64cf2e62c01427",
+          "mode": "auto",
+          "host": "cover-only02.shoplixo.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "tag": "proxy-4"
+    },
+    {
+      "protocol": "vless",
+      "settings": {
+        "address": "ibena.ir",
+        "port": 443,
+        "id": "fc9dab5b-044f-44ae-a267-43d7bbdad506",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "static.kaltrio.ir",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "echConfigList": "AGT+DQBgAAAgACCJariJY7eqwvyaLjZE3sxwMY6RUxZU/bvPdKP+Xc4hdAAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADABFzdGF0aWMua2FsdHJpby5pcgAA"
+        },
+        "grpcSettings": {
+          "serviceName": "grpc-c7aefd623b1605ab45ef",
+          "authority": "static.kaltrio.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP",
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "tag": "proxy-5"
+    },
+    {
+      "protocol": "vless",
+      "settings": {
+        "address": "mihanwebhost.com",
+        "port": 443,
+        "id": "ba9db74d-9d23-4021-b63c-897c5751ac40",
+        "encryption": "none",
+        "flow": "",
+        "level": 8
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "cover-only03.borzino.ir",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ]
+        },
+        "xhttpSettings": {
+          "path": "/content/v6/8e92cc2b14f74ac9a531e0d61f3c2a87",
+          "mode": "auto",
+          "host": "cover-only03.borzino.ir"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "tag": "proxy-6"
+    },
+    {
+      "tag": "fragment",
       "protocol": "freedom",
-      "tag": "direct"
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
+          "tcpMptcp": true
+        }
+      }
     },
     {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
+    },
+    {
+      "tag": "dns-out",
       "protocol": "dns",
-      "tag": "dns-out"
+      "settings": {
+        "network": "tcp,udp",
+        "address": "1.1.1.1",
+        "port": 53
+      }
     },
     {
+      "tag": "block",
       "protocol": "blackhole",
-      "tag": "block"
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
+  "remarks": "@shenvpn",
   "policy": {
     "levels": {
       "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
         "handshake": 4,
-        "uplinkOnly": 1
+        "connIdle": 180,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1,
+        "bufferSize": 64
       }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
     }
   },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
+    "domainMatcher": "hybrid",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "type": "field",
+        "inboundTag": [
+          "dns-proxy"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-direct"
         ],
         "outboundTag": "direct"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
+        "type": "field",
+        "inboundTag": [
+          "dns-in"
         ],
-        "outboundTag": "block"
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "dns"
+        ],
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "port": "53",
+        "network": "tcp,udp",
+        "outboundTag": "dns-out"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
       }
     ]
-  }
+  },
+  "fakedns": [
+    {
+      "ipPool": "198.18.0.0/15",
+      "poolSize": 65535
+    },
+    {
+      "ipPool": "fc00::/18",
+      "poolSize": 65535
+    }
+  ]
 }
