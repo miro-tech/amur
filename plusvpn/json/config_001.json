@@ -1,27 +1,75 @@
 {
   "dns": {
     "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
+      "domain:googleapis.cn": "googleapis.com",
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "irdiplomacy.ir": "178.107.55.131",
+      "iran-newspaper.com": "164.37.102.151",
+      "tv7.ir": "130.78.218.70"
     },
     "servers": [
       "1.1.1.1",
       {
-        "address": "1.1.1.1",
-        "domains": []
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
       },
       {
         "address": "223.5.5.5",
-        "domains": [],
-        "expectIPs": [],
-        "skipFallback": true
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_2_0"
       }
-    ]
+    ],
+    "tag": "dns-module"
   },
   "inbounds": [
     {
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
+      "tag": "socks",
       "settings": {
         "auth": "noauth",
         "udp": true,
@@ -30,82 +78,290 @@
       "sniffing": {
         "destOverride": [
           "http",
-          "tls"
+          "tls",
+          "quic"
         ],
         "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "outbounds": [
     {
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "irdiplomacy.ir",
+        "port": 30150
+      },
+      "streamSettings": {
+        "method": "hysteria",
+        "security": "tls",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "3e97a6242c0cbc12086e0948647931b26204b3b9d584dae9",
+          "udpIdleTimeout": 60
+        },
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "pinnedPeerCertSha256": "ebc122e2156d886cc1810ee50bf3278f7b1b9e48132a9adb4dd9dbaaff214450"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "settings": {
+                "password": "c9232a093115a79f79dc0143b63dd9b7b201894b5bce13cc"
+              },
+              "type": "salamander"
+            }
+          ]
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "proxy-1",
       "mux": {
         "concurrency": -1,
         "enabled": false
-      },
-      "protocol": "vless",
+      }
+    },
+    {
+      "protocol": "hysteria",
       "settings": {
-        "vnext": [
-          {
-            "address": "65.109.210.46",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "id": "e760f091-6b04-4cbe-b1e5-e4627822554f",
-                "level": 8
-              }
-            ]
-          }
-        ]
+        "version": 2,
+        "address": "iran-newspaper.com",
+        "port": 30150
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+        "method": "hysteria",
+        "security": "tls",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "cabbcf817806577b14c73ee87d019b54d3ed96d000b8e3b9",
+          "udpIdleTimeout": 60
         },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "pinnedPeerCertSha256": "a025085b619089653e38bcf26e031c33f981142a9b1b5a746f87ac07dd9acdd1"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "settings": {
+                "password": "979f13ccf5444fe5422a95ec2fabfc5d56b310f589a03d5f"
+              },
+              "type": "salamander"
+            }
+          ]
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
         }
       },
-      "tag": "proxy"
+      "tag": "proxy-2",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      }
+    },
+    {
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "tv7.ir",
+        "port": 30150
+      },
+      "streamSettings": {
+        "method": "hysteria",
+        "security": "tls",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "e79e19e3b4f5a88c204986fe4814921f52ddddf3d15c1d78",
+          "udpIdleTimeout": 60
+        },
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "fingerprint": "chrome",
+          "allowInsecure": false,
+          "pinnedPeerCertSha256": "0db14e07227eb9645585790d8bfaa58a2ffa17e782214d235495383607ead406"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "settings": {
+                "password": "df20e9f6973499a4c4cac15a5e95abe4787d95d87aef3c32"
+              },
+              "type": "salamander"
+            }
+          ]
+        },
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      "tag": "proxy-3",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      }
     },
     {
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "direct"
+      "tag": "direct",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      }
     },
     {
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
-      "tag": "block"
+      "tag": "block",
+      "settings": {}
     }
   ],
+  "log": {
+    "loglevel": "warning"
+  },
   "remarks": "@shenvpn",
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
-    "rules": []
+    "domainStrategy": "IPIfNonMatch",
+    "balancers": [
+      {
+        "tag": "proxy-balancer",
+        "selector": [
+          "proxy-"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 2,
+            "maxRTT": "1.5s",
+            "tolerance": 0.25
+          }
+        }
+      }
+    ],
+    "rules": [
+      {
+        "type": "field",
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ir",
+          "domain:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:ru"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:cn"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_2_0"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "balancerTag": "proxy-balancer"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "balancerTag": "proxy-balancer"
+      }
+    ]
+  },
+  "burstObservatory": {
+    "subjectSelector": [
+      "proxy-"
+    ],
+    "pingConfig": {
+      "destination": "https://connectivitycheck.gstatic.com/generate_204",
+      "connectivity": "",
+      "interval": "18s",
+      "sampling": 2,
+      "timeout": "3s",
+      "httpMethod": "HEAD"
+    }
   }
 }
