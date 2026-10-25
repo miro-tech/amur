@@ -2,6 +2,390 @@
   {
     "dns": {
       "hosts": {
+        "domain:googleapis.cn": "googleapis.com"
+      },
+      "queryStrategy": "UseIP",
+      "disableCache": false,
+      "serveStale": true,
+      "serveExpiredTTL": 86400,
+      "enableParallelQuery": true,
+      "disableFallback": false,
+      "disableFallbackIfMatch": false,
+      "servers": [
+        {
+          "tag": "dns-direct",
+          "address": "1.1.1.1",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "8.8.8.8",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "9.9.9.9",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://1.1.1.1/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://8.8.8.8/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "1.0.0.1",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "8.8.4.4",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "149.112.112.112",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://cloudflare-dns.com/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://dns.quad9.net/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        }
+      ]
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false,
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false,
+          "routeOnly": false
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false,
+          "routeOnly": false
+        }
+      },
+      {
+        "tag": "dns-in",
+        "listen": "127.0.0.1",
+        "port": 10853,
+        "protocol": "dokodemo-door",
+        "settings": {
+          "address": "1.1.1.1",
+          "port": 53,
+          "network": "tcp,udp"
+        }
+      }
+    ],
+    "log": {
+      "access": "",
+      "error": "",
+      "loglevel": "none",
+      "dnsLog": false
+    },
+    "outbounds": [
+      {
+        "mux": {
+          "concurrency": -1,
+          "enabled": false
+        },
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "65.109.210.46",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "id": "d49804ed-c2dd-4f87-ad20-0abb3482cc94",
+                  "level": 8
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "xhttp",
+          "security": "reality",
+          "realitySettings": {
+            "allowInsecure": false,
+            "fingerprint": "chrome",
+            "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
+            "serverName": "www.wikipedia.org",
+            "shortId": "1c213fd68e13",
+            "show": false,
+            "spiderX": "/"
+          },
+          "xhttpSettings": {
+            "host": "",
+            "mode": "auto",
+            "path": "/farasati1"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns",
+        "settings": {
+          "network": "tcp,udp",
+          "address": "1.1.1.1",
+          "port": 53
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        }
+      }
+    ],
+    "remarks": "@shenvpn",
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "domainMatcher": "hybrid",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-proxy"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-direct"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-in"
+          ],
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "protocol": [
+            "dns"
+          ],
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "port": "53",
+          "network": "tcp,udp",
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      },
+      {
+        "ipPool": "fc00::/18",
+        "poolSize": 65535
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "handshake": 4,
+          "connIdle": 180,
+          "uplinkOnly": 1,
+          "downlinkOnly": 1,
+          "bufferSize": 64
+        }
+      }
+    }
+  },
+  {
+    "dns": {
+      "hosts": {
+        "domain:googleapis.cn": "googleapis.com"
+      },
+      "servers": [
+        "1.1.1.1",
+        {
+          "address": "1.1.1.1",
+          "domains": []
+        },
+        {
+          "address": "223.5.5.5",
+          "domains": [],
+          "expectIPs": [],
+          "skipFallback": true
+        }
+      ]
+    },
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "userLevel": 8
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        },
+        "tag": "socks"
+      }
+    ],
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "outbounds": [
+      {
+        "mux": {
+          "concurrency": -1,
+          "enabled": false
+        },
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "65.109.210.46",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "id": "d49804ed-c2dd-4f87-ad20-0abb3482cc94",
+                  "level": 8
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "xhttp",
+          "security": "reality",
+          "realitySettings": {
+            "allowInsecure": false,
+            "fingerprint": "chrome",
+            "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
+            "serverName": "www.wikipedia.org",
+            "shortId": "1c213fd68e13",
+            "show": false,
+            "spiderX": "/"
+          },
+          "xhttpSettings": {
+            "host": "",
+            "mode": "auto",
+            "path": "/farasati1"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "settings": {
+          "domainStrategy": "UseIP"
+        },
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        },
+        "tag": "block"
+      }
+    ],
+    "remarks": "@shenvpn",
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": []
+    }
+  },
+  {
+    "dns": {
+      "hosts": {
         "domain:googleapis.cn": "googleapis.com",
         "dns.alidns.com": [
           "223.5.5.5",
@@ -383,19 +767,28 @@
           "tag": "dns-direct",
           "address": "1.1.1.1",
           "queryStrategy": "UseIP",
-          "skipFallback": false
+          "skipFallback": false,
+          "domains": [
+            "full:shortbig.ir"
+          ]
         },
         {
           "tag": "dns-direct",
           "address": "8.8.8.8",
           "queryStrategy": "UseIP",
-          "skipFallback": false
+          "skipFallback": false,
+          "domains": [
+            "full:shortbig.ir"
+          ]
         },
         {
           "tag": "dns-direct",
           "address": "9.9.9.9",
           "queryStrategy": "UseIP",
-          "skipFallback": false
+          "skipFallback": false,
+          "domains": [
+            "full:shortbig.ir"
+          ]
         },
         {
           "tag": "dns-proxy",
@@ -506,39 +899,64 @@
     "outbounds": [
       {
         "mux": {
-          "concurrency": -1,
-          "enabled": false
+          "concurrency": 8,
+          "enabled": true,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": "reject"
         },
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "94.103.168.224",
-              "port": 31146,
+              "address": "178.107.55.61",
+              "port": 40443,
               "users": [
                 {
-                  "id": "82b1ea76-c87d-4cd8-9795-59d102f12b07",
+                  "id": "3a87ed61-c186-4feb-b3fc-d9da4f31842f",
                   "encryption": "none",
-                  "flow": "",
-                  "level": 8
+                  "flow": ""
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "tcp",
-          "realitySettings": {
-            "fingerprint": "chrome",
-            "publicKey": "vs10U0RP4Sq1GTT83EY7yGfNJUyklGvMat3PbsTmgiQ",
-            "serverName": "play-fe.googleapis.com",
-            "shortId": "cf4e6f8338",
-            "spiderX": "/07db352efbe0522"
+          "finalmask": {
+            "tcp": [
+              {
+                "type": "fragment",
+                "settings": {
+                  "packets": "tlshello",
+                  "maxSplit": "0",
+                  "length": "1-104",
+                  "delay": "0"
+                }
+              },
+              {
+                "type": "fragment",
+                "settings": {
+                  "packets": "1-1",
+                  "maxSplit": "11",
+                  "length": "1-114",
+                  "delay": "1"
+                }
+              }
+            ]
           },
-          "security": "reality",
-          "tcpSettings": {
-            "header": {
-              "type": "none"
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "http/1.1"
+            ],
+            "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+            "fingerprint": "unsafe",
+            "serverName": "topkopo.blog"
+          },
+          "wsSettings": {
+            "path": "/joker",
+            "headers": {
+              "Host": "topkopo.blog"
             }
           },
           "sockopt": {
@@ -552,6 +970,86 @@
           }
         },
         "tag": "proxy"
+      },
+      {
+        "mux": {
+          "concurrency": 8,
+          "enabled": true,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": "reject"
+        },
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "shortbig.ir",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "3a87ed61-c186-4feb-b3fc-d9da4f31842f",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "finalmask": {
+            "tcp": [
+              {
+                "type": "fragment",
+                "settings": {
+                  "packets": "tlshello",
+                  "maxSplit": "0",
+                  "length": "1-104",
+                  "delay": "0"
+                }
+              },
+              {
+                "type": "fragment",
+                "settings": {
+                  "packets": "1-1",
+                  "maxSplit": "11",
+                  "length": "1-114",
+                  "delay": "1"
+                }
+              }
+            ]
+          },
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "http/1.1"
+            ],
+            "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+            "fingerprint": "unsafe",
+            "serverName": "topkopo.blog"
+          },
+          "wsSettings": {
+            "path": "/joker",
+            "headers": {
+              "Host": "topkopo.blog"
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4v6",
+            "tcpNoDelay": true,
+            "tcpKeepAliveIdle": 20,
+            "tcpKeepAliveInterval": 15,
+            "tcpUserTimeout": 20000,
+            "tcpMaxSeg": 1200,
+            "tcpMptcp": true,
+            "happyEyeballs": {
+              "tryDelayMs": 250,
+              "prioritizeIPv6": false,
+              "interleave": 1,
+              "maxConcurrentTry": 4
+            }
+          }
+        },
+        "tag": "proxy-proxy-2-8443-Nconn"
       },
       {
         "tag": "direct",
@@ -579,6 +1077,17 @@
         }
       }
     ],
+    "policy": {
+      "levels": {
+        "8": {
+          "handshake": 4,
+          "connIdle": 180,
+          "uplinkOnly": 1,
+          "downlinkOnly": 1,
+          "bufferSize": 64
+        }
+      }
+    },
     "remarks": "@shenvpn",
     "routing": {
       "domainStrategy": "IPIfNonMatch",
@@ -634,134 +1143,7 @@
         "ipPool": "fc00::/18",
         "poolSize": 65535
       }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "handshake": 4,
-          "connIdle": 180,
-          "uplinkOnly": 1,
-          "downlinkOnly": 1,
-          "bufferSize": 64
-        }
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "connect.hondamotor.site",
-              "port": 10002,
-              "users": [
-                {
-                  "id": "c6362720-0931-4b91-b187-d8ecf3149734",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp"
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
+    ]
   },
   {
     "remarks": "@shenvpn",
@@ -918,11 +1300,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "164.92.147.63",
-              "port": 443,
+              "address": "139.162.165.129",
+              "port": 2095,
               "users": [
                 {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                  "id": "90cda07f-c6c2-4dc4-a718-c29129a056ae",
                   "encryption": "none",
                   "level": 8
                 }
@@ -942,7 +1324,7 @@
                 ],
                 "headers": {
                   "Host": [
-                    "fast.com"
+                    "perf-prod.samsung.com"
                   ]
                 }
               }
@@ -1046,328 +1428,6 @@
   {
     "remarks": "@shenvpn",
     "log": {
-      "access": "",
-      "error": "",
-      "loglevel": "none",
-      "dnsLog": false
-    },
-    "dns": {
-      "hosts": {
-        "domain:googleapis.cn": "googleapis.com"
-      },
-      "queryStrategy": "UseIP",
-      "disableCache": false,
-      "serveStale": true,
-      "serveExpiredTTL": 86400,
-      "enableParallelQuery": true,
-      "disableFallback": false,
-      "disableFallbackIfMatch": false,
-      "servers": [
-        {
-          "tag": "dns-direct",
-          "address": "1.1.1.1",
-          "queryStrategy": "UseIP",
-          "skipFallback": false,
-          "domains": [
-            "full:ius2.namenamebest.shop"
-          ]
-        },
-        {
-          "tag": "dns-direct",
-          "address": "8.8.8.8",
-          "queryStrategy": "UseIP",
-          "skipFallback": false,
-          "domains": [
-            "full:ius2.namenamebest.shop"
-          ]
-        },
-        {
-          "tag": "dns-direct",
-          "address": "9.9.9.9",
-          "queryStrategy": "UseIP",
-          "skipFallback": false,
-          "domains": [
-            "full:ius2.namenamebest.shop"
-          ]
-        },
-        {
-          "tag": "dns-proxy",
-          "address": "https://1.1.1.1/dns-query",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-proxy",
-          "address": "https://8.8.8.8/dns-query",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-direct",
-          "address": "1.0.0.1",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-direct",
-          "address": "8.8.4.4",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-direct",
-          "address": "149.112.112.112",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-proxy",
-          "address": "https://cloudflare-dns.com/dns-query",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        },
-        {
-          "tag": "dns-proxy",
-          "address": "https://dns.quad9.net/dns-query",
-          "queryStrategy": "UseIP",
-          "skipFallback": false
-        }
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      },
-      {
-        "ipPool": "fc00::/18",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true,
-          "allowTransparent": false,
-          "userLevel": 8
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic",
-            "fakedns"
-          ],
-          "metadataOnly": false,
-          "routeOnly": false
-        }
-      },
-      {
-        "tag": "http",
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "userLevel": 8
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic",
-            "fakedns"
-          ],
-          "metadataOnly": false,
-          "routeOnly": false
-        }
-      },
-      {
-        "tag": "dns-in",
-        "listen": "127.0.0.1",
-        "port": 10853,
-        "protocol": "dokodemo-door",
-        "settings": {
-          "address": "1.1.1.1",
-          "port": 53,
-          "network": "tcp,udp"
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "ius2.namenamebest.shop",
-              "port": 465,
-              "users": [
-                {
-                  "id": "ec155ed8-7c9b-419b-aa4d-2e42099e3fce",
-                  "encryption": "none",
-                  "level": 8
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "ius2.nahangdarya.com.",
-            "allowInsecure": false,
-            "fingerprint": "chrome",
-            "alpn": [
-              "http/1.1"
-            ]
-          },
-          "wsSettings": {
-            "path": "/"
-          },
-          "sockopt": {
-            "tcpFastOpen": true,
-            "tcpNoDelay": true,
-            "tcpKeepAliveIdle": 20,
-            "tcpKeepAliveInterval": 15,
-            "tcpUserTimeout": 20000,
-            "domainStrategy": "UseIP",
-            "tcpMaxSeg": 1200,
-            "dialerProxy": "fragment"
-          }
-        }
-      },
-      {
-        "tag": "fragment",
-        "protocol": "freedom",
-        "settings": {
-          "fragment": {
-            "packets": "tlshello",
-            "length": "50-100",
-            "interval": "5-10"
-          }
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "",
-          "sockopt": {
-            "tcpNoDelay": true,
-            "tcpKeepAliveIdle": 20,
-            "tcpKeepAliveInterval": 15,
-            "tcpUserTimeout": 20000,
-            "tcpMptcp": true,
-            "domainStrategy": "UseIP",
-            "happyEyeballs": {
-              "tryDelayMs": 250,
-              "prioritizeIPv6": false,
-              "interleave": 1,
-              "maxConcurrentTry": 4
-            }
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom",
-        "settings": {
-          "domainStrategy": "UseIP"
-        }
-      },
-      {
-        "tag": "dns-out",
-        "protocol": "dns",
-        "settings": {
-          "network": "tcp,udp",
-          "address": "1.1.1.1",
-          "port": 53
-        }
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole",
-        "settings": {
-          "response": {
-            "type": "http"
-          }
-        }
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "handshake": 4,
-          "connIdle": 180,
-          "uplinkOnly": 1,
-          "downlinkOnly": 1,
-          "bufferSize": 64
-        }
-      }
-    },
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "domainMatcher": "hybrid",
-      "rules": [
-        {
-          "type": "field",
-          "domain": [
-            "full:ius2.namenamebest.shop"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "direct"
-        },
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-proxy"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-direct"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-in"
-          ],
-          "outboundTag": "dns-out"
-        },
-        {
-          "type": "field",
-          "protocol": [
-            "dns"
-          ],
-          "outboundTag": "dns-out"
-        },
-        {
-          "type": "field",
-          "port": "53",
-          "network": "tcp,udp",
-          "outboundTag": "dns-out"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
       "loglevel": "warning"
     },
     "dns": {
@@ -1420,12 +1480,13 @@
         "settings": {
           "vnext": [
             {
-              "address": "94.237.46.104",
+              "address": "172.237.142.51",
               "port": 443,
               "users": [
                 {
-                  "id": "dac47070-c136-49f3-8ed2-32b68e710ea3",
-                  "encryption": "none"
+                  "id": "04a5184e-8da3-4ae8-a7bf-baa25d33b21d",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
                 }
               ]
             }
@@ -1433,6 +1494,14 @@
         },
         "streamSettings": {
           "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "amp-api-edge.apps.apple.com",
+            "fingerprint": "chrome",
+            "publicKey": "dB6BevOyyXAgB-6mAsRA8ZwLP5zyd-sjNaLVXEWPySw",
+            "shortId": "9eafc25c134e08e2",
+            "spiderX": "/fwPNnMfinmEK"
+          },
           "tcpSettings": {
             "header": {
               "type": "none"
@@ -1637,11 +1706,386 @@
     "outbounds": [
       {
         "tag": "proxy",
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "5.223.19.15",
+              "port": 443,
+              "password": "b6facbf0-d7b1-4ac2-a57f-3e03d9598826",
+              "level": 8
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "none",
+          "wsSettings": {
+            "path": "/taxes/estimate?ed=2560",
+            "headers": {
+              "Host": "qcgwo.lptreskbb.com"
+            }
+          },
+          "sockopt": {
+            "tcpFastOpen": true,
+            "tcpNoDelay": true,
+            "tcpKeepAliveIdle": 20,
+            "tcpKeepAliveInterval": 15,
+            "tcpUserTimeout": 20000,
+            "domainStrategy": "UseIP",
+            "tcpMaxSeg": 1200,
+            "tcpMptcp": true
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "domainStrategy": "UseIP"
+        }
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns",
+        "settings": {
+          "network": "tcp,udp",
+          "address": "1.1.1.1",
+          "port": 53
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        }
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "handshake": 4,
+          "connIdle": 180,
+          "uplinkOnly": 1,
+          "downlinkOnly": 1,
+          "bufferSize": 64
+        }
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "domainMatcher": "hybrid",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-proxy"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-direct"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-in"
+          ],
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "protocol": [
+            "dns"
+          ],
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "port": "53",
+          "network": "tcp,udp",
+          "outboundTag": "dns-out"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "82.38.31.170",
+              "port": 443,
+              "method": "chacha20-ietf-poly1305",
+              "password": "oZIoA69Q8yhcQV8ka3Pa3A"
+            }
+          ]
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "access": "",
+      "error": "",
+      "loglevel": "none",
+      "dnsLog": false
+    },
+    "dns": {
+      "hosts": {
+        "domain:googleapis.cn": "googleapis.com"
+      },
+      "queryStrategy": "UseIP",
+      "disableCache": false,
+      "serveStale": true,
+      "serveExpiredTTL": 86400,
+      "enableParallelQuery": true,
+      "disableFallback": false,
+      "disableFallbackIfMatch": false,
+      "servers": [
+        {
+          "tag": "dns-direct",
+          "address": "1.1.1.1",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "8.8.8.8",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "9.9.9.9",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://1.1.1.1/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://8.8.8.8/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "1.0.0.1",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "8.8.4.4",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-direct",
+          "address": "149.112.112.112",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://cloudflare-dns.com/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        },
+        {
+          "tag": "dns-proxy",
+          "address": "https://dns.quad9.net/dns-query",
+          "queryStrategy": "UseIP",
+          "skipFallback": false
+        }
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      },
+      {
+        "ipPool": "fc00::/18",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "allowTransparent": false,
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false,
+          "routeOnly": false
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false,
+          "routeOnly": false
+        }
+      },
+      {
+        "tag": "dns-in",
+        "listen": "127.0.0.1",
+        "port": 10853,
+        "protocol": "dokodemo-door",
+        "settings": {
+          "address": "1.1.1.1",
+          "port": 53,
+          "network": "tcp,udp"
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "47.128.76.215",
+              "address": "16.61.222.83",
               "port": 443,
               "users": [
                 {
@@ -1821,12 +2265,13 @@
         "settings": {
           "vnext": [
             {
-              "address": "50.116.19.56",
-              "port": 2095,
+              "address": "57.131.168.18",
+              "port": 443,
               "users": [
                 {
-                  "id": "12954ec2-d480-4338-bde6-04c10989c484",
-                  "encryption": "none"
+                  "id": "3079ea2b-2f4b-4166-843e-7ca9b67b375a",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
                 }
               ]
             }
@@ -1834,10 +2279,13 @@
         },
         "streamSettings": {
           "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "amp-api-edge.apps.apple.com",
+            "fingerprint": "chrome",
+            "publicKey": "VxpXo3AED_bvIKqYMriQDootMnq27Vo9CE228p0iEyQ",
+            "shortId": "1579ad5a36171662",
+            "spiderX": "/"
           }
         },
         "tag": "proxy"
@@ -1942,7 +2390,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "35.179.152.6",
+              "address": "89.60.118.86",
               "port": 443,
               "users": [
                 {
@@ -2063,7 +2511,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "52.212.46.254",
+              "address": "3.35.238.51",
               "port": 443,
               "users": [
                 {
@@ -2184,7 +2632,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "3.14.250.243",
+              "address": "35.77.92.174",
               "port": 443,
               "users": [
                 {
@@ -2305,7 +2753,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "56.10.62.215",
+              "address": "13.40.60.51",
               "port": 443,
               "users": [
                 {
@@ -2426,7 +2874,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "18.169.163.18",
+              "address": "43.203.251.99",
               "port": 443,
               "users": [
                 {
@@ -2547,7 +2995,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "52.78.183.190",
+              "address": "52.47.129.119",
               "port": 443,
               "users": [
                 {
@@ -2668,7 +3116,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "34.244.7.64",
+              "address": "54.74.143.255",
               "port": 443,
               "users": [
                 {
@@ -2913,7 +3361,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "43.202.57.231",
+              "address": "54.151.246.72",
               "port": 443,
               "users": [
                 {
@@ -3034,7 +3482,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "54.180.137.203",
+              "address": "89.60.118.250",
               "port": 443,
               "users": [
                 {
@@ -3155,7 +3603,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "3.8.123.223",
+              "address": "18.171.149.187",
               "port": 443,
               "users": [
                 {
@@ -3276,7 +3724,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "3.238.18.159",
+              "address": "13.38.13.13",
               "port": 443,
               "users": [
                 {
@@ -3397,7 +3845,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.237.144.55",
+              "address": "3.112.69.12",
               "port": 443,
               "users": [
                 {
@@ -3518,7 +3966,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "18.191.107.161",
+              "address": "3.144.99.102",
               "port": 443,
               "users": [
                 {
@@ -3639,7 +4087,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "18.201.86.155",
+              "address": "34.217.192.137",
               "port": 443,
               "users": [
                 {
@@ -3760,7 +4208,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.236.134.217",
+              "address": "18.175.139.29",
               "port": 443,
               "users": [
                 {
@@ -3881,7 +4329,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.216.235.227",
+              "address": "18.183.96.240",
               "port": 443,
               "users": [
                 {
@@ -4002,7 +4450,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "51.44.25.246",
+              "address": "13.113.97.158",
               "port": 443,
               "users": [
                 {
@@ -4123,7 +4571,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "54.216.216.141",
+              "address": "18.143.180.103",
               "port": 443,
               "users": [
                 {
@@ -4244,7 +4692,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "47.128.77.101",
+              "address": "54.254.212.107",
               "port": 443,
               "users": [
                 {
@@ -4365,7 +4813,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "18.143.131.60",
+              "address": "89.60.37.212",
               "port": 443,
               "users": [
                 {
@@ -4486,7 +4934,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "35.176.115.23",
+              "address": "52.56.158.206",
               "port": 443,
               "users": [
                 {
@@ -4607,7 +5055,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "18.188.91.94",
+              "address": "43.202.37.167",
               "port": 443,
               "users": [
                 {
@@ -4728,7 +5176,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "34.244.251.6",
+              "address": "15.236.226.250",
               "port": 443,
               "users": [
                 {
@@ -4849,7 +5297,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.237.186.251",
+              "address": "35.43.247.143",
               "port": 443,
               "users": [
                 {
@@ -4970,7 +5418,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "34.252.227.163",
+              "address": "108.131.137.97",
               "port": 443,
               "users": [
                 {
@@ -5091,7 +5539,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.237.174.242",
+              "address": "3.133.135.169",
               "port": 443,
               "users": [
                 {
@@ -5212,7 +5660,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.237.121.81",
+              "address": "18.181.161.215",
               "port": 443,
               "users": [
                 {
@@ -5333,7 +5781,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "3.113.12.231",
+              "address": "18.133.245.51",
               "port": 443,
               "users": [
                 {
@@ -5454,7 +5902,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "52.194.215.29",
+              "address": "13.124.195.250",
               "port": 443,
               "users": [
                 {
@@ -5575,131 +6023,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "156.252.229.17",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "3e21e3d3-6d26-4155-b851-764dd8e8c6b5",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "7jPluypHwPilf_Mq7JOY96SwKkbK35WuIlN1HwGQ_0A",
-            "shortId": "974f7f8f",
-            "spiderX": "/"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "51.49.200.97",
+              "address": "18.130.203.15",
               "port": 443,
               "users": [
                 {
@@ -5820,7 +6144,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "57.180.13.202",
+              "address": "13.212.211.112",
               "port": 443,
               "users": [
                 {
@@ -5941,7 +6265,854 @@
         "settings": {
           "vnext": [
             {
-              "address": "13.212.55.243",
+              "address": "43.203.193.3",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "47.129.168.50",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "18.171.154.24",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "15.237.219.51",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "35.42.31.149",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "13.250.29.29",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "54.179.58.228",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http"
+            }
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "18.132.196.211",
               "port": 443,
               "users": [
                 {
@@ -6183,7 +7354,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "52.77.247.194",
+              "address": "3.10.19.51",
               "port": 443,
               "users": [
                 {
@@ -6304,7 +7475,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "54.254.230.220",
+              "address": "35.181.167.89",
               "port": 443,
               "users": [
                 {
@@ -6425,7 +7596,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "13.212.36.140",
+              "address": "51.94.186.119",
               "port": 443,
               "users": [
                 {
@@ -6546,7 +7717,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "108.131.118.106",
+              "address": "43.207.172.124",
               "port": 443,
               "users": [
                 {
@@ -6667,7 +7838,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "51.49.98.122",
+              "address": "184.195.179.149",
               "port": 443,
               "users": [
                 {
@@ -6788,7 +7959,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "13.159.23.82",
+              "address": "18.188.48.167",
               "port": 443,
               "users": [
                 {
@@ -7030,7 +8201,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "15.224.219.105",
+              "address": "51.94.3.116",
               "port": 443,
               "users": [
                 {
@@ -7151,132 +8322,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "52.18.129.98",
+              "address": "78.141.247.207",
               "port": 443,
               "users": [
                 {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "199.247.16.164",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40f6058d-6cc1-4e4e-8c00-a5df8b7a8b58",
+                  "id": "817be056-2afc-4358-9b8d-5dbe836251f3",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -7291,129 +8341,6 @@
             "serverName": "ash.d50f6225-23b4-3a7b-9f15-a0fb2fc16803.googleapis.com",
             "fingerprint": "chrome",
             "publicKey": "hTweFDvbSucrGERtiiwDfoqD3vo_Z9cuaqboff3FTXQ"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "64.176.226.113",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "b27a75c8-6876-473c-a84c-65b789989539",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "uCSfz-V-LQAGgN2lMtEY8r2cQqc6q5gfjGkvzX0slgg",
-            "shortId": "8328e49544fc8081"
           }
         },
         "tag": "proxy"
@@ -7641,129 +8568,6 @@
         "settings": {
           "vnext": [
             {
-              "address": "173.255.193.201",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "97bdfad6-f304-4e3f-814c-7ec3c1b15f78",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "8r35VQYpaehjqeU4X6wH7U5RgdVYAbFdlDMJodSrq0c",
-            "shortId": "71e4f2d1cd1cc7af"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
               "address": "50.116.30.192",
               "port": 8443,
               "users": [
@@ -7887,11 +8691,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "144.202.98.164",
+              "address": "207.246.125.247",
               "port": 8443,
               "users": [
                 {
-                  "id": "1293c69b-5661-420e-8171-748e50dd855b",
+                  "id": "4fa9f0b9-142c-4d35-8b9c-f9085997a0a2",
                   "encryption": "none"
                 }
               ]
@@ -7904,8 +8708,131 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "2viZNyplbV-nVg2XC38oMYQCuJrIlsqsu9bBIUWYtic",
-            "shortId": "4841a6a49897cb19"
+            "publicKey": "GfmdO1PymlpwSbkPR7bRN9iS2RkSDZU2qYi7taDQe3c",
+            "shortId": "4e4eb60af50b8abe"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "147.182.187.236",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "95ce2bbc-9528-481f-965a-f0a90ad1b7ea",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "bnkFys_RpNTYLWAC1QOswfRac1PFRLx6RWvQYW3p-xc",
+            "shortId": "48bf030e37263b86"
           }
         },
         "tag": "proxy"
@@ -8256,11 +9183,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "141.164.55.251",
+              "address": "45.32.219.240",
               "port": 8443,
               "users": [
                 {
-                  "id": "01b818d9-307b-4ac9-a3cc-4b40d28d97fa",
+                  "id": "468dbccd-13e9-4f4a-8cb1-7f3c1a5ba8e2",
                   "encryption": "none"
                 }
               ]
@@ -8273,8 +9200,131 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "7RU4R3DUzhJrS5a2ApCyZIXmYPPC_nz-R6Nnv_54eS0",
-            "shortId": "94c5b2d115e5f7f2"
+            "publicKey": "mPOL926LiYgJkcv4s01UuJ_S0kOIZm37DaQ-FqTiMGk",
+            "shortId": "48aba8a93e8da94f"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "158.247.206.126",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "e04c4866-59f8-4af8-9c86-cba67d683db0",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "eXU8-YJ86up9OEeKkXlmCss33PuPXOwj04imoyRqDV8",
+            "shortId": "c2e299c99652e032"
           }
         },
         "tag": "proxy"
@@ -8502,11 +9552,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "152.42.161.175",
+              "address": "172.236.252.168",
               "port": 8443,
               "users": [
                 {
-                  "id": "9c032bf3-9628-4b3b-9f49-2c378d3755b9",
+                  "id": "154d388c-002e-4aa8-9fa0-70f1d384655f",
                   "encryption": "none"
                 }
               ]
@@ -8519,131 +9569,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "SWHRoJ31z7ky-_Lzcb9jr274dssiKtItyjVJ_gyc0GE",
-            "shortId": "876be6385df790fd"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "149.28.198.12",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "0e241bc1-ae93-461c-9d23-f4bf7e52ac45",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "ZzsQ0RMRFMODxM0lvykj_8hG4k-B9IK17dPph_5WQVI",
-            "shortId": "d9367ea4fe2e5935"
+            "publicKey": "cd2IhblK9ky_UFHo7lX-929PfU6Es4wmVmhQ61h-Wks",
+            "shortId": "a5cbe4a7afe7e3e5"
           }
         },
         "tag": "proxy"
@@ -8871,11 +9798,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "158.247.250.175",
+              "address": "140.82.31.8",
               "port": 8443,
               "users": [
                 {
-                  "id": "c5a4dd91-4b80-4d6f-9e8e-a7221eb5cefc",
+                  "id": "6775ec27-ea01-46f4-b3df-6d6b8b14fd32",
                   "encryption": "none"
                 }
               ]
@@ -8888,131 +9815,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "_n9DKFq6MFOQ0_ugniM9-cP1IMk3V9n7QocuZl_0dVE",
-            "shortId": "6fb40dbd1a7cd031"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "64.176.49.132",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "ee71d0e2-3117-45e1-ab22-66339bf64e34",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "cvZfDc-W1lYr-oYfLQIerCBB62D3hXfc9enVlhxyXxI",
-            "shortId": "be114e24b88a9632"
+            "publicKey": "gJ3uwPNIkL5VqxNkbowgsGuaEmZ_Jr7imBGwf_3b9j0",
+            "shortId": "17024faa47b17353"
           }
         },
         "tag": "proxy"
@@ -9136,252 +9940,6 @@
             "fingerprint": "chrome",
             "publicKey": "PjxiR-dX2CtUVp1G9ZKF-w3K2-eGLPGhJZlYYEpmpGs",
             "shortId": "711155757f5ae9ec"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "108.160.134.189",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "89c65fa3-4d3e-4040-8540-01bfbc9afa91",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "fmO1ujR-kBcNACYt-q5YtuGSH6zrz4-VuAlF1Glcyng",
-            "shortId": "d2c314dd5a29ef17"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "79.137.10.153",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "81896c3a-3734-4582-99c7-dea575043de0",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "wWDUJ9KVelxKe9XDgeeoTDZpypMDVVWY-qV76sOr5HI",
-            "shortId": "631dfb87d942e819"
           }
         },
         "tag": "proxy"
@@ -9732,11 +10290,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "45.77.26.5",
+              "address": "96.30.195.65",
               "port": 8443,
               "users": [
                 {
-                  "id": "3dee5d54-beaf-48a4-9699-c5705f5eac0f",
+                  "id": "8ad13069-b721-4913-b540-aa207335820d",
                   "encryption": "none"
                 }
               ]
@@ -9749,8 +10307,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "Nf4IflIc3mNgbTcyBFfK_C9F7XzW5O3yoM-P1yVlogA",
-            "shortId": "3ebf83e8978b4f78"
+            "publicKey": "fGs9kS56g1sXcJ4p4fJFq6h6HKp9hF-em2-ID5_6iwY",
+            "shortId": "1438bf9d6b4c06ff"
           }
         },
         "tag": "proxy"
@@ -9855,11 +10413,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "64.176.57.50",
+              "address": "45.77.5.218",
               "port": 8443,
               "users": [
                 {
-                  "id": "80897dd6-a2a1-4247-bcbc-16e492c3b60d",
+                  "id": "dccfce1c-8489-46c5-b4af-b2238c858376",
                   "encryption": "none"
                 }
               ]
@@ -9872,8 +10430,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "cfP5vvUvQhLpeS08n1HZwx2AKr2Py-tIHng-3ZZmDiw",
-            "shortId": "f8d765398b529179"
+            "publicKey": "_nedNjWC25JYyylgibpPJPv8ntGmlAC1GbCSF8F6sAM",
+            "shortId": "227bf3698faaf651"
           }
         },
         "tag": "proxy"
@@ -10224,11 +10782,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "104.64.210.171",
+              "address": "64.177.55.142",
               "port": 8443,
               "users": [
                 {
-                  "id": "d4519dce-9b60-431f-a616-3de1e2793227",
+                  "id": "35e87f55-09e7-436f-908e-fd399db0ebfd",
                   "encryption": "none"
                 }
               ]
@@ -10241,377 +10799,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "iqUGOZFvcS1Ecs0PasTlZG9iWmT4J4tORvGn3NRLF18",
-            "shortId": "9795b575129e03ef"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "149.28.211.239",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "6f7bfbee-309a-4219-9472-2ff6ace8b5fa",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "tNLEPolziymb72S7GaOq2gYFJMVLN_gl7tLVieZBbh0",
-            "shortId": "66217f45284421e5"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "149.28.255.197",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "bb0fd616-cd05-48a0-8915-542351e1133f",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "BiyIOXEWGrsn6fOSH78dzR1HfsU_MLUYyJmXYo1FlQE",
-            "shortId": "ba0d929dc1a5fe23"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "45.76.156.112",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "f8cf7b1d-4781-4277-823a-999395c24518",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "CYeOcXwjFSCNE_plj8k0PhOUj3Pbg5zp5snK-Ge_BDw",
-            "shortId": "686dd27b170e1422"
+            "publicKey": "ptFHZu1M4BSuCJi0IEOvoum6V-ZpQIcNiNszNftWQxg",
+            "shortId": "7a6960347f9f6cdf"
           }
         },
         "tag": "proxy"
@@ -11104,375 +11293,6 @@
             "fingerprint": "chrome",
             "publicKey": "I0WqeTu-0UCqsCWBhavXzAPQmCcbuaOgj8tFrCvO4Tk",
             "shortId": "fc7b600f0f22a55e"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "172.238.52.46",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "a793addb-9f3d-4004-9b9c-d47bd92a72b2",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "8E_dHnGOK5t56a6OW0ZMKQtgHWHr20uFP2Svz82-eRM",
-            "shortId": "63b7be4331cdb2b3"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "51.178.253.3",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "4c619de9-8a3c-4c97-9d4d-1a3ae50bffc9",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "bCDrGGK0R0zNWiFJOHndJ-YulHieBMRDkzl_c5rIdlU",
-            "shortId": "bbc1806c5ca1291e"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "104.105.134.129",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "71766e8e-5bf1-4274-8ab6-2f5b8596f6c8",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "xuo6bwNDxbZbJzz_WSAy1MAU8YnOVD3nJ7UktssITGQ",
-            "shortId": "77fe82cc3b5f6502"
           }
         },
         "tag": "proxy"
@@ -12192,11 +12012,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "159.223.191.1",
+              "address": "152.42.209.189",
               "port": 8443,
               "users": [
                 {
-                  "id": "84b965b3-90be-49d5-ae78-e9223bab8594",
+                  "id": "9cd1f58f-9f77-4ea8-9fc6-16b1e001accd",
                   "encryption": "none"
                 }
               ]
@@ -12209,254 +12029,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "heW_pYVMGGNuOuXjWW2-9PYYwPCveyi41g62e7iS_RU",
-            "shortId": "91a3bc0a717dcd1f"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "144.202.104.66",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "85c34029-2ced-49d6-9bfd-91b079397936",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "WjWOfKxfwkqbfzSCYkez7gJCgkPMWhrlTMm4MqF-NDM",
-            "shortId": "ae463a5bacb8e648"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "167.172.85.224",
-              "port": 8443,
-              "users": [
-                {
-                  "id": "3cb032b0-0f51-4168-a639-f39466067d3a",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "play.googleapis.com",
-            "fingerprint": "chrome",
-            "publicKey": "QJcfWO1ys_AMdWKdM5T48pmcyGqjICB4YtA0Gd9PQGs",
-            "shortId": "dd39aed7e21a9094"
+            "publicKey": "7RuyNaI1JUv1cIqHEZ1MOrs9jLY9pFPJCPhKu44YAwk",
+            "shortId": "32bf107a8e162b73"
           }
         },
         "tag": "proxy"
@@ -12684,11 +12258,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "51.68.95.249",
+              "address": "68.183.102.165",
               "port": 8443,
               "users": [
                 {
-                  "id": "ca58c242-9cf6-46c9-b81a-00d430c73a3a",
+                  "id": "aaa74a55-0d3d-49ba-aa09-5ded8b4a378a",
                   "encryption": "none"
                 }
               ]
@@ -12701,8 +12275,131 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "73Ng6zKW0QN-86YOJm6w2f3ax07bEmZk7pfy1U5l-kk",
-            "shortId": "4df550a27b6334f5"
+            "publicKey": "xTGsYoJvuG79HrL-uY-Zvzz2DV2I6mgKK8SWz6IWdzA",
+            "shortId": "e83cbe853a3578fd"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "66.42.72.115",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "261b8bc3-f03c-4bdb-a4f7-9226ce57b3f8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "NqEkoocrZqtfg2ZxyPsPsB8AOUZwmnH5QjgxZYnKXUc",
+            "shortId": "ca8d33e2e35a0c84"
           }
         },
         "tag": "proxy"
@@ -12930,11 +12627,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "172.234.219.48",
+              "address": "66.42.94.105",
               "port": 8443,
               "users": [
                 {
-                  "id": "8bd4d0bc-812b-4369-8f3f-48fb4a424262",
+                  "id": "42d2208c-344b-4a99-8ce8-37d702cfe6cc",
                   "encryption": "none"
                 }
               ]
@@ -12947,8 +12644,8 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "W6ouE7CTXWG10Oisfjc4M8_h2B6Qnvr64yYAASgW2Es",
-            "shortId": "69e9d2e96c207f3d"
+            "publicKey": "PmN3OGljy-dX4fPjF8wrVBRvt7lFt8x9GcmCXnH5FiE",
+            "shortId": "76140ae3b480c9dc"
           }
         },
         "tag": "proxy"
@@ -13299,6 +12996,129 @@
         "settings": {
           "vnext": [
             {
+              "address": "172.234.88.107",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "267ff195-d26d-44ce-a244-05d89a688e47",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "p7r034m6qhGmHcV77TlKZr99IcCzlpR1TFxHjyQQJyQ",
+            "shortId": "01f9c5b54579810e"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
               "address": "149.28.213.105",
               "port": 8443,
               "users": [
@@ -13422,11 +13242,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "66.245.217.161",
+              "address": "172.104.105.96",
               "port": 8443,
               "users": [
                 {
-                  "id": "57bac2ce-7dbc-43d8-9dec-c84ec9496c0b",
+                  "id": "60d4f5cf-1071-40be-ace0-8ef9235f9156",
                   "encryption": "none"
                 }
               ]
@@ -13439,8 +13259,131 @@
           "realitySettings": {
             "serverName": "play.googleapis.com",
             "fingerprint": "chrome",
-            "publicKey": "M28ZS19uiqL-jAGktP3lUKAoDYnKkXNri6ir-fJBUmQ",
-            "shortId": "e178dca18a564990"
+            "publicKey": "S8xm9SX3O8SHlTW4-q9YYUzzjgWfq_UNQmgEpoTUbUg",
+            "shortId": "c40a88a4149ba707"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "216.155.135.97",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "a8edc067-8451-4714-9fb9-e3bf98aa67d5",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "mABvKIK26C-k5FRE_6MBa4UbC3829c5AJ-M3pZFEfFk",
+            "shortId": "d6dbc630125febc0"
           }
         },
         "tag": "proxy"
@@ -13668,6 +13611,129 @@
         "settings": {
           "vnext": [
             {
+              "address": "45.77.79.84",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "a322b323-ebe2-408e-a366-2ddaf4882276",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "eeRqJ8PH5042RtjYFWD2yKu9ere7DU0isYtYLF2azUg",
+            "shortId": "c1d9001fccbaa64b"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
               "address": "45.32.128.232",
               "port": 8443,
               "users": [
@@ -13687,6 +13753,129 @@
             "fingerprint": "chrome",
             "publicKey": "KRgD7Jz1H2hgHf1-aNuuQzTlBGSqNyacKEqCX8Ec8To",
             "shortId": "6d03b799ba5987e7"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {
+      "hosts": {},
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "139.162.106.153",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "110dca80-5f89-43c5-bb94-233975975a03",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "play.googleapis.com",
+            "fingerprint": "chrome",
+            "publicKey": "DfcVKwRSYbWhLOIRL8RZL5w9o2m8ukXNmNXvOHYUz3g",
+            "shortId": "a701b0428b7e55c3"
           }
         },
         "tag": "proxy"
