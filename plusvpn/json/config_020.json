@@ -1,28 +1,13 @@
 {
   "remarks": "@shenvpn",
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": ""
   },
-  "dns": {
-    "hosts": {},
-    "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
-  },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -31,95 +16,78 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
-        ],
-        "enabled": true,
-        "routeOnly": false
+        ]
       }
     },
     {
+      "tag": "http",
       "listen": "127.0.0.1",
       "port": 10809,
       "protocol": "http",
-      "settings": {}
+      "settings": []
     }
   ],
   "outbounds": [
     {
-      "protocol": "vless",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "40.160.9.171",
-            "port": 31146,
-            "users": [
-              {
-                "id": "f0466557-2fd5-442e-94cb-12c6b764155e",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
+            "level": 8,
+            "address": "188.114.97.6",
+            "port": 443,
+            "password": "humanity"
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "play-fe.googleapis.com",
-          "fingerprint": "chrome",
-          "publicKey": "QAoJHZT6_DZsBu-jH74uYZUTpGgxmvN2tXpRKj4CygE",
-          "shortId": "cf4e6f8338",
-          "spiderX": "/"
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "echConfigList": "ip.gs+udp://8.8.8.8",
+          "serverName": "www.calmlunch.com"
+        },
+        "wsSettings": {
+          "path": "/assignment",
+          "headers": {
+            "Host": "www.calmlunch.com"
+          }
         }
       },
-      "tag": "proxy"
+      "tag": "proxy-0"
     },
     {
-      "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "protocol": "freedom"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
+      "tag": "block",
+      "protocol": "blackhole"
     }
   ],
-  "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
-    "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
-    }
-  },
   "routing": {
-    "domainStrategy": "AsIs",
     "rules": [
       {
+        "type": "field",
         "ip": [
           "geoip:private"
         ],
         "outboundTag": "direct"
-      },
-      {
-        "domain": [
-          "geosite:category-ads-all"
-        ],
-        "outboundTag": "block"
       }
+    ]
+  },
+  "dns": {
+    "servers": [
+      "8.8.8.8"
     ]
   }
 }
