@@ -1,40 +1,21 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "GET",
-      "interval": "30m",
-      "sampling": 2,
-      "timeout": "10s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
-  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
     },
     "servers": [
+      "1.1.1.1",
       {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
+        "address": "1.1.1.1",
+        "domains": []
       },
-      "8.8.8.8",
       {
         "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "finalQuery": true,
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
+        "domains": [],
+        "expectIPs": [],
+        "skipFallback": true
       }
-    ],
-    "tag": "dns-module"
+    ]
   },
   "inbounds": [
     {
@@ -43,14 +24,13 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
           "http",
-          "tls",
-          "quic",
-          "fakedns"
+          "tls"
         ],
         "enabled": true,
         "routeOnly": false
@@ -59,195 +39,73 @@
     }
   ],
   "log": {
-    "loglevel": "warning"
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
   "outbounds": [
     {
       "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
+        "concurrency": -1,
+        "enabled": false
       },
       "protocol": "vless",
       "settings": {
-        "address": "shortbig.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
-        "port": 2087
+        "vnext": [
+          {
+            "address": "65.109.210.46",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "id": "0f69c967-6c38-45f2-9f01-696f3887e3b1",
+                "level": 8
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "maxSplit": "0",
-                "length": "1-104",
-                "delay": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "maxSplit": "11",
-                "length": "1-114",
-                "delay": "1"
-              }
-            }
-          ]
-        },
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
           "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "don.qavrix.ir"
+          "fingerprint": "chrome",
+          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
+          "serverName": "www.wikipedia.org",
+          "shortId": "1c213fd68e13",
+          "show": false,
+          "spiderX": "/"
         },
-        "wsSettings": {
-          "host": "don.qavrix.ir",
-          "path": "/hokm"
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",
+          "path": "/farasati1"
         }
       },
-      "tag": "proxy-proxy-1-8443-Nconn"
-    },
-    {
-      "mux": {
-        "concurrency": 8,
-        "enabled": true,
-        "xudpConcurrency": 8,
-        "xudpProxyUDP443": "reject"
-      },
-      "protocol": "vless",
-      "settings": {
-        "address": "shortbig.ir",
-        "encryption": "none",
-        "flow": "",
-        "id": "31f185b6-e591-413b-ba72-88083a87feb2",
-        "port": 2087
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "allowInsecure": false,
-          "alpn": [
-            "http/1.1"
-          ],
-          "echConfigList": "iranva.ir+udp://1.1.1.1",
-          "fingerprint": "unsafe",
-          "serverName": "don.qavrix.ir"
-        },
-        "wsSettings": {
-          "host": "don.qavrix.ir",
-          "path": "/hokm"
-        }
-      },
-      "tag": "proxy-proxy-2-8443-Nconn"
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
-      "tag": "block"
-    },
-    {
-      "protocol": "dns",
       "settings": {
-        "userLevel": 12
+        "response": {
+          "type": "http"
+        }
       },
-      "tag": "dns-out"
+      "tag": "block"
     }
   ],
-  "policy": {
-    "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      }
-    }
-  },
   "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "proxy-proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
-      }
-    ],
     "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "type": "field"
-      },
-      {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "ext:geoip-only-cn-private.dat:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "network": "tcp,udp",
-        "type": "field"
-      }
-    ]
+    "rules": []
   }
 }
