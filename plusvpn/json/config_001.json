@@ -1,4 +1,11 @@
 {
+  "remarks": "@shenvpn",
+  "log": {
+    "access": "",
+    "error": "",
+    "loglevel": "none",
+    "dnsLog": false
+  },
   "dns": {
     "hosts": {
       "domain:googleapis.cn": "googleapis.com"
@@ -15,19 +22,28 @@
         "tag": "dns-direct",
         "address": "1.1.1.1",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:only.pryvanto.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "8.8.8.8",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:only.pryvanto.ir"
+        ]
       },
       {
         "tag": "dns-direct",
         "address": "9.9.9.9",
         "queryStrategy": "UseIP",
-        "skipFallback": false
+        "skipFallback": false,
+        "domains": [
+          "full:only.pryvanto.ir"
+        ]
       },
       {
         "tag": "dns-proxy",
@@ -129,53 +145,92 @@
       }
     }
   ],
-  "log": {
-    "access": "",
-    "error": "",
-    "loglevel": "none",
-    "dnsLog": false
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
+      "tag": "proxy",
+      "protocol": "hysteria",
       "settings": {
-        "vnext": [
-          {
-            "address": "65.109.210.46",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "id": "0f69c967-6c38-45f2-9f01-696f3887e3b1",
-                "level": 8
-              }
-            ]
-          }
-        ]
+        "version": 2,
+        "address": "only.pryvanto.ir",
+        "port": 30150
       },
       "streamSettings": {
-        "network": "xhttp",
-        "security": "reality",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "as04WkYoj-P4vEjJFXB3LeA_Rkt7Ud4pV2oTZ3bZwQg",
-          "serverName": "www.wikipedia.org",
-          "shortId": "1c213fd68e13",
-          "show": false,
-          "spiderX": "/"
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "4f18d6df725bd2580fc4ce89ebbfd9e2"
         },
-        "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "/farasati1"
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "725c2d03bdf270fcc6da8f152160f1ad00a1c6bc67b5b2c41fd0965957945d70"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
         }
+      }
+    },
+    {
+      "tag": "door4",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "only.pryvanto.ir",
+        "port": 30150
       },
-      "tag": "proxy"
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "4f18d6df725bd2580fc4ce89ebbfd9e2"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "725c2d03bdf270fcc6da8f152160f1ad00a1c6bc67b5b2c41fd0965957945d70"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "tlshello",
+                "maxSplit": "0",
+                "length": "1-104",
+                "delay": "0"
+              }
+            },
+            {
+              "type": "fragment",
+              "settings": {
+                "packets": "1-1",
+                "maxSplit": "11",
+                "length": "1-114",
+                "delay": "1"
+              }
+            }
+          ]
+        }
+      }
     },
     {
       "tag": "direct",
@@ -203,7 +258,6 @@
       }
     }
   ],
-  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "domainMatcher": "hybrid",
