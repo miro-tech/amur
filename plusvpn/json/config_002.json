@@ -3,28 +3,16 @@
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
+    "error": ""
   },
   "dns": {
     "servers": [
-      "tls://1.1.1.1",
-      "tls://1.0.0.1",
-      "tls://8.8.8.8",
-      "tls://8.8.4.4",
-      "tls://9.9.9.9",
-      "1.1.1.1",
-      "1.0.0.1",
-      "8.8.8.8",
-      "8.8.4.4",
-      "9.9.9.9"
+      "1.1.1.1"
     ],
-    "queryStrategy": "UseIPv4",
     "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -33,28 +21,29 @@
         "udp": true
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
+        "enabled": true,
         "routeOnly": false
-      }
+      },
+      "tag": "socks"
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "tag": "s1-tcp4",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "[2a01:4f8:1c19:7b5::1]",
-            "port": 443,
+            "address": "167.99.197.218",
+            "port": 30161,
             "users": [
               {
-                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "id": "598e47e6-cca4-4c55-af21-738f7a08dfdb",
                 "encryption": "none"
               }
             ]
@@ -63,69 +52,320 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "http",
-            "request": {
-              "version": "1.1",
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "fast.com"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Pragma": "no-cache",
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              }
-            }
-          }
-        },
-        "sockopt": {
-          "domainStrategy": "UseIPv4"
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "7435e9c703541f26eb341886f872948f9dba95dae8777a562c2b6c06824ec5e0"
         }
       }
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "tag": "s1-tcp6",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "2a03:b0c0:1:e0:0:1:ea11:8001",
+            "port": 30161,
+            "users": [
+              {
+                "id": "598e47e6-cca4-4c55-af21-738f7a08dfdb",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "7435e9c703541f26eb341886f872948f9dba95dae8777a562c2b6c06824ec5e0"
+        }
+      }
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "tag": "s1-hy4",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "167.99.197.218",
+        "port": 30160
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "598e47e6-cca4-4c55-af21-738f7a08dfdb"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "7435e9c703541f26eb341886f872948f9dba95dae8777a562c2b6c06824ec5e0"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "71abbbbe3936599b1c0a2bfe434f6ae1"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "s1-hy6",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "2a03:b0c0:1:e0:0:1:ea11:8001",
+        "port": 30160
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "598e47e6-cca4-4c55-af21-738f7a08dfdb"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "7435e9c703541f26eb341886f872948f9dba95dae8777a562c2b6c06824ec5e0"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "71abbbbe3936599b1c0a2bfe434f6ae1"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "s2-tcp4",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "46.101.54.35",
+            "port": 30161,
+            "users": [
+              {
+                "id": "598e47e6-cca4-4c55-af21-738f7a08dfdb",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "2aa176aa0561d8c52be67590d98b137084a63a17d07274c82165fce5de3b1de9"
+        }
+      }
+    },
+    {
+      "tag": "s2-tcp6",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "2a03:b0c0:1:e0:0:1:ea11:9001",
+            "port": 30161,
+            "users": [
+              {
+                "id": "598e47e6-cca4-4c55-af21-738f7a08dfdb",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "alpn": [
+            "http/1.1"
+          ],
+          "pinnedPeerCertSha256": "2aa176aa0561d8c52be67590d98b137084a63a17d07274c82165fce5de3b1de9"
+        }
+      }
+    },
+    {
+      "tag": "s2-hy4",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "46.101.54.35",
+        "port": 30160
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "598e47e6-cca4-4c55-af21-738f7a08dfdb"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "2aa176aa0561d8c52be67590d98b137084a63a17d07274c82165fce5de3b1de9"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "71abbbbe3936599b1c0a2bfe434f6ae1"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "s2-hy6",
+      "protocol": "hysteria",
+      "settings": {
+        "version": 2,
+        "address": "2a03:b0c0:1:e0:0:1:ea11:9001",
+        "port": 30160
+      },
+      "streamSettings": {
+        "network": "hysteria",
+        "hysteriaSettings": {
+          "version": 2,
+          "auth": "598e47e6-cca4-4c55-af21-738f7a08dfdb"
+        },
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "www.bing.com",
+          "pinnedPeerCertSha256": "2aa176aa0561d8c52be67590d98b137084a63a17d07274c82165fce5de3b1de9"
+        },
+        "finalmask": {
+          "udp": [
+            {
+              "type": "salamander",
+              "settings": {
+                "password": "71abbbbe3936599b1c0a2bfe434f6ae1"
+              }
+            }
+          ],
+          "quicParams": {
+            "congestion": "bbr",
+            "udpHop": {
+              "ports": "40000-50000",
+              "interval": 10
+            }
+          }
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
     }
   ],
+  "burstObservatory": {
+    "subjectSelector": [
+      "s1-tcp4",
+      "s1-tcp6",
+      "s1-hy4",
+      "s1-hy6",
+      "s2-tcp4",
+      "s2-tcp6",
+      "s2-hy4",
+      "s2-hy6"
+    ],
+    "pingConfig": {
+      "destination": "https://www.gstatic.com/generate_204",
+      "interval": "60s",
+      "sampling": 2,
+      "timeout": "5s",
+      "httpMethod": "HEAD"
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPOnDemand",
+    "balancers": [
+      {
+        "tag": "doors",
+        "selector": [
+          "s1-tcp4",
+          "s1-tcp6",
+          "s1-hy4",
+          "s1-hy6",
+          "s2-tcp4",
+          "s2-tcp6",
+          "s2-hy4",
+          "s2-hy6"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 1,
+            "tolerance": 0.05
+          }
+        },
+        "fallbackTag": "s1-tcp4"
+      }
+    ],
     "rules": [
       {
         "type": "field",
-        "inboundTag": [
-          "dns-module"
-        ],
-        "outboundTag": "proxy"
+        "network": "udp",
+        "port": "443",
+        "outboundTag": "block"
       },
       {
         "type": "field",
-        "network": "tcp,udp",
-        "outboundTag": "proxy"
+        "port": "0-65535",
+        "balancerTag": "doors"
       }
     ]
-  },
-  "stats": {},
-  "policy": {
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
   }
 }
