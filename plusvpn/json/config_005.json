@@ -1,13 +1,10 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "dns": {
+    "queryStrategy": "UseIPv4",
     "servers": [
-      "1.1.1.1"
+      "https://1.1.1.1/dns-query",
+      "https://8.8.8.8/dns-query",
+      "https://9.9.9.9/dns-query"
     ],
     "tag": "dns-module"
   },
@@ -27,100 +24,30 @@
           "quic"
         ],
         "enabled": true,
-        "routeOnly": false
+        "routeOnly": true
       },
       "tag": "socks"
     }
   ],
+  "log": {
+    "access": "none",
+    "dnsLog": true,
+    "error": "",
+    "loglevel": "info"
+  },
   "outbounds": [
     {
-      "tag": "door4",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "168.222.49.89",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "dcae26dd-b17a-4424-aea0-42ffee21ae60"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
-        },
-        "finalmask": {
-          "udp": [
-            {
-              "type": "salamander",
-              "settings": {
-                "password": "2cdac61cdc30d93a33cc955123681028"
-              }
-            }
-          ],
-          "quicParams": {
-            "congestion": "bbr",
-            "udpHop": {
-              "ports": "40000-50000",
-              "interval": 10
-            }
-          }
-        }
-      }
-    },
-    {
-      "tag": "door6",
-      "protocol": "hysteria",
-      "settings": {
-        "version": 2,
-        "address": "168.222.49.89",
-        "port": 30150
-      },
-      "streamSettings": {
-        "network": "hysteria",
-        "hysteriaSettings": {
-          "version": 2,
-          "auth": "dcae26dd-b17a-4424-aea0-42ffee21ae60"
-        },
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "www.bing.com",
-          "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
-        },
-        "finalmask": {
-          "udp": [
-            {
-              "type": "salamander",
-              "settings": {
-                "password": "2cdac61cdc30d93a33cc955123681028"
-              }
-            }
-          ],
-          "quicParams": {
-            "congestion": "bbr",
-            "udpHop": {
-              "ports": "40000-50000",
-              "interval": 10
-            }
-          }
-        }
-      }
-    },
-    {
-      "tag": "doorT4",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "168.222.49.89",
-            "port": 30151,
+            "address": "54.250.58.236",
+            "port": 443,
             "users": [
               {
-                "id": "dcae26dd-b17a-4424-aea0-42ffee21ae60",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "7060231d-b9ba-495f-a218-bf427940cf3e"
               }
             ]
           }
@@ -128,15 +55,53 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
+        "security": "none",
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "tcpSettings": {
+          "header": {
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "play.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
+          }
+        },
         "tlsSettings": {
-          "serverName": "www.bing.com",
-          "alpn": [
-            "http/1.1"
-          ],
-          "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
+          "allowInsecure": false,
+          "serverName": "play.googleapis.com"
         }
-      }
+      },
+      "tag": "proxy"
+    },
+    {
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy"
+        }
+      },
+      "tag": "dns-out"
     },
     {
       "protocol": "freedom",
@@ -147,43 +112,38 @@
       "tag": "block"
     }
   ],
-  "observatory": {
-    "subjectSelector": [
-      "door4",
-      "door6",
-      "doorT4"
-    ],
-    "probeUrl": "https://www.gstatic.com/generate_204",
-    "probeInterval": "15s",
-    "enableConcurrency": true
+  "policy": {
+    "system": {
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
   },
+  "remarks": "@shenvpn",
   "routing": {
-    "domainStrategy": "IPOnDemand",
-    "balancers": [
-      {
-        "tag": "doors",
-        "selector": [
-          "door4",
-          "door6",
-          "doorT4"
-        ],
-        "strategy": {
-          "type": "leastPing"
-        }
-      }
-    ],
+    "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
-        "network": "udp",
-        "port": "443",
-        "outboundTag": "block"
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
-        "port": "0-65535",
-        "balancerTag": "doors"
+        "inboundTag": [
+          "socks"
+        ],
+        "network": "tcp,udp",
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "tcp,udp",
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }

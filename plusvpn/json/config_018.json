@@ -1,30 +1,15 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": "",
-    "dnsLog": false
-  },
   "dns": {
-    "servers": [
-      "tls://1.1.1.1",
-      "tls://1.0.0.1",
-      "tls://8.8.8.8",
-      "tls://8.8.4.4",
-      "tls://9.9.9.9",
-      "1.1.1.1",
-      "1.0.0.1",
-      "8.8.8.8",
-      "8.8.4.4",
-      "9.9.9.9"
-    ],
     "queryStrategy": "UseIPv4",
+    "servers": [
+      "https://1.1.1.1/dns-query",
+      "https://8.8.8.8/dns-query",
+      "https://9.9.9.9/dns-query"
+    ],
     "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -33,29 +18,36 @@
         "udp": true
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
-        "routeOnly": false
-      }
+        "enabled": true,
+        "routeOnly": true
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "access": "none",
+    "dnsLog": true,
+    "error": "",
+    "loglevel": "info"
+  },
   "outbounds": [
     {
-      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "18.159.214.2",
-            "port": 443,
+            "address": "51.68.146.34",
+            "port": 2095,
             "users": [
               {
-                "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "9dcd581c-0ee6-4514-a791-87bd2edac968"
               }
             ]
           }
@@ -63,69 +55,95 @@
       },
       "streamSettings": {
         "network": "tcp",
+        "security": "none",
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
         "tcpSettings": {
           "header": {
-            "type": "http",
             "request": {
-              "version": "1.1",
-              "method": "GET",
-              "path": [
-                "/"
-              ],
               "headers": {
-                "Host": [
-                  "cloudfront.net"
+                "Accept-Encoding": [
+                  "gzip, deflate"
                 ],
                 "Connection": [
                   "keep-alive"
                 ],
-                "Pragma": "no-cache",
-                "Accept-Encoding": [
-                  "gzip, deflate"
+                "Host": [
+                  "firebaseinstallations.googleapis.com"
                 ],
+                "Pragma": "no-cache",
                 "User-Agent": [
                   "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
                 ]
-              }
-            }
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
         },
-        "sockopt": {
-          "domainStrategy": "UseIPv4"
+        "tlsSettings": {
+          "allowInsecure": false,
+          "serverName": "firebaseinstallations.googleapis.com"
         }
-      }
+      },
+      "tag": "proxy"
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy"
+        }
+      },
+      "tag": "dns-out"
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
     }
   ],
+  "policy": {
+    "system": {
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
+  },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "type": "field",
         "inboundTag": [
           "dns-module"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "type": "field",
+        "inboundTag": [
+          "socks"
+        ],
         "network": "tcp,udp",
-        "outboundTag": "proxy"
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "tcp,udp",
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   },
-  "stats": {},
-  "policy": {
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  }
+  "stats": {}
 }
