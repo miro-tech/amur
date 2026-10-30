@@ -3,41 +3,23 @@
   "log": {
     "loglevel": "none",
     "access": "",
-    "error": "",
-    "dnsLog": false
-  },
-  "dns": {
-    "servers": [
-      "tls://1.1.1.1",
-      "tls://1.0.0.1",
-      "tls://8.8.8.8",
-      "tls://8.8.4.4",
-      "tls://9.9.9.9",
-      "1.1.1.1",
-      "1.0.0.1",
-      "8.8.8.8",
-      "8.8.4.4",
-      "9.9.9.9"
-    ],
-    "queryStrategy": "UseIPv4",
-    "tag": "dns-module"
+    "error": ""
   },
   "inbounds": [
     {
       "tag": "socks",
-      "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
-          "tls",
-          "quic"
+          "tls"
         ],
         "routeOnly": false
       }
@@ -50,82 +32,129 @@
       "settings": {
         "vnext": [
           {
-            "address": "172.105.21.121",
-            "port": 2095,
+            "address": "199.232.78.159",
+            "port": 443,
             "users": [
               {
-                "id": "57a727cf-f961-45e0-88c3-b09673c9b930",
+                "id": "e9a9d2ba-8c33-4e5e-a903-efa595db2fff",
+                "level": 8,
                 "encryption": "none"
               }
             ]
           }
         ]
       },
+      "mux": {
+        "enabled": false,
+        "concurrency": -1,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": ""
+      },
       "streamSettings": {
-        "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "http",
-            "request": {
-              "version": "1.1",
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "firebaseinstallations.googleapis.com"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Pragma": "no-cache",
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              }
-            }
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "headers": {
+            "Host": "copy_az_channel_NUFiLTER_8i.global.ssl.fastly.net."
           }
         },
-        "sockopt": {
-          "domainStrategy": "UseIPv4"
+        "tlsSettings": {
+          "serverName": "cdn.akamai.steamstatic.com",
+          "pinnedPeerCertSha256": "CD6E838B9BFE31CAB8B3D5C858B0D6223FE84ECE236C1FDB281BE93C302E1E6E",
+          "show": false
         }
       }
     },
     {
       "tag": "direct",
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "mux": {
+        "enabled": false,
+        "concurrency": 8,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": ""
+      }
     },
     {
       "tag": "block",
-      "protocol": "blackhole"
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "mux": {
+        "enabled": false,
+        "concurrency": 8,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": ""
+      }
     }
   ],
+  "dns": {
+    "servers": [
+      "1.1.1.1"
+    ],
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com",
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "dot.pub": [
+        "1.12.12.12",
+        "120.53.53.53"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "common.dot.dns.yandex.net": [
+        "77.88.8.8",
+        "77.88.8.1",
+        "2a02:6b8::feed:0ff",
+        "2a02:6b8:0:1::feed:0ff"
+      ]
+    }
+  },
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
-        "inboundTag": [
-          "dns-module"
+        "ip": [
+          "1.1.1.1"
         ],
-        "outboundTag": "proxy"
+        "outboundTag": "proxy",
+        "port": "53"
       },
       {
         "type": "field",
-        "network": "tcp,udp",
-        "outboundTag": "proxy"
+        "ip": [
+          "223.5.5.5"
+        ],
+        "outboundTag": "direct",
+        "port": "53"
       }
     ]
-  },
-  "stats": [],
-  "policy": {
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
   }
 }

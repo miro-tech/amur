@@ -2,28 +2,13 @@
   {
     "remarks": "@shenvpn",
     "log": {
-      "loglevel": "warning"
+      "loglevel": "none",
+      "access": "",
+      "error": ""
     },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
@@ -32,90 +17,241 @@
           "udp": true
         },
         "sniffing": {
+          "enabled": true,
           "destOverride": [
             "http",
             "tls",
             "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
+          ]
         }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
         "protocol": "http",
-        "settings": {}
+        "settings": []
       }
     ],
     "outbounds": [
       {
+        "tag": "proxy",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "51.75.63.122",
-              "port": 2095,
+              "address": "151.101.193.194",
+              "port": 443,
               "users": [
                 {
-                  "id": "4d9af357-2fe2-4f87-88de-87c2d48b23cd",
-                  "encryption": "none"
+                  "id": "337bf72e-bb79-4d5f-be3f-7822eb77100c",
+                  "encryption": "none",
+                  "level": 0
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
+          "network": "xhttp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.firefox.com",
+            "fingerprint": "chrome",
+            "alpn": [
+              "http/1.1"
+            ],
+            "verifyPeerCertByName": "*.freetls.fastly.net"
+          },
+          "xhttpSettings": {
+            "host": "ascx-1a124d18ae2000-task-1a16db2a943000-066d0f4351.global.ssl.fastly.net",
+            "path": "/",
+            "mode": "auto"
           }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
         }
       },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
       }
-    },
+    ],
     "routing": {
-      "domainStrategy": "AsIs",
       "rules": [
         {
+          "type": "field",
           "ip": [
             "geoip:private"
           ],
           "outboundTag": "direct"
+        }
+      ]
+    },
+    "dns": {
+      "servers": [
+        "8.8.8.8"
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": ""
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true,
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "199.232.78.159",
+              "port": 443,
+              "users": [
+                {
+                  "id": "e9a9d2ba-8c33-4e5e-a903-efa595db2fff",
+                  "level": 8,
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "mux": {
+          "enabled": false,
+          "concurrency": -1,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": ""
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "wsSettings": {
+            "headers": {
+              "Host": "copy_az_channel_NUFiLTER_8i.global.ssl.fastly.net."
+            }
+          },
+          "tlsSettings": {
+            "serverName": "cdn.akamai.steamstatic.com",
+            "pinnedPeerCertSha256": "CD6E838B9BFE31CAB8B3D5C858B0D6223FE84ECE236C1FDB281BE93C302E1E6E",
+            "show": false
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "domainStrategy": "UseIP"
+        },
+        "mux": {
+          "enabled": false,
+          "concurrency": 8,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": ""
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        },
+        "mux": {
+          "enabled": false,
+          "concurrency": 8,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": ""
+        }
+      }
+    ],
+    "dns": {
+      "servers": [
+        "1.1.1.1"
+      ],
+      "hosts": {
+        "domain:googleapis.cn": "googleapis.com",
+        "dns.alidns.com": [
+          "223.5.5.5",
+          "223.6.6.6",
+          "2400:3200::1",
+          "2400:3200:baba::1"
+        ],
+        "one.one.one.one": [
+          "1.1.1.1",
+          "1.0.0.1",
+          "2606:4700:4700::1111",
+          "2606:4700:4700::1001"
+        ],
+        "dot.pub": [
+          "1.12.12.12",
+          "120.53.53.53"
+        ],
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "2001:4860:4860::8888",
+          "2001:4860:4860::8844"
+        ],
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112",
+          "2620:fe::fe",
+          "2620:fe::9"
+        ],
+        "common.dot.dns.yandex.net": [
+          "77.88.8.8",
+          "77.88.8.1",
+          "2a02:6b8::feed:0ff",
+          "2a02:6b8:0:1::feed:0ff"
+        ]
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "1.1.1.1"
+          ],
+          "outboundTag": "proxy",
+          "port": "53"
         },
         {
-          "domain": [
-            "geosite:category-ads-all"
+          "type": "field",
+          "ip": [
+            "223.5.5.5"
           ],
-          "outboundTag": "block"
+          "outboundTag": "direct",
+          "port": "53"
         }
       ]
     }
@@ -172,11 +308,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "172.105.21.121",
-              "port": 2095,
+              "address": "164.92.140.208",
+              "port": 443,
               "users": [
                 {
-                  "id": "57a727cf-f961-45e0-88c3-b09673c9b930",
+                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
                   "encryption": "none"
                 }
               ]
@@ -196,7 +332,7 @@
                 ],
                 "headers": {
                   "Host": [
-                    "firebaseinstallations.googleapis.com"
+                    "cloudfront.net"
                   ],
                   "Connection": [
                     "keep-alive"
@@ -252,40 +388,131 @@
     }
   },
   {
-    "burstObservatory": {
-      "pingConfig": {
-        "destination": "https://www.gstatic.com/generate_204",
-        "httpMethod": "HEAD",
-        "interval": "5m",
-        "sampling": 2,
-        "timeout": "30s"
-      },
-      "subjectSelector": [
-        "proxy-proxy-"
-      ]
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "warning"
     },
     "dns": {
-      "hosts": {
-        "domain:googleapis.cn": "googleapis.com"
-      },
+      "hosts": {},
       "servers": [
         {
-          "address": "fakedns",
+          "address": "1.1.1.1",
           "domains": [
-            "geosite:cn",
-            "geosite:private"
+            "geosite:geolocation-!cn"
           ]
         },
-        "8.8.8.8",
-        {
-          "address": "223.5.5.5",
-          "domains": [
-            "geosite:private"
+        "8.8.8.8"
+      ]
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
           ],
-          "finalQuery": true,
-          "skipFallback": true,
-          "tag": "domestic-dns_0_0"
+          "enabled": true,
+          "routeOnly": false
         }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "2a01:4f9:c015:3f3d::1",
+              "port": 51926,
+              "users": [
+                {
+                  "id": "555c177a-d806-4e8d-bbc3-7c01e4c5d973",
+                  "encryption": "mlkem768x25519plus.native.0rtt.iP6t9L9w7FUsFjEmjng6ILDTZZoxk5KRnYxWFJ6Ah2k"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp"
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": ""
+    },
+    "dns": {
+      "servers": [
+        "1.1.1.1"
       ],
       "tag": "dns-module"
     },
@@ -302,8 +529,7 @@
           "destOverride": [
             "http",
             "tls",
-            "quic",
-            "fakedns"
+            "quic"
           ],
           "enabled": true,
           "routeOnly": false
@@ -311,132 +537,111 @@
         "tag": "socks"
       }
     ],
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": ""
-    },
     "outbounds": [
       {
-        "mux": {
-          "concurrency": -1,
-          "enabled": false
-        },
-        "protocol": "vless",
+        "tag": "door4",
+        "protocol": "hysteria",
         "settings": {
-          "vnext": [
-            {
-              "address": "reaza.localip.ir",
-              "port": 2087,
-              "users": [
-                {
-                  "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                  "encryption": "none",
-                  "flow": ""
-                }
-              ]
-            }
-          ]
+          "version": 2,
+          "address": "168.222.49.89",
+          "port": 30150
         },
         "streamSettings": {
+          "network": "hysteria",
+          "hysteriaSettings": {
+            "version": 2,
+            "auth": "dcae26dd-b17a-4424-aea0-42ffee21ae60"
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.bing.com",
+            "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
+          },
           "finalmask": {
-            "tcp": [
+            "udp": [
               {
-                "type": "fragment",
+                "type": "salamander",
                 "settings": {
-                  "packets": "tlshello",
-                  "lengths": [
-                    "0",
-                    "104",
-                    "1"
-                  ],
-                  "delays": [
-                    "0"
-                  ],
-                  "maxSplit": "0"
-                }
-              },
-              {
-                "type": "fragment",
-                "settings": {
-                  "packets": "1-1",
-                  "lengths": [
-                    "114",
-                    "1"
-                  ],
-                  "delays": [
-                    "1"
-                  ],
-                  "maxSplit": "11"
+                  "password": "2cdac61cdc30d93a33cc955123681028"
                 }
               }
-            ]
-          },
-          "network": "xhttp",
-          "security": "tls",
-          "tlsSettings": {
-            "alpn": [
-              "h2"
             ],
-            "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-            "fingerprint": "unsafe",
-            "serverName": "leaseweb69-dtah71tw.zellivo.ir"
-          },
-          "xhttpSettings": {
-            "extra": {
-              "mode": "auto",
-              "xPaddingBytes": "100-1000"
-            },
-            "host": "leaseweb69-dtah71tw.zellivo.ir",
-            "mode": "auto",
-            "path": "/mori1996"
+            "quicParams": {
+              "congestion": "bbr",
+              "udpHop": {
+                "ports": "40000-50000",
+                "interval": 10
+              }
+            }
           }
-        },
-        "tag": "proxy-proxy-1-443-T"
+        }
       },
       {
-        "mux": {
-          "concurrency": -1,
-          "enabled": false
+        "tag": "door6",
+        "protocol": "hysteria",
+        "settings": {
+          "version": 2,
+          "address": "168.222.49.89",
+          "port": 30150
         },
+        "streamSettings": {
+          "network": "hysteria",
+          "hysteriaSettings": {
+            "version": 2,
+            "auth": "dcae26dd-b17a-4424-aea0-42ffee21ae60"
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.bing.com",
+            "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
+          },
+          "finalmask": {
+            "udp": [
+              {
+                "type": "salamander",
+                "settings": {
+                  "password": "2cdac61cdc30d93a33cc955123681028"
+                }
+              }
+            ],
+            "quicParams": {
+              "congestion": "bbr",
+              "udpHop": {
+                "ports": "40000-50000",
+                "interval": 10
+              }
+            }
+          }
+        }
+      },
+      {
+        "tag": "doorT4",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "reaza.localip.ir",
-              "port": 2087,
+              "address": "168.222.49.89",
+              "port": 30151,
               "users": [
                 {
-                  "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                  "encryption": "none",
-                  "flow": ""
+                  "id": "dcae26dd-b17a-4424-aea0-42ffee21ae60",
+                  "encryption": "none"
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "xhttp",
+          "network": "tcp",
           "security": "tls",
           "tlsSettings": {
+            "serverName": "www.bing.com",
             "alpn": [
-              "h2"
+              "http/1.1"
             ],
-            "echConfigList": "iranva.ir+udp://1.1.1.1",
-            "fingerprint": "chrome",
-            "serverName": "leaseweb69-dtah71tw.zellivo.ir"
-          },
-          "xhttpSettings": {
-            "extra": {
-              "mode": "auto",
-              "xPaddingBytes": "100-1000"
-            },
-            "host": "leaseweb69-dtah71tw.zellivo.ir",
-            "mode": "auto",
-            "path": "/mori1996"
+            "pinnedPeerCertSha256": "cb68bc3b53228c0320ab41dff1a0cb4af0a221796fb3e85c1b991e6cc04cd09e"
           }
-        },
-        "tag": "proxy-proxy-2-443-M"
+        }
       },
       {
         "protocol": "freedom",
@@ -445,94 +650,44 @@
       {
         "protocol": "blackhole",
         "tag": "block"
-      },
-      {
-        "protocol": "dns",
-        "settings": {
-          "userLevel": 12
-        },
-        "tag": "dns-out"
       }
     ],
-    "policy": {
-      "levels": {
-        "0": {
-          "downlinkOnly": 0,
-          "uplinkOnly": 0
-        },
-        "12": {
-          "connIdle": 12,
-          "downlinkOnly": 0,
-          "uplinkOnly": 0
-        }
-      }
+    "observatory": {
+      "subjectSelector": [
+        "door4",
+        "door6",
+        "doorT4"
+      ],
+      "probeUrl": "https://www.gstatic.com/generate_204",
+      "probeInterval": "15s",
+      "enableConcurrency": true
     },
-    "remarks": "@shenvpn",
     "routing": {
+      "domainStrategy": "IPOnDemand",
       "balancers": [
         {
+          "tag": "doors",
           "selector": [
-            "proxy-proxy-"
+            "door4",
+            "door6",
+            "doorT4"
           ],
           "strategy": {
-            "type": "leastLoad"
-          },
-          "tag": "balancer-main"
+            "type": "leastPing"
+          }
         }
       ],
-      "domainStrategy": "AsIs",
       "rules": [
         {
-          "inboundTag": [
-            "socks"
-          ],
-          "outboundTag": "dns-out",
-          "port": "53",
-          "type": "field"
-        },
-        {
-          "inboundTag": [
-            "domestic-dns_0_0"
-          ],
-          "outboundTag": "direct",
-          "type": "field"
-        },
-        {
-          "balancerTag": "balancer-main",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "type": "field"
-        },
-        {
+          "type": "field",
           "network": "udp",
-          "outboundTag": "block",
           "port": "443",
-          "type": "field"
+          "outboundTag": "block"
         },
         {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct",
-          "type": "field"
-        },
-        {
-          "domain": [
-            "geosite:private"
-          ],
-          "outboundTag": "direct",
-          "type": "field"
-        },
-        {
-          "balancerTag": "balancer-main",
+          "type": "field",
           "port": "0-65535",
-          "type": "field"
-        },
-        {
-          "balancerTag": "balancer-main",
-          "network": "tcp,udp",
-          "type": "field"
+          "balancerTag": "doors"
         }
       ]
     }
@@ -592,11 +747,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "57.128.27.88",
+              "address": "51.79.92.33",
               "port": 2095,
               "users": [
                 {
-                  "id": "4a004712-8f60-4c23-a56e-64f64bd80be3",
+                  "id": "74af9808-3673-4c3d-94a7-b5125f60832c",
                   "encryption": "none"
                 }
               ]
@@ -713,11 +868,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "57.128.27.41",
+              "address": "172.233.47.132",
               "port": 2095,
               "users": [
                 {
-                  "id": "5a86ccd0-6129-4d47-8550-0a7bfe114c7c",
+                  "id": "73b8dac7-6817-4f61-8228-a0426b5ad7fa",
                   "encryption": "none"
                 }
               ]
@@ -834,11 +989,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "51.77.40.241",
+              "address": "172.232.186.216",
               "port": 2095,
               "users": [
                 {
-                  "id": "3cb31b58-3ef9-4bc0-bc8a-5bfb67db9a6e",
+                  "id": "67ae50f1-b388-44a1-a740-bb3b4232a1b4",
                   "encryption": "none"
                 }
               ]
@@ -955,11 +1110,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "51.79.102.116",
+              "address": "172.233.44.214",
               "port": 2095,
               "users": [
                 {
-                  "id": "3fd8bd40-29a3-436d-a55a-0125df79aa72",
+                  "id": "332059c4-26dd-4011-b533-9b4e1fb6a3a6",
                   "encryption": "none"
                 }
               ]
@@ -1076,11 +1231,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "178.32.152.141",
+              "address": "173.255.225.236",
               "port": 443,
               "users": [
                 {
-                  "id": "9d795909-8217-43bc-90be-4779420aec1c",
+                  "id": "6f88f6f3-f53b-4f0f-a02d-68e4998c93a1",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1094,2913 +1249,88 @@
           "realitySettings": {
             "serverName": "amp-api-edge.apps.apple.com",
             "fingerprint": "chrome",
-            "publicKey": "NMAg-o3Hea_Ei-3ezwyDnrIkW4ubrCreUV1WpV4tIVg",
-            "shortId": "78df41b9ee2bef6d",
-            "spiderX": "/"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "54.37.76.95",
-              "port": 2095,
-              "users": [
-                {
-                  "id": "a0b16cf4-b9a1-4b72-93ff-f7231e421e54",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "141.94.211.93",
-              "port": 443,
-              "users": [
-                {
-                  "id": "e19b6844-5844-4a62-a13c-f9984c349087",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "ny0uTdI2fY_6Cs0TGS4j_9M8V4RXgTF6gHNVJh_dJBw",
-            "shortId": "928d71c542e04f24",
-            "spiderX": "/"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "51.91.206.139",
-              "port": 2095,
-              "users": [
-                {
-                  "id": "b75c99d0-fd00-4c49-9a05-1001e61b319f",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "51.79.27.53",
-              "port": 443,
-              "users": [
-                {
-                  "id": "006bf07b-83e8-4bac-8c86-d81b68faff66",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "UM9SO3Tg-yA1YjPI6Mnsvg1gKv5BiSiWi8Q2zH4JqxU",
-            "shortId": "074f54d52399e6ca",
-            "spiderX": "/"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "hosts": {},
-      "servers": [
-        {
-          "address": "1.1.1.1",
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "8.8.8.8"
-      ]
-    },
-    "fakedns": [
-      {
-        "ipPool": "198.18.0.0/15",
-        "poolSize": 65535
-      }
-    ],
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        }
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {}
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "54.37.2.35",
-              "port": 2095,
-              "users": [
-                {
-                  "id": "0adefb6f-6c8b-4eb8-8664-8dba79b3db6e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http"
-            }
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "dns",
-        "tag": "dns-out"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "policy": {
-      "levels": {
-        "8": {
-          "connIdle": 300,
-          "downlinkOnly": 1,
-          "handshake": 4,
-          "uplinkOnly": 1
-        }
-      },
-      "system": {
-        "statsInboundDownlink": true,
-        "statsInboundUplink": true
-      }
-    },
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "ip": [
-            "geoip:private"
-          ],
-          "outboundTag": "direct"
-        },
-        {
-          "domain": [
-            "geosite:category-ads-all"
-          ],
-          "outboundTag": "block"
-        }
-      ]
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "170.64.237.6",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "fast.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
+            "publicKey": "m0uo-ELyx7YF1gNVv3cbnOF3vuCrPfPE5dWnUnw-zB4",
+            "shortId": "4e6291c82b602d28",
+            "spiderX": "/ZaQ2Zd0mUtI0"
           },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "178.62.74.203",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "cloudfront.net"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "16.58.128.210",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "store.steampowered.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "[2a01:4f8:1c19:7b5::1]",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "store.steampowered.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "138.68.152.177",
-              "port": 443,
-              "users": [
-                {
-                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "cloudfront.net"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "54.185.135.179",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "43.202.63.28",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "3.35.156.186",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "43.201.56.153",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "13.124.252.31",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "35.90.93.5",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "52.78.36.211",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "32.191.45.34",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "54.249.209.20",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "15.237.53.17",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "13.124.227.168",
-              "port": 443,
-              "users": [
-                {
-                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "play.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
-            }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "141.95.102.212",
-              "port": 443,
-              "users": [
-                {
-                  "id": "6ebb17c5-8334-40a2-bc18-98f729347aea",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
           "tcpSettings": {
             "header": {
               "type": "none"
             }
-          },
-          "security": "reality",
-          "realitySettings": {
-            "show": false,
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "7pS0xNWAkf8VHcTuqyy5ptDCUnpJFTlXRdGxcYz45Vg",
-            "shortId": "8dd1b8809e6438cd",
-            "spiderX": "/"
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
           }
-        }
+        },
+        "tag": "proxy"
       },
       {
-        "tag": "direct",
-        "protocol": "freedom"
+        "protocol": "freedom",
+        "tag": "direct"
       },
       {
-        "tag": "block",
-        "protocol": "blackhole"
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
       }
     ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
     "routing": {
       "domainStrategy": "AsIs",
       "rules": [
         {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
+          "ip": [
+            "geoip:private"
           ],
-          "outboundTag": "proxy"
+          "outboundTag": "direct"
         },
         {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
         }
       ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
     }
   },
   {
     "remarks": "@shenvpn",
     "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
+      "loglevel": "warning"
     },
     "dns": {
+      "hosts": {},
       "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
     },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
     "inbounds": [
       {
-        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
@@ -4009,28 +1339,33 @@
           "udp": true
         },
         "sniffing": {
-          "enabled": true,
           "destOverride": [
             "http",
             "tls",
             "quic"
           ],
+          "enabled": true,
           "routeOnly": false
         }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
       }
     ],
     "outbounds": [
       {
-        "tag": "proxy",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "148.113.233.37",
+              "address": "51.178.33.112",
               "port": 2095,
               "users": [
                 {
-                  "id": "48c9c48b-473d-4ecf-b52a-849ab2f52810",
+                  "id": "00ae29d7-e4a9-48fb-bec6-46788fa54931",
                   "encryption": "none"
                 }
               ]
@@ -4041,97 +1376,82 @@
           "network": "tcp",
           "tcpSettings": {
             "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "firebaseinstallations.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
+              "type": "http"
             }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
           }
-        }
+        },
+        "tag": "proxy"
       },
       {
-        "tag": "direct",
-        "protocol": "freedom"
+        "protocol": "freedom",
+        "tag": "direct"
       },
       {
-        "tag": "block",
-        "protocol": "blackhole"
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
       }
     ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
     "routing": {
       "domainStrategy": "AsIs",
       "rules": [
         {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
+          "ip": [
+            "geoip:private"
           ],
-          "outboundTag": "proxy"
+          "outboundTag": "direct"
         },
         {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
         }
       ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
     }
   },
   {
     "remarks": "@shenvpn",
     "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
+      "loglevel": "warning"
     },
     "dns": {
+      "hosts": {},
       "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
     },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
     "inbounds": [
       {
-        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
@@ -4140,28 +1460,33 @@
           "udp": true
         },
         "sniffing": {
-          "enabled": true,
           "destOverride": [
             "http",
             "tls",
             "quic"
           ],
+          "enabled": true,
           "routeOnly": false
         }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
       }
     ],
     "outbounds": [
       {
-        "tag": "proxy",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "57.128.85.5",
+              "address": "172.239.15.118",
               "port": 2095,
               "users": [
                 {
-                  "id": "343b77cd-05c8-4d71-8a15-4cfb0a2a4b74",
+                  "id": "483f79c2-28af-4b05-9fcb-51a88d767e2a",
                   "encryption": "none"
                 }
               ]
@@ -4172,97 +1497,82 @@
           "network": "tcp",
           "tcpSettings": {
             "header": {
-              "type": "http",
-              "request": {
-                "version": "1.1",
-                "method": "GET",
-                "path": [
-                  "/"
-                ],
-                "headers": {
-                  "Host": [
-                    "firebaseinstallations.googleapis.com"
-                  ],
-                  "Connection": [
-                    "keep-alive"
-                  ],
-                  "Pragma": "no-cache",
-                  "Accept-Encoding": [
-                    "gzip, deflate"
-                  ],
-                  "User-Agent": [
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                  ]
-                }
-              }
+              "type": "http"
             }
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
           }
-        }
+        },
+        "tag": "proxy"
       },
       {
-        "tag": "direct",
-        "protocol": "freedom"
+        "protocol": "freedom",
+        "tag": "direct"
       },
       {
-        "tag": "block",
-        "protocol": "blackhole"
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
       }
     ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
     "routing": {
       "domainStrategy": "AsIs",
       "rules": [
         {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
+          "ip": [
+            "geoip:private"
           ],
-          "outboundTag": "proxy"
+          "outboundTag": "direct"
         },
         {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
         }
       ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
     }
   },
   {
     "remarks": "@shenvpn",
     "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
+      "loglevel": "warning"
     },
     "dns": {
+      "hosts": {},
       "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
+        {
+          "address": "1.1.1.1",
+          "domains": [
+            "geosite:geolocation-!cn"
+          ]
+        },
+        "8.8.8.8"
+      ]
     },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
     "inbounds": [
       {
-        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
@@ -4271,28 +1581,33 @@
           "udp": true
         },
         "sniffing": {
-          "enabled": true,
           "destOverride": [
             "http",
             "tls",
             "quic"
           ],
+          "enabled": true,
           "routeOnly": false
         }
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {}
       }
     ],
     "outbounds": [
       {
-        "tag": "proxy",
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "51.79.89.213",
+              "address": "51.91.139.243",
               "port": 443,
               "users": [
                 {
-                  "id": "c4737608-c308-459b-830d-ed375982a368",
+                  "id": "b4ad142a-940e-45bd-b9ac-4723a5150b6c",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -4302,57 +1617,60 @@
         },
         "streamSettings": {
           "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "none"
-            }
-          },
           "security": "reality",
           "realitySettings": {
-            "show": false,
             "serverName": "amp-api-edge.apps.apple.com",
             "fingerprint": "chrome",
-            "publicKey": "ID1m4n4-TVz-C3WUxf8LuftUFq4vYWJpMFoipvx5skc",
-            "shortId": "77e1dbc38063ee30",
+            "publicKey": "zCu5ECuytQIMEx1L2yHYrvLVUovfPldQIi23i1n_UB4",
+            "shortId": "b8eac33a18773b0b",
             "spiderX": "/"
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
           }
-        }
+        },
+        "tag": "proxy"
       },
       {
-        "tag": "direct",
-        "protocol": "freedom"
+        "protocol": "freedom",
+        "tag": "direct"
       },
       {
-        "tag": "block",
-        "protocol": "blackhole"
+        "protocol": "dns",
+        "tag": "dns-out"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
       }
     ],
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 1,
+          "handshake": 4,
+          "uplinkOnly": 1
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true
+      }
+    },
     "routing": {
       "domainStrategy": "AsIs",
       "rules": [
         {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
+          "ip": [
+            "geoip:private"
           ],
-          "outboundTag": "proxy"
+          "outboundTag": "direct"
         },
         {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "domain": [
+            "geosite:category-ads-all"
+          ],
+          "outboundTag": "block"
         }
       ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
     }
   },
   {
@@ -4407,11 +1725,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "188.114.97.6",
+              "address": "54.230.112.40",
               "port": 443,
               "users": [
                 {
-                  "id": "30610baf-4645-4c7b-9a22-0d0a0a79eab5",
+                  "id": "328a3ea0-1f1a-4437-8ec1-b862ce38df24",
                   "encryption": "none"
                 }
               ]
@@ -4420,17 +1738,20 @@
         },
         "streamSettings": {
           "network": "ws",
+          "security": "tls",
           "wsSettings": {
-            "path": "/glasspanel/guest000_0_5de14443985f/",
+            "path": "/api/v1/",
             "headers": {
-              "Host": "mao.kipfel.kdns.fr"
+              "Host": "cloudfront.net"
             }
           },
-          "security": "tls",
           "tlsSettings": {
-            "serverName": "mao.kipfel.kdns.fr",
+            "serverName": "d17ts7c7z3fe13.cloudfront.net",
+            "fingerprint": "chrome",
             "allowInsecure": false,
-            "fingerprint": "unsafe"
+            "alpn": [
+              "http/1.1"
+            ]
           },
           "sockopt": {
             "domainStrategy": "UseIPv4"
@@ -4523,7 +1844,138 @@
         "settings": {
           "vnext": [
             {
-              "address": "144.126.230.205",
+              "address": "161.35.60.244",
+              "port": 443,
+              "users": [
+                {
+                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "fast.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "165.227.134.228",
               "port": 443,
               "users": [
                 {
@@ -4654,7 +2106,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "170.64.158.142",
+              "address": "206.189.24.79",
               "port": 443,
               "users": [
                 {
@@ -4785,7 +2237,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "165.22.82.101",
+              "address": "18.159.214.2",
               "port": 443,
               "users": [
                 {
@@ -4809,7 +2261,7 @@
                 ],
                 "headers": {
                   "Host": [
-                    "fast.com"
+                    "cloudfront.net"
                   ],
                   "Connection": [
                     "keep-alive"
@@ -4916,7 +2368,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "170.64.206.165",
+              "address": "46.101.48.215",
               "port": 443,
               "users": [
                 {
@@ -5047,7 +2499,2222 @@
         "settings": {
           "vnext": [
             {
-              "address": "170.64.136.236",
+              "address": "57.181.32.27",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "13.38.30.55",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "13.39.112.82",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "35.181.52.77",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "32.191.29.87",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "13.36.178.51",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "15.237.176.219",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "54.180.126.21",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "54.92.104.251",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "3.112.226.82",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "13.38.15.211",
+              "port": 443,
+              "users": [
+                {
+                  "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "play.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.237.50.191",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "e71916cd-044c-43a8-9498-fe6989ab7769",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "firebaseinstallations.googleapis.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.233.47.209",
+              "port": 443,
+              "users": [
+                {
+                  "id": "c02c436a-2e3d-46cf-ab00-d345da690ee3",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "none"
+            }
+          },
+          "security": "reality",
+          "realitySettings": {
+            "show": false,
+            "serverName": "amp-api-edge.apps.apple.com",
+            "fingerprint": "chrome",
+            "publicKey": "RUz7W9MjW9X_ZNnmOyk4jdybHVDGSsuhWnGf3vSUvyo",
+            "shortId": "cb4bac12cf980d2c",
+            "spiderX": "/D73aseYJ8svk"
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.236.233.44",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "cb72811d-aaf3-4fe4-b03d-4d47f984fff8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "store.steampowered.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.105.109.235",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "d7ac47bc-44a2-4ff7-b858-a509599c4b56",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "store.steampowered.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "51.79.92.33",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "74af9808-3673-4c3d-94a7-b5125f60832c",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "perf-prod.samsung.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.105.191.151",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "c41d559f-77c5-4b98-9147-f02404a31d89",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "store.steampowered.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "188.166.95.122",
               "port": 443,
               "users": [
                 {
@@ -5178,7 +4845,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "24.144.103.236",
+              "address": "[2a01:4f8:1c19:4e82::1]",
               "port": 443,
               "users": [
                 {
@@ -5309,11 +4976,523 @@
         "settings": {
           "vnext": [
             {
-              "address": "54.37.76.95",
+              "address": "209.38.101.18",
+              "port": 443,
+              "users": [
+                {
+                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "cloudfront.net"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "46.101.112.196",
+              "port": 443,
+              "users": [
+                {
+                  "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "store.steampowered.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "173.255.225.236",
               "port": 2095,
               "users": [
                 {
-                  "id": "a0b16cf4-b9a1-4b72-93ff-f7231e421e54",
+                  "id": "d4e202fe-d70e-4ac4-aaad-212ad4e5b717",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "perf-prod.samsung.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
+                }
+              }
+            }
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "57.128.55.183",
+              "port": 443,
+              "users": [
+                {
+                  "id": "9eeb90e8-ffde-4fc0-8a5b-4b320400aa63",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {
+            "header": {
+              "type": "none"
+            }
+          },
+          "security": "reality",
+          "realitySettings": {
+            "show": false,
+            "serverName": "amp-api-edge.apps.apple.com",
+            "fingerprint": "chrome",
+            "publicKey": "S3Z4C2bw4yzB7XHSd09f9m2W-AXeJI9i1LfqlgaDMmI",
+            "shortId": "7841a1db352133a0",
+            "spiderX": "/"
+          },
+          "sockopt": {
+            "domainStrategy": "UseIPv4"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-module"
+          ],
+          "outboundTag": "proxy"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+      }
+    }
+  },
+  {
+    "remarks": "@shenvpn",
+    "log": {
+      "loglevel": "none",
+      "access": "",
+      "error": "",
+      "dnsLog": false
+    },
+    "dns": {
+      "servers": [
+        "tls://1.1.1.1",
+        "tls://1.0.0.1",
+        "tls://8.8.8.8",
+        "tls://8.8.4.4",
+        "tls://9.9.9.9",
+        "1.1.1.1",
+        "1.0.0.1",
+        "8.8.8.8",
+        "8.8.4.4",
+        "9.9.9.9"
+      ],
+      "queryStrategy": "UseIPv4",
+      "tag": "dns-module"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "51.210.167.194",
+              "port": 2095,
+              "users": [
+                {
+                  "id": "bd6850b7-70ea-4b70-910e-75688b0d4bf3",
                   "encryption": "none"
                 }
               ]
@@ -5440,130 +5619,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "141.94.173.14",
-              "port": 443,
-              "users": [
-                {
-                  "id": "bb49c0f4-0640-4f14-a6f5-c1ef76c9a824",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "none"
-            }
-          },
-          "security": "reality",
-          "realitySettings": {
-            "show": false,
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "rTLL2G1NjctVHXXs2UicLgVvrU3-pL6BjrpMEmTP_Xg",
-            "shortId": "786018047874b42f",
-            "spiderX": "/"
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "51.91.143.64",
+              "address": "172.235.216.162",
               "port": 2095,
               "users": [
                 {
-                  "id": "5e082459-ad4e-4f1e-ab1d-6002a661be70",
+                  "id": "3bfd35fb-a819-46da-9452-cd158d110e3a",
                   "encryption": "none"
                 }
               ]
@@ -5583,7 +5643,7 @@
                 ],
                 "headers": {
                   "Host": [
-                    "firebaseinstallations.googleapis.com"
+                    "store.steampowered.com"
                   ],
                   "Connection": [
                     "keep-alive"
@@ -5690,13 +5750,12 @@
         "settings": {
           "vnext": [
             {
-              "address": "147.135.234.48",
-              "port": 443,
+              "address": "172.235.229.207",
+              "port": 2095,
               "users": [
                 {
-                  "id": "66c50756-22cc-4887-a29a-2fc146aa3c47",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
+                  "id": "9e72f17f-e900-4506-b36b-00b496bfdac5",
+                  "encryption": "none"
                 }
               ]
             }
@@ -5706,136 +5765,30 @@
           "network": "tcp",
           "tcpSettings": {
             "header": {
-              "type": "none"
-            }
-          },
-          "security": "reality",
-          "realitySettings": {
-            "show": false,
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "Wi2pDV8fDoJLJLt-oCKTi_xjLQjYe5JaFQ3xxfrG23o",
-            "shortId": "4aced5bb8e018ca2",
-            "spiderX": "/"
-          },
-          "sockopt": {
-            "domainStrategy": "UseIPv4"
-          }
-        }
-      },
-      {
-        "tag": "direct",
-        "protocol": "freedom"
-      },
-      {
-        "tag": "block",
-        "protocol": "blackhole"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "AsIs",
-      "rules": [
-        {
-          "type": "field",
-          "inboundTag": [
-            "dns-module"
-          ],
-          "outboundTag": "proxy"
-        },
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "stats": {},
-    "policy": {
-      "system": {
-        "statsOutboundUplink": true,
-        "statsOutboundDownlink": true
-      }
-    }
-  },
-  {
-    "remarks": "@shenvpn",
-    "log": {
-      "loglevel": "none",
-      "access": "",
-      "error": "",
-      "dnsLog": false
-    },
-    "dns": {
-      "servers": [
-        "tls://1.1.1.1",
-        "tls://1.0.0.1",
-        "tls://8.8.8.8",
-        "tls://8.8.4.4",
-        "tls://9.9.9.9",
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4",
-        "9.9.9.9"
-      ],
-      "queryStrategy": "UseIPv4",
-      "tag": "dns-module"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "enabled": true,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "routeOnly": false
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "tag": "proxy",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "54.37.1.15",
-              "port": 443,
-              "users": [
-                {
-                  "id": "758c99e5-9d5a-45a5-9f54-5cd3c44c2d13",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
+              "type": "http",
+              "request": {
+                "version": "1.1",
+                "method": "GET",
+                "path": [
+                  "/"
+                ],
+                "headers": {
+                  "Host": [
+                    "perf-prod.samsung.com"
+                  ],
+                  "Connection": [
+                    "keep-alive"
+                  ],
+                  "Pragma": "no-cache",
+                  "Accept-Encoding": [
+                    "gzip, deflate"
+                  ],
+                  "User-Agent": [
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                  ]
                 }
-              ]
+              }
             }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "tcpSettings": {
-            "header": {
-              "type": "none"
-            }
-          },
-          "security": "reality",
-          "realitySettings": {
-            "show": false,
-            "serverName": "amp-api-edge.apps.apple.com",
-            "fingerprint": "chrome",
-            "publicKey": "_cPugbPAzq3aZ7SafiTFLNlI0GyuILDeRZta19t6AnE",
-            "shortId": "7a875f545dd30399",
-            "spiderX": "/"
           },
           "sockopt": {
             "domainStrategy": "UseIPv4"

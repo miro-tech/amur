@@ -1,43 +1,30 @@
 {
-  "burstObservatory": {
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "httpMethod": "HEAD",
-      "interval": "5m",
-      "sampling": 2,
-      "timeout": "30s"
-    },
-    "subjectSelector": [
-      "proxy-proxy-"
-    ]
+  "remarks": "@shenvpn",
+  "log": {
+    "loglevel": "none",
+    "access": "",
+    "error": "",
+    "dnsLog": false
   },
   "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
     "servers": [
-      {
-        "address": "fakedns",
-        "domains": [
-          "geosite:cn",
-          "geosite:private"
-        ]
-      },
+      "tls://1.1.1.1",
+      "tls://1.0.0.1",
+      "tls://8.8.8.8",
+      "tls://8.8.4.4",
+      "tls://9.9.9.9",
+      "1.1.1.1",
+      "1.0.0.1",
       "8.8.8.8",
-      {
-        "address": "223.5.5.5",
-        "domains": [
-          "geosite:private"
-        ],
-        "finalQuery": true,
-        "skipFallback": true,
-        "tag": "domestic-dns_0_0"
-      }
+      "8.8.4.4",
+      "9.9.9.9"
     ],
+    "queryStrategy": "UseIPv4",
     "tag": "dns-module"
   },
   "inbounds": [
     {
+      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -46,241 +33,99 @@
         "udp": true
       },
       "sniffing": {
+        "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic",
-          "fakedns"
+          "quic"
         ],
-        "enabled": true,
         "routeOnly": false
-      },
-      "tag": "socks"
+      }
     }
   ],
-  "log": {
-    "loglevel": "none",
-    "access": "",
-    "error": ""
-  },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "reaza.localip.ir",
-            "port": 2087,
+            "address": "164.92.140.208",
+            "port": 443,
             "users": [
               {
-                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                "encryption": "none",
-                "flow": ""
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "finalmask": {
-          "tcp": [
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "tlshello",
-                "lengths": [
-                  "0",
-                  "104",
-                  "1"
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "version": "1.1",
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Host": [
+                  "cloudfront.net"
                 ],
-                "delays": [
-                  "0"
+                "Connection": [
+                  "keep-alive"
                 ],
-                "maxSplit": "0"
-              }
-            },
-            {
-              "type": "fragment",
-              "settings": {
-                "packets": "1-1",
-                "lengths": [
-                  "114",
-                  "1"
+                "Pragma": "no-cache",
+                "Accept-Encoding": [
+                  "gzip, deflate"
                 ],
-                "delays": [
-                  "1"
-                ],
-                "maxSplit": "11"
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
               }
             }
-          ]
-        },
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "alpn": [
-            "h2"
-          ],
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-          "fingerprint": "unsafe",
-          "serverName": "leaseweb69-dtah71tw.zellivo.ir"
-        },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "leaseweb69-dtah71tw.zellivo.ir",
-          "mode": "auto",
-          "path": "/mori1996"
-        }
-      },
-      "tag": "proxy-proxy-1-443-T"
-    },
-    {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false
-      },
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "reaza.localip.ir",
-            "port": 2087,
-            "users": [
-              {
-                "id": "cfe855cd-a200-4567-9312-eca01ae55861",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
           }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "tls",
-        "tlsSettings": {
-          "alpn": [
-            "h2"
-          ],
-          "echConfigList": "iranva.ir+udp://1.1.1.1",
-          "fingerprint": "chrome",
-          "serverName": "leaseweb69-dtah71tw.zellivo.ir"
         },
-        "xhttpSettings": {
-          "extra": {
-            "mode": "auto",
-            "xPaddingBytes": "100-1000"
-          },
-          "host": "leaseweb69-dtah71tw.zellivo.ir",
-          "mode": "auto",
-          "path": "/mori1996"
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
         }
-      },
-      "tag": "proxy-proxy-2-443-M"
+      }
     },
     {
-      "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "protocol": "freedom"
     },
     {
-      "protocol": "blackhole",
-      "tag": "block"
-    },
-    {
-      "protocol": "dns",
-      "settings": {
-        "userLevel": 12
-      },
-      "tag": "dns-out"
+      "tag": "block",
+      "protocol": "blackhole"
     }
   ],
-  "policy": {
-    "levels": {
-      "0": {
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      },
-      "12": {
-        "connIdle": 12,
-        "downlinkOnly": 0,
-        "uplinkOnly": 0
-      }
-    }
-  },
-  "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "proxy-proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "balancer-main"
-      }
-    ],
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "inboundTag": [
-          "socks"
-        ],
-        "outboundTag": "dns-out",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "domestic-dns_0_0"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
+        "type": "field",
         "inboundTag": [
           "dns-module"
         ],
-        "type": "field"
+        "outboundTag": "proxy"
       },
       {
-        "network": "udp",
-        "outboundTag": "block",
-        "port": "443",
-        "type": "field"
-      },
-      {
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "domain": [
-          "geosite:private"
-        ],
-        "outboundTag": "direct",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
-        "port": "0-65535",
-        "type": "field"
-      },
-      {
-        "balancerTag": "balancer-main",
+        "type": "field",
         "network": "tcp,udp",
-        "type": "field"
+        "outboundTag": "proxy"
       }
     ]
+  },
+  "stats": [],
+  "policy": {
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
   }
 }
