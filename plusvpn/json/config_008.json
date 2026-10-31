@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:us.bsh-net.ru"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -37,16 +44,32 @@
   },
   "outbounds": [
     {
-      "protocol": "shadowsocks",
+      "protocol": "vless",
       "settings": {
-        "address": "82.38.31.165",
-        "method": "chacha20-ietf-poly1305",
-        "password": "oZIoA69Q8yhcQV8ka3Pa3A",
-        "port": 443
+        "vnext": [
+          {
+            "address": "us.bsh-net.ru",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443",
+                "id": "a0fa7e19-70ec-41e0-b0cc-bcc984d4201a"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "firefox",
+          "publicKey": "LEb-1eNb7yzDYJ7rBs8k7VNWcfw6FnuTIIYeCBjHRkM",
+          "serverName": "us.bsh-net.ru",
+          "shortId": "da8e9fff883c5950"
+        },
+        "security": "reality",
         "sockopt": {
           "domainStrategy": "UseIPv4"
         },
@@ -54,9 +77,6 @@
           "header": {
             "type": "none"
           }
-        },
-        "tlsSettings": {
-          "allowInsecure": false
         }
       },
       "tag": "proxy"
