@@ -1,26 +1,13 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
+      "https://1.1.1.1/dns-query",
+      "https://8.8.8.8/dns-query",
+      "https://9.9.9.9/dns-query"
+    ],
+    "tag": "dns-module"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -37,50 +24,100 @@
           "quic"
         ],
         "enabled": true,
-        "routeOnly": false
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
+        "routeOnly": true
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "access": "none",
+    "dnsLog": true,
+    "error": "",
+    "loglevel": "info"
+  },
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.237.143.158",
+            "address": "188.114.97.6",
             "port": 443,
             "users": [
               {
-                "id": "6ec3ebb7-9182-467b-8318-1c050be72634",
-                "encryption": "none"
+                "encryption": "none",
+                "flow": "",
+                "id": "30610baf-4645-4c7b-9a22-0d0a0a79eab5"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "tcpSettings": {
-          "header": {
-            "type": "http"
-          }
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delays": [
+                  "0"
+                ],
+                "lengths": [
+                  "5",
+                  "94",
+                  "1"
+                ],
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delays": [
+                  "1"
+                ],
+                "lengths": [
+                  "109",
+                  "1"
+                ],
+                "maxSplit": "355",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ]
+        },
+        "network": "ws",
+        "security": "tls",
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "mao.kipfel.kdns.fr"
+        },
+        "wsSettings": {
+          "host": "mao.kipfel.kdns.fr",
+          "path": "/glasspanel/guest000_0_5de14443985f/"
         }
       },
       "tag": "proxy"
     },
     {
-      "protocol": "freedom",
-      "tag": "direct"
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy"
+        }
+      },
+      "tag": "dns-out"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
+      "protocol": "freedom",
+      "tag": "direct"
     },
     {
       "protocol": "blackhole",
@@ -88,34 +125,37 @@
     }
   ],
   "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
     "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "inboundTag": [
+          "dns-module"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
+        "inboundTag": [
+          "socks"
         ],
-        "outboundTag": "block"
+        "network": "tcp,udp",
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "tcp,udp",
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }

@@ -1,26 +1,13 @@
 {
-  "remarks": "@shenvpn",
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {},
+    "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "1.1.1.1",
-        "domains": [
-          "geosite:geolocation-!cn"
-        ]
-      },
-      "8.8.8.8"
-    ]
+      "https://1.1.1.1/dns-query",
+      "https://8.8.8.8/dns-query",
+      "https://9.9.9.9/dns-query"
+    ],
+    "tag": "dns-module"
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    }
-  ],
   "inbounds": [
     {
       "listen": "127.0.0.1",
@@ -37,29 +24,30 @@
           "quic"
         ],
         "enabled": true,
-        "routeOnly": false
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {}
+        "routeOnly": true
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "access": "none",
+    "dnsLog": true,
+    "error": "",
+    "loglevel": "info"
+  },
   "outbounds": [
     {
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "188.130.209.185",
+            "address": "145.239.127.210",
             "port": 443,
             "users": [
               {
-                "id": "eaf8abff-0fbf-4b64-8d8f-18c1757c75df",
                 "encryption": "none",
-                "flow": "xtls-rprx-vision"
+                "flow": "xtls-rprx-vision-udp443",
+                "id": "ca7cd744-b82c-4827-a537-f33e305cfd66"
               }
             ]
           }
@@ -67,23 +55,39 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "reality",
         "realitySettings": {
-          "serverName": "images.mycdn-io.ru",
-          "fingerprint": "firefox",
-          "publicKey": "vrtWpW_N3rBs9WEoV1Yz4uOYsci3Kpe7HitaYr4oQGc",
-          "shortId": "fbe42a5d4788bacc"
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "qoLflPO1_FjcKWmo8xNbcYilwX9Z6QnkE1GbCLjAAmE",
+          "serverName": "amp-api-edge.apps.apple.com",
+          "shortId": "1b364773745ef4bc",
+          "spiderX": "/"
+        },
+        "security": "reality",
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         }
       },
       "tag": "proxy"
     },
     {
-      "protocol": "freedom",
-      "tag": "direct"
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy"
+        }
+      },
+      "tag": "dns-out"
     },
     {
-      "protocol": "dns",
-      "tag": "dns-out"
+      "protocol": "freedom",
+      "tag": "direct"
     },
     {
       "protocol": "blackhole",
@@ -91,34 +95,37 @@
     }
   ],
   "policy": {
-    "levels": {
-      "8": {
-        "connIdle": 300,
-        "downlinkOnly": 1,
-        "handshake": 4,
-        "uplinkOnly": 1
-      }
-    },
     "system": {
-      "statsInboundDownlink": true,
-      "statsInboundUplink": true
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
     }
   },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "ip": [
-          "geoip:private"
+        "inboundTag": [
+          "dns-module"
         ],
-        "outboundTag": "direct"
+        "outboundTag": "proxy",
+        "type": "field"
       },
       {
-        "domain": [
-          "geosite:category-ads-all"
+        "inboundTag": [
+          "socks"
         ],
-        "outboundTag": "block"
+        "network": "tcp,udp",
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "network": "tcp,udp",
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
-  }
+  },
+  "stats": {}
 }
