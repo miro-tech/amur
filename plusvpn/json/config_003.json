@@ -1,10 +1,64 @@
 {
   "dns": {
-    "queryStrategy": "UseIPv4",
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "domain:googleapis.cn": "googleapis.com",
+      "snapp.ir": "164.37.104.93",
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ]
+    },
     "servers": [
-      "https://1.1.1.1/dns-query",
-      "https://8.8.8.8/dns-query",
-      "https://9.9.9.9/dns-query"
+      "1.1.1.1",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_2_0"
+      }
     ],
     "tag": "dns-module"
   },
@@ -15,7 +69,8 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
@@ -24,126 +79,172 @@
           "quic"
         ],
         "enabled": true,
-        "routeOnly": true
+        "routeOnly": false
       },
       "tag": "socks"
     }
   ],
   "log": {
-    "access": "none",
-    "dnsLog": true,
-    "error": "",
-    "loglevel": "info"
+    "loglevel": "warning"
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "13.62.229.210",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "flow": "",
-                "id": "7060231d-b9ba-495f-a218-bf427940cf3e"
-              }
-            ]
-          }
-        ]
+        "address": "snapp.ir",
+        "encryption": "none",
+        "flow": "",
+        "id": "326ede18-1df7-43c3-b3cb-cb8fba379870",
+        "level": 8,
+        "port": 443
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "security": "tls",
         "sockopt": {
-          "domainStrategy": "UseIPv4"
+          "domainStrategy": "UseIP"
         },
         "tcpSettings": {
           "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "play.googleapis.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+            "type": "none"
           }
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "play.googleapis.com"
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "origin-95-133-243-226.certs.drexivo.ir"
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "dns",
-      "settings": {},
-      "streamSettings": {
-        "sockopt": {
-          "dialerProxy": "proxy"
-        }
-      },
-      "tag": "dns-out"
+      "tag": "sub-01-df1da795"
     },
     {
       "protocol": "freedom",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
+      "settings": {},
       "tag": "block"
     }
   ],
   "policy": {
-    "system": {
-      "statsOutboundDownlink": true,
-      "statsOutboundUplink": true
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
     }
   },
-  "remarks": "@shenvpn",
+  "remarks": "holand — App JSON 5 — rotated 2026-11-05",
   "routing": {
-    "domainStrategy": "AsIs",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
+      {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ir",
+          "domain:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ru"
+        ],
+        "outboundTag": "sub-01-df1da795",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ru"
+        ],
+        "outboundTag": "sub-01-df1da795",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:cn"
+        ],
+        "outboundTag": "sub-01-df1da795",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:cn"
+        ],
+        "outboundTag": "sub-01-df1da795",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_2_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
       {
         "inboundTag": [
           "dns-module"
         ],
-        "outboundTag": "proxy",
-        "type": "field"
-      },
-      {
-        "inboundTag": [
-          "socks"
-        ],
-        "network": "tcp,udp",
-        "outboundTag": "dns-out",
-        "port": "53",
+        "outboundTag": "sub-01-df1da795",
         "type": "field"
       },
       {
         "network": "tcp,udp",
-        "outboundTag": "proxy",
+        "outboundTag": "sub-01-df1da795",
         "type": "field"
       }
     ]
-  },
-  "stats": {}
+  }
 }
