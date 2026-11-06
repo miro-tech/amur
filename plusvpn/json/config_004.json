@@ -1,10 +1,82 @@
 {
+  "burstObservatory": {
+    "pingConfig": {
+      "connectivity": "",
+      "destination": "https://connectivitycheck.gstatic.com/generate_204",
+      "httpMethod": "HEAD",
+      "interval": "30s",
+      "sampling": 3,
+      "timeout": "8s"
+    },
+    "subjectSelector": [
+      "sub-01-1af18bc0",
+      "sub-02-2df7131f",
+      "sub-03-290180a5"
+    ]
+  },
   "dns": {
-    "queryStrategy": "UseIPv4",
+    "hosts": {
+      "cloudflare-dns.com": [
+        "104.16.248.249",
+        "104.16.249.249",
+        "2606:4700::6810:f8f9",
+        "2606:4700::6810:f9f9"
+      ],
+      "dns.alidns.com": [
+        "223.5.5.5",
+        "223.6.6.6",
+        "2400:3200::1",
+        "2400:3200:baba::1"
+      ],
+      "dns.cloudflare.com": [
+        "162.159.61.8",
+        "172.64.41.8",
+        "2a06:98c1:52::8",
+        "2803:f800:53::8"
+      ],
+      "dns.google": [
+        "8.8.8.8",
+        "8.8.4.4",
+        "2001:4860:4860::8888",
+        "2001:4860:4860::8844"
+      ],
+      "dns.quad9.net": [
+        "9.9.9.9",
+        "149.112.112.112",
+        "2620:fe::fe",
+        "2620:fe::9"
+      ],
+      "domain:googleapis.cn": "googleapis.com",
+      "emofid.com": "188.221.119.32",
+      "hibank24.com": "188.221.119.90",
+      "one.one.one.one": [
+        "1.1.1.1",
+        "1.0.0.1",
+        "2606:4700:4700::1111",
+        "2606:4700:4700::1001"
+      ],
+      "rbc.ir": "188.221.119.64",
+      "snapp.ir": "188.221.119.32"
+    },
     "servers": [
-      "https://1.1.1.1/dns-query",
-      "https://8.8.8.8/dns-query",
-      "https://9.9.9.9/dns-query"
+      "1.1.1.1",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:private"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_0_0"
+      },
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "domain:ir",
+          "geosite:category-ir"
+        ],
+        "skipFallback": true,
+        "tag": "domestic-dns_2_0"
+      }
     ],
     "tag": "dns-module"
   },
@@ -15,7 +87,8 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true
+        "udp": true,
+        "userLevel": 8
       },
       "sniffing": {
         "destOverride": [
@@ -24,126 +97,240 @@
           "quic"
         ],
         "enabled": true,
-        "routeOnly": true
+        "routeOnly": false
       },
       "tag": "socks"
     }
   ],
   "log": {
-    "access": "none",
-    "dnsLog": true,
-    "error": "",
-    "loglevel": "info"
+    "loglevel": "warning"
   },
   "outbounds": [
     {
-      "protocol": "vless",
+      "protocol": "shadowsocks",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "13.53.37.215",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "flow": "",
-                "id": "7060231d-b9ba-495f-a218-bf427940cf3e"
-              }
-            ]
+            "address": "snapp.ir",
+            "method": "aes-256-gcm",
+            "password": "9fad478988dd57a505b618af1cddd159",
+            "port": 443
           }
         ]
       },
+      "tag": "sub-01-1af18bc0"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "rbc.ir",
+        "encryption": "none",
+        "flow": "xtls-rprx-vision",
+        "id": "c1da674a-9e18-4a2f-bd73-f8c66eccb33d",
+        "level": 8,
+        "port": 443
+      },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "realitySettings": {
+          "fingerprint": "chrome",
+          "publicKey": "fnnOl1oHAKN764cxdH4Xyr4SOvlWCC9TGsW-eSJd3wk",
+          "serverName": "dl.google.com",
+          "shortId": "ed72cd386c2813d6",
+          "spiderX": "/83def5127a2fd47"
+        },
+        "security": "reality",
         "sockopt": {
-          "domainStrategy": "UseIPv4"
+          "domainStrategy": "UseIP"
         },
         "tcpSettings": {
           "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "play.googleapis.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+            "type": "none"
+          }
+        }
+      },
+      "tag": "sub-02-2df7131f"
+    },
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "settings": {
+        "address": "hibank24.com",
+        "encryption": "none",
+        "flow": "",
+        "id": "bcc76c06-2dbc-4ad1-95c0-ff1fadcc0a53",
+        "level": 8,
+        "port": 443
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
           }
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "play.googleapis.com"
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ],
+          "echConfigList": "AGH+DQBdAAAgACCMuLwcSTM0rElzi8K9dZxc8JPDflGP8UwdYl8egPaMVQAkAAEAAQABAAIAAQADAAIAAQACAAIAAgADAAMAAQADAAIAAwADAA5jZG4uZnVpdmVydC5pcgAA",
+          "fingerprint": "chrome",
+          "serverName": "cdn.fuivert.ir"
         }
       },
-      "tag": "proxy"
-    },
-    {
-      "protocol": "dns",
-      "settings": {},
-      "streamSettings": {
-        "sockopt": {
-          "dialerProxy": "proxy"
-        }
-      },
-      "tag": "dns-out"
+      "tag": "sub-03-290180a5"
     },
     {
       "protocol": "freedom",
+      "streamSettings": {
+        "network": "tcp",
+        "sockopt": {
+          "domainStrategy": "UseIP"
+        }
+      },
       "tag": "direct"
     },
     {
       "protocol": "blackhole",
+      "settings": {},
       "tag": "block"
     }
   ],
   "policy": {
-    "system": {
-      "statsOutboundDownlink": true,
-      "statsOutboundUplink": true
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
     }
   },
-  "remarks": "@shenvpn",
+  "remarks": "holand — App JSON 4",
   "routing": {
-    "domainStrategy": "AsIs",
+    "balancers": [
+      {
+        "selector": [
+          "sub-01-1af18bc0",
+          "sub-02-2df7131f",
+          "sub-03-290180a5"
+        ],
+        "strategy": {
+          "settings": {
+            "expected": 2,
+            "maxRTT": "8s",
+            "tolerance": 0.5
+          },
+          "type": "leastLoad"
+        },
+        "tag": "proxy-balancer"
+      }
+    ],
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
+        "network": "udp",
+        "outboundTag": "block",
+        "port": "443",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:private"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ir",
+          "domain:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:ir"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "balancerTag": "proxy-balancer",
+        "domain": [
+          "geosite:category-ru"
+        ],
+        "type": "field"
+      },
+      {
+        "balancerTag": "proxy-balancer",
+        "ip": [
+          "geoip:ru"
+        ],
+        "type": "field"
+      },
+      {
+        "balancerTag": "proxy-balancer",
+        "domain": [
+          "geosite:cn"
+        ],
+        "type": "field"
+      },
+      {
+        "balancerTag": "proxy-balancer",
+        "ip": [
+          "geoip:cn"
+        ],
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "domestic-dns_0_0",
+          "domestic-dns_2_0"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "balancerTag": "proxy-balancer",
         "inboundTag": [
           "dns-module"
         ],
-        "outboundTag": "proxy",
         "type": "field"
       },
       {
-        "inboundTag": [
-          "socks"
-        ],
+        "balancerTag": "proxy-balancer",
         "network": "tcp,udp",
-        "outboundTag": "dns-out",
-        "port": "53",
-        "type": "field"
-      },
-      {
-        "network": "tcp,udp",
-        "outboundTag": "proxy",
         "type": "field"
       }
     ]
-  },
-  "stats": {}
+  }
 }

@@ -149,38 +149,30 @@
   "outbounds": [
     {
       "tag": "proxy",
-      "protocol": "vless",
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
+        "servers": [
           {
-            "address": "18.100.46.230",
+            "address": "185.15.59.224",
             "port": 443,
-            "users": [
-              {
-                "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
+            "password": "USGunEjprK",
+            "level": 8
           }
         ]
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "m.wikipedia.org",
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ]
+        },
         "tcpSettings": {
           "header": {
-            "type": "http",
-            "request": {
-              "path": [
-                "/"
-              ],
-              "headers": {
-                "Host": [
-                  "play.googleapis.com"
-                ]
-              }
-            }
+            "type": "none"
           }
         },
         "sockopt": {
@@ -191,6 +183,28 @@
           "tcpUserTimeout": 20000,
           "domainStrategy": "UseIP",
           "tcpMaxSeg": 1200,
+          "dialerProxy": "fragment"
+        }
+      }
+    },
+    {
+      "tag": "fragment",
+      "protocol": "freedom",
+      "settings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "50-100",
+          "interval": "5-10"
+        }
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "",
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpKeepAliveIdle": 20,
+          "tcpKeepAliveInterval": 15,
+          "tcpUserTimeout": 20000,
           "tcpMptcp": true
         }
       }
