@@ -1,84 +1,51 @@
 {
-  "remarks": "@shenvpn",
+  "remarks": "@shenvpn-smart-parallel-v6b",
   "log": {
-    "access": "",
-    "error": "",
     "loglevel": "none",
+    "access": "none",
+    "error": "none",
     "dnsLog": false
   },
   "dns": {
-    "hosts": {
-      "domain:googleapis.cn": "googleapis.com"
-    },
-    "queryStrategy": "UseIP",
-    "disableCache": false,
-    "serveStale": true,
-    "serveExpiredTTL": 86400,
-    "enableParallelQuery": true,
-    "disableFallback": false,
-    "disableFallbackIfMatch": false,
+    "tag": "dns-module",
+    "queryStrategy": "UseIPv4",
     "servers": [
       {
-        "tag": "dns-direct",
-        "address": "1.1.1.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:dovari24.org",
+          "full:fduknew.titun.su",
+          "full:novonl.subv.ru",
+          "full:shortbig.ir",
+          "full:static.229.163.46.78.clients.your-server.de"
+        ],
+        "skipFallback": true
       },
       {
-        "tag": "dns-direct",
-        "address": "8.8.8.8",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
+        "address": "https+local://8.8.8.8/dns-query",
+        "domains": [
+          "full:dovari24.org",
+          "full:fduknew.titun.su",
+          "full:novonl.subv.ru",
+          "full:shortbig.ir",
+          "full:static.229.163.46.78.clients.your-server.de"
+        ],
+        "skipFallback": true
       },
       {
-        "tag": "dns-direct",
-        "address": "9.9.9.9",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
         "address": "https://1.1.1.1/dns-query",
-        "queryStrategy": "UseIP",
         "skipFallback": false
       },
       {
-        "tag": "dns-proxy",
         "address": "https://8.8.8.8/dns-query",
-        "queryStrategy": "UseIP",
         "skipFallback": false
       },
       {
-        "tag": "dns-direct",
-        "address": "1.0.0.1",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "8.8.4.4",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-direct",
-        "address": "149.112.112.112",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://cloudflare-dns.com/dns-query",
-        "queryStrategy": "UseIP",
-        "skipFallback": false
-      },
-      {
-        "tag": "dns-proxy",
-        "address": "https://dns.quad9.net/dns-query",
-        "queryStrategy": "UseIP",
+        "address": "https://9.9.9.9/dns-query",
         "skipFallback": false
       }
-    ]
+    ],
+    "disableFallbackIfMatch": true
   },
   "inbounds": [
     {
@@ -88,62 +55,1546 @@
       "protocol": "socks",
       "settings": {
         "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false,
-        "userLevel": 8
+        "udp": true
       },
       "sniffing": {
         "enabled": true,
         "destOverride": [
           "http",
           "tls",
-          "quic",
-          "fakedns"
+          "quic"
         ],
-        "metadataOnly": false,
-        "routeOnly": false
-      }
-    },
-    {
-      "tag": "http",
-      "listen": "127.0.0.1",
-      "port": 10809,
-      "protocol": "http",
-      "settings": {
-        "userLevel": 8
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls",
-          "quic",
-          "fakedns"
-        ],
-        "metadataOnly": false,
-        "routeOnly": false
-      }
-    },
-    {
-      "tag": "dns-in",
-      "listen": "127.0.0.1",
-      "port": 10853,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "1.1.1.1",
-        "port": 53,
-        "network": "tcp,udp"
+        "routeOnly": true
       }
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "tag": "proxy-01",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "64.227.6.141",
+            "address": "3.36.106.208",
+            "port": 443,
+            "users": [
+              {
+                "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "play.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "play.googleapis.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-02",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "161.35.82.21",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-03",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "138.68.190.77",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-04",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "143.110.164.74",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-05",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "68.183.47.195",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "fast.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-06",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "170.64.189.184",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "fast.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-07",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "dovari24.org",
+            "port": 40443,
+            "users": [
+              {
+                "id": "3a87ed61-c186-4feb-b3fc-d9da4f31842f",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/joker",
+          "host": "EfIkMyUj9.GrOwThMaNaGmEnT.OrG"
+        },
+        "tlsSettings": {
+          "serverName": "EfIkMyUj9.GrOwThMaNaGmEnT.OrG",
+          "fingerprint": "unsafe",
+          "alpn": [
+            "http/1.1"
+          ],
+          "allowInsecure": false,
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delays": [
+                  "0"
+                ],
+                "lengths": [
+                  "0",
+                  "104",
+                  "1"
+                ],
+                "maxSplit": "0",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delays": [
+                  "1"
+                ],
+                "lengths": [
+                  "114",
+                  "1"
+                ],
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ]
+        }
+      },
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "allow"
+      }
+    },
+    {
+      "tag": "proxy-08",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "shortbig.ir",
+            "port": 8443,
+            "users": [
+              {
+                "id": "3a87ed61-c186-4feb-b3fc-d9da4f31842f",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/joker",
+          "host": "EfIkMyUj9.GrOwThMaNaGmEnT.OrG"
+        },
+        "tlsSettings": {
+          "serverName": "EfIkMyUj9.GrOwThMaNaGmEnT.OrG",
+          "fingerprint": "unsafe",
+          "alpn": [
+            "http/1.1"
+          ],
+          "allowInsecure": false,
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delays": [
+                  "0"
+                ],
+                "lengths": [
+                  "0",
+                  "104",
+                  "1"
+                ],
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delays": [
+                  "1"
+                ],
+                "lengths": [
+                  "114",
+                  "1"
+                ],
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ]
+        }
+      },
+      "mux": {
+        "concurrency": 8,
+        "enabled": true,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": "allow"
+      }
+    },
+    {
+      "tag": "proxy-09",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "57.128.78.88",
+            "port": 2095,
+            "users": [
+              {
+                "id": "57d72643-ff85-4733-8d83-f47305e6106e",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "firebaseinstallations.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "firebaseinstallations.googleapis.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-10",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.233.17.24",
+            "port": 2095,
+            "users": [
+              {
+                "id": "d2a7db4a-98f3-4cd2-a01a-87f3a1994d10",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "perf-prod.samsung.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "perf-prod.samsung.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-11",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "35.159.41.107",
+            "port": 443,
+            "users": [
+              {
+                "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "play.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "play.googleapis.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-12",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.233.83.133",
+            "port": 443,
+            "users": [
+              {
+                "id": "fc71b24c-8a86-4ab4-a46b-e85fbc54a971",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "amp-api-edge.apps.apple.com",
+          "fingerprint": "chrome",
+          "publicKey": "YOn1tkIGbIFwYAuX2EWHnGd1L7qpcvtXWGXkUOJvJ3A",
+          "shortId": "ac5c5ba3959d0d40",
+          "spiderX": "/diGoeDtsT6tP",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-13",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "144.202.126.90",
+            "port": 8443,
+            "users": [
+              {
+                "id": "445149fb-7f91-4315-a2c5-e02b82fd264d",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "play.googleapis.com",
+          "fingerprint": "chrome",
+          "publicKey": "mqVOwmYxAPhZOlLBAFAVnJWaeFqJSBToGneKHi6Cl0g",
+          "shortId": "028307243a98964f",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delay": "0",
+                "length": "1-104",
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delay": "1",
+                "length": "1-114",
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ],
+          "udp": [
+            {
+              "settings": {
+                "client": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ],
+                "server": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ]
+              },
+              "type": "header-custom"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tag": "proxy-14",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "68.183.36.34",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "fast.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-15",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "137.184.16.10",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "fast.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-16",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.238.100.164",
+            "port": 8080,
+            "users": [
+              {
+                "id": "2afded01-2b11-4412-962a-6afe38599901",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "vas.samsungapps.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "vas.samsungapps.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-17",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "135.125.72.58",
+            "port": 2095,
+            "users": [
+              {
+                "id": "c60af682-cf9c-4fb0-a63b-7adcde3815af",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "firebaseinstallations.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "firebaseinstallations.googleapis.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-18",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.238.100.164",
+            "port": 8080,
+            "users": [
+              {
+                "id": "3c87de9e-ce25-439a-b86d-a21ade9bf623",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "vas.samsungapps.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "vas.samsungapps.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-19",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "198.74.55.133",
+            "port": 8443,
+            "users": [
+              {
+                "id": "e88d30e1-d614-4a43-a809-034bb5e081d2",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "play.googleapis.com",
+          "fingerprint": "chrome",
+          "publicKey": "02-RyRGyeBwvMJh9K_ZLfly6IVttRR78qzS3ejgThTs",
+          "shortId": "92a218bfb7cd2251",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delay": "0",
+                "length": "1-104",
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delay": "1",
+                "length": "1-114",
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ],
+          "udp": [
+            {
+              "settings": {
+                "client": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ],
+                "server": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ]
+              },
+              "type": "header-custom"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tag": "proxy-20",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "188.166.50.249",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-21",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "188.166.7.144",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-22",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.238.100.164",
+            "port": 8080,
+            "users": [
+              {
+                "id": "f9edb01a-40cc-4706-a6f5-7eb730138525",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "vas.samsungapps.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "vas.samsungapps.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-23",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "45.79.212.50",
+            "port": 8443,
+            "users": [
+              {
+                "id": "47a4a1c4-e5b3-4c30-abce-8a608fa53f2d",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "play.googleapis.com",
+          "fingerprint": "chrome",
+          "publicKey": "Hs7dnft3euoE_hka_thncmIaRTy-K0I8BlMIih26hx0",
+          "shortId": "577e26751e5f5fdb",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        },
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delay": "0",
+                "length": "1-104",
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delay": "1",
+                "length": "1-114",
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ],
+          "udp": [
+            {
+              "settings": {
+                "client": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ],
+                "server": [
+                  {
+                    "rand": 16,
+                    "randRange": "0-255"
+                  }
+                ]
+              },
+              "type": "header-custom"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tag": "proxy-24",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "static.229.163.46.78.clients.your-server.de",
+            "port": 8443,
+            "users": [
+              {
+                "id": "c4aa4cab-1ce3-42a5-883a-ebb4614aad8f",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "tlsSettings": {
+          "serverName": "static.69.71.203.116.clients.your-server.de",
+          "fingerprint": "chrome",
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ],
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-25",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.237.1.56",
+            "port": 443,
+            "users": [
+              {
+                "id": "85f138b5-578a-4209-8c73-4b7789cc42c3",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "amp-api-edge.apps.apple.com",
+          "fingerprint": "chrome",
+          "publicKey": "gC64XONQejORmZaLRx0l5s2eZu3tTZzlEWf53UfOJV0",
+          "shortId": "af62bad001d3e6ee",
+          "spiderX": "/YC8VtpmDiW5G",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-26",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "novonl.subv.ru",
+            "port": 443,
+            "users": [
+              {
+                "id": "90157e25-cee1-4217-921e-91f300bc1a24",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "golos.mail.ru",
+          "fingerprint": "firefox",
+          "publicKey": "1vSZjvhZO01oAEH3b7eebR1qF5dLU1Dq2E7xu8pwGSs",
+          "shortId": "428ef87fd47a3a32",
+          "spiderX": "/",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-27",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "167.71.0.179",
             "port": 443,
             "users": [
               {
@@ -160,22 +1611,22 @@
           "header": {
             "type": "http",
             "request": {
-              "version": "1.1",
               "method": "GET",
+              "version": "1.1",
               "path": [
                 "/"
               ],
               "headers": {
-                "Host": [
-                  "fast.com"
+                "Accept-Encoding": [
+                  "gzip, deflate"
                 ],
                 "Connection": [
                   "keep-alive"
                 ],
-                "Pragma": "no-cache",
-                "Accept-Encoding": [
-                  "gzip, deflate"
+                "Host": [
+                  "store.steampowered.com"
                 ],
+                "Pragma": "no-cache",
                 "User-Agent": [
                   "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
                 ]
@@ -184,106 +1635,1218 @@
           }
         },
         "sockopt": {
-          "domainStrategy": "UseIPv4",
-          "tcpNoDelay": true,
-          "tcpKeepAliveIdle": 20,
-          "tcpKeepAliveInterval": 15,
-          "tcpUserTimeout": 20000,
-          "tcpMaxSeg": 1200,
-          "tcpMptcp": true
+          "domainStrategy": "UseIPv4"
         }
+      }
+    },
+    {
+      "tag": "proxy-28",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "fduknew.titun.su",
+            "port": 443,
+            "users": [
+              {
+                "id": "90157e25-cee1-4217-921e-91f300bc1a24",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "bizorg.su",
+          "fingerprint": "edge",
+          "publicKey": "1vSZjvhZO01oAEH3b7eebR1qF5dLU1Dq2E7xu8pwGSs",
+          "shortId": "428ef87fd47a3a32",
+          "spiderX": "/",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-29",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "174.138.13.137",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-30",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "164.92.159.3",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-31",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "174.138.13.137",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "store.steampowered.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-32",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "34.255.124.203",
+            "port": 443,
+            "users": [
+              {
+                "id": "7060231d-b9ba-495f-a218-bf427940cf3e",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "play.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "play.googleapis.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-33",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "188.165.70.192",
+            "port": 2095,
+            "users": [
+              {
+                "id": "f94f2910-ea49-4a92-b229-7a5446c4441a",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "perf-prod.samsung.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "perf-prod.samsung.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-34",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "159.223.235.157",
+            "port": 443,
+            "users": [
+              {
+                "id": "40992c2a-513e-4837-9594-23411fd42afd",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "fast.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-35",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.104.235.73",
+            "port": 443,
+            "users": [
+              {
+                "id": "5f117789-8dad-466e-aaf7-25b5e9ba41c9",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        },
+        "realitySettings": {
+          "serverName": "amp-api-edge.apps.apple.com",
+          "fingerprint": "chrome",
+          "publicKey": "FM5REBYs5rpGXaAaJCNxyxK8U5JAMgRL1QO36MFgBgg",
+          "shortId": "9b2d9c60f86a4dfc",
+          "spiderX": "/9O7FhKZvV9ye",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "proxy-36",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "172.233.13.147",
+            "port": 2095,
+            "users": [
+              {
+                "id": "caf39a37-05c8-4dbd-9e42-a7cf6fa0686b",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "method": "GET",
+              "version": "1.1",
+              "path": [
+                "/"
+              ],
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "perf-prod.samsung.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              }
+            }
+          }
+        },
+        "tlsSettings": {
+          "serverName": "perf-prod.samsung.com",
+          "allowInsecure": false
+        },
+        "sockopt": {
+          "domainStrategy": "UseIPv4"
+        }
+      }
+    },
+    {
+      "tag": "member-0001-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-01"
+        }
+      }
+    },
+    {
+      "tag": "member-0001-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0001-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0002-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-02"
+        }
+      }
+    },
+    {
+      "tag": "member-0002-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0002-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0003-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-03"
+        }
+      }
+    },
+    {
+      "tag": "member-0003-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0003-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0004-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-04"
+        }
+      }
+    },
+    {
+      "tag": "member-0004-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0004-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0005-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-05"
+        }
+      }
+    },
+    {
+      "tag": "member-0005-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0005-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0006-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-06"
+        }
+      }
+    },
+    {
+      "tag": "member-0006-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0006-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0007-out-0002_",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "member-0007-in-cm-balancer-dispatch"
+      }
+    },
+    {
+      "tag": "member-0007-out-0003_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "member-0007-out-0002_"
+        }
+      }
+    },
+    {
+      "tag": "member-0007-out-0004_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0007-out-0005_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0008-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-09"
+        }
+      }
+    },
+    {
+      "tag": "member-0008-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0008-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0009-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-10"
+        }
+      }
+    },
+    {
+      "tag": "member-0009-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0009-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0010-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-11"
+        }
+      }
+    },
+    {
+      "tag": "member-0010-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0010-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0011-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-12"
+        }
+      }
+    },
+    {
+      "tag": "member-0011-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0011-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0012-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-13"
+        }
+      }
+    },
+    {
+      "tag": "member-0012-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0012-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0013-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-14"
+        }
+      }
+    },
+    {
+      "tag": "member-0013-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0013-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0014-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-15"
+        }
+      }
+    },
+    {
+      "tag": "member-0014-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0014-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0015-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-16"
+        }
+      }
+    },
+    {
+      "tag": "member-0015-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0015-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0016-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-17"
+        }
+      }
+    },
+    {
+      "tag": "member-0016-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0016-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0017-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-18"
+        }
+      }
+    },
+    {
+      "tag": "member-0017-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0017-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0018-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-19"
+        }
+      }
+    },
+    {
+      "tag": "member-0018-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0018-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0019-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-20"
+        }
+      }
+    },
+    {
+      "tag": "member-0019-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0019-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0020-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-21"
+        }
+      }
+    },
+    {
+      "tag": "member-0020-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0020-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0021-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-22"
+        }
+      }
+    },
+    {
+      "tag": "member-0021-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0021-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0022-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-23"
+        }
+      }
+    },
+    {
+      "tag": "member-0022-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0022-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0023-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-24"
+        }
+      }
+    },
+    {
+      "tag": "member-0023-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0023-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0024-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-25"
+        }
+      }
+    },
+    {
+      "tag": "member-0024-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0024-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0025-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-26"
+        }
+      }
+    },
+    {
+      "tag": "member-0025-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0025-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0026-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-27"
+        }
+      }
+    },
+    {
+      "tag": "member-0026-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0026-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0027-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-28"
+        }
+      }
+    },
+    {
+      "tag": "member-0027-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0027-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0028-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-29"
+        }
+      }
+    },
+    {
+      "tag": "member-0028-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0028-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0029-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-30"
+        }
+      }
+    },
+    {
+      "tag": "member-0029-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0029-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0030-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-31"
+        }
+      }
+    },
+    {
+      "tag": "member-0030-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0030-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0031-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-32"
+        }
+      }
+    },
+    {
+      "tag": "member-0031-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0031-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0032-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-33"
+        }
+      }
+    },
+    {
+      "tag": "member-0032-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0032-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0033-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-34"
+        }
+      }
+    },
+    {
+      "tag": "member-0033-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0033-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0034-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-35"
+        }
+      }
+    },
+    {
+      "tag": "member-0034-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0034-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "member-0035-out-0001_",
+      "protocol": "dns",
+      "settings": {},
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "proxy-36"
+        }
+      }
+    },
+    {
+      "tag": "member-0035-out-0002_",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "member-0035-out-0003_",
+      "protocol": "blackhole"
+    },
+    {
+      "tag": "smart-dns-out",
+      "protocol": "dns",
+      "settings": {
+        "rewriteAddress": "1.1.1.1",
+        "rewriteNetwork": "tcp",
+        "rewritePort": 53,
+        "rules": [
+          {
+            "action": "hijack",
+            "qType": "1,28"
+          },
+          {
+            "action": "direct"
+          }
+        ]
+      },
+      "streamSettings": {
+        "sockopt": {
+          "dialerProxy": "smart-dns-relay"
+        }
+      }
+    },
+    {
+      "tag": "smart-dns-relay",
+      "protocol": "loopback",
+      "settings": {
+        "inboundTag": "smart-dns-egress"
       }
     },
     {
       "tag": "direct",
       "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      }
-    },
-    {
-      "tag": "dns-out",
-      "protocol": "dns",
-      "settings": {
-        "network": "tcp,udp",
-        "address": "1.1.1.1",
-        "port": 53
-      }
+      "settings": {}
     },
     {
       "tag": "block",
       "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      }
+      "settings": {}
     }
   ],
   "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "domainMatcher": "hybrid",
+    "domainStrategy": "AsIs",
+    "balancers": [
+      {
+        "tag": "smart-parallel-balancer",
+        "selector": [
+          "proxy-"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 3,
+            "maxRTT": "2s",
+            "tolerance": 0.15
+          }
+        },
+        "fallbackTag": "block"
+      }
+    ],
     "rules": [
       {
         "type": "field",
         "inboundTag": [
-          "dns-proxy"
+          "socks",
+          "tun"
         ],
-        "outboundTag": "proxy"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-direct"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-in"
-        ],
-        "outboundTag": "dns-out"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "dns"
-        ],
-        "outboundTag": "dns-out"
-      },
-      {
-        "type": "field",
         "port": "53",
         "network": "tcp,udp",
-        "outboundTag": "dns-out"
+        "outboundTag": "smart-dns-out"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "balancerTag": "smart-parallel-balancer"
       },
       {
         "type": "field",
         "network": "tcp,udp",
-        "outboundTag": "proxy"
+        "balancerTag": "smart-parallel-balancer"
       }
     ]
   },
+  "burstObservatory": {
+    "subjectSelector": [
+      "proxy-"
+    ],
+    "pingConfig": {
+      "destination": "https://www.gstatic.com/generate_204",
+      "interval": "10s",
+      "sampling": 1,
+      "timeout": "3s",
+      "httpMethod": "GET"
+    }
+  },
   "policy": {
     "levels": {
-      "8": {
-        "handshake": 4,
-        "connIdle": 180,
-        "uplinkOnly": 1,
-        "downlinkOnly": 1,
-        "bufferSize": 64
+      "0": {
+        "handshake": 15,
+        "connIdle": 600,
+        "uplinkOnly": 2,
+        "downlinkOnly": 5
       }
     }
   },
-  "fakedns": [
-    {
-      "ipPool": "198.18.0.0/15",
-      "poolSize": 65535
-    },
-    {
-      "ipPool": "fc00::/18",
-      "poolSize": 65535
-    }
-  ]
+  "stats": {}
 }
