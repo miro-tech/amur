@@ -1,53 +1,15 @@
 {
-  "remarks": "@shenvpn-smart-parallel-v6b",
-  "log": {
-    "loglevel": "none",
-    "access": "none",
-    "error": "none",
-    "dnsLog": false
-  },
   "dns": {
-    "tag": "dns-module",
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https://8.8.8.8/dns-query",
-        "domains": [
-          "full:benzi.iddns.ir"
-        ],
-        "skipFallback": true,
-        "tag": "dns-bootstrap",
-        "timeoutMs": 2500
-      },
-      {
-        "address": "https://1.1.1.1/dns-query",
-        "domains": [
-          "full:benzi.iddns.ir"
-        ],
-        "skipFallback": true,
-        "tag": "dns-bootstrap",
-        "timeoutMs": 2500
-      },
-      {
-        "address": "https://1.1.1.1/dns-query",
-        "skipFallback": false,
-        "timeoutMs": 2500
-      },
-      {
-        "address": "https://8.8.8.8/dns-query",
-        "skipFallback": false,
-        "timeoutMs": 2500
-      }
+      "https://1.1.1.1/dns-query",
+      "https://8.8.8.8/dns-query",
+      "https://9.9.9.9/dns-query"
     ],
-    "disableFallbackIfMatch": true,
-    "disableCache": false,
-    "serveStale": true,
-    "serveExpiredTTL": 60,
-    "enableParallelQuery": true
+    "tag": "dns-module"
   },
   "inbounds": [
     {
-      "tag": "socks",
       "listen": "127.0.0.1",
       "port": 10808,
       "protocol": "socks",
@@ -56,30 +18,34 @@
         "udp": true
       },
       "sniffing": {
-        "enabled": true,
         "destOverride": [
           "http",
           "tls",
           "quic"
         ],
+        "enabled": true,
         "routeOnly": true
-      }
+      },
+      "tag": "socks"
     }
   ],
+  "log": {
+    "access": "none",
+    "dnsLog": false,
+    "loglevel": "warning"
+  },
   "outbounds": [
     {
-      "tag": "proxy-02",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "172.235.151.228",
-            "port": 8443,
+            "address": "127.0.0.1",
+            "port": 443,
             "users": [
               {
-                "id": "fadf706d-cacc-4563-a948-55cba54cf0db",
                 "encryption": "none",
-                "flow": "xtls-rprx-vision-udp443"
+                "id": "40992c2a-513e-4837-9594-23411fd42afd"
               }
             ]
           }
@@ -87,291 +53,103 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "reality",
+        "sockopt": {
+          "dialerProxy": "compat-transport-1"
+        },
         "tcpSettings": {
           "header": {
-            "type": "none"
-          }
-        },
-        "realitySettings": {
-          "serverName": "play.googleapis.com",
-          "fingerprint": "chrome",
-          "publicKey": "0B2BkpDRPVPSy0Byh6PTD02iTiXwy8esVTy_maVtOis",
-          "shortId": "bf91677538b2b565",
-          "allowInsecure": false
-        },
-        "sockopt": {
-          "domainStrategy": "ForceIPv4",
-          "tcpKeepAliveIdle": 45,
-          "tcpKeepAliveInterval": 15
-        },
-        "finalmask": {
-          "tcp": [
-            {
-              "settings": {
-                "delay": "0",
-                "length": "1-104",
-                "maxSplit": "0",
-                "packets": "tlshello"
-              },
-              "type": "fragment"
-            },
-            {
-              "settings": {
-                "delay": "1",
-                "length": "1-114",
-                "maxSplit": "11",
-                "packets": "1-1"
-              },
-              "type": "fragment"
-            }
-          ],
-          "udp": [
-            {
-              "settings": {
-                "client": [
-                  {
-                    "rand": 16,
-                    "randRange": "0-255"
-                  }
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
                 ],
-                "server": [
-                  {
-                    "rand": 16,
-                    "randRange": "0-255"
-                  }
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
                 ]
               },
-              "type": "header-custom"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "tag": "proxy-01",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "benzi.iddns.ir",
-            "port": 2087,
-            "users": [
-              {
-                "id": "92a188aa-2e86-4557-bd30-b2079a70f824",
-                "encryption": "none",
-                "level": 8
-              }
-            ]
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
-        },
-        "tlsSettings": {
-          "serverName": "benzi.iddns.ir",
-          "fingerprint": "chrome",
-          "alpn": [
-            "h2",
-            "http/1.1",
-            "h3"
-          ],
-          "allowInsecure": false
-        },
-        "sockopt": {
-          "domainStrategy": "ForceIPv4",
-          "happyEyeballs": {
-            "interleave": 2,
-            "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          },
-          "tcpKeepAliveIdle": 45,
-          "tcpKeepAliveInterval": 15
         }
       },
-      "mux": {
-        "concurrency": -1,
-        "enabled": false,
-        "xudpProxyUDP443": "allow"
-      }
+      "tag": "proxy"
     },
     {
-      "tag": "member-0001-out-0001_",
       "protocol": "dns",
       "settings": {},
       "streamSettings": {
         "sockopt": {
-          "dialerProxy": "proxy-01"
+          "dialerProxy": "proxy"
         }
-      }
+      },
+      "tag": "dns-out"
     },
     {
-      "tag": "member-0001-out-0002_",
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "tag": "direct"
     },
     {
-      "tag": "member-0001-out-0003_",
-      "protocol": "blackhole"
-    },
-    {
-      "tag": "member-0002-out-0001_",
-      "protocol": "dns",
-      "settings": {},
-      "streamSettings": {
-        "sockopt": {
-          "dialerProxy": "proxy-02"
-        }
-      }
-    },
-    {
-      "tag": "member-0002-out-0002_",
-      "protocol": "freedom"
-    },
-    {
-      "tag": "member-0002-out-0003_",
-      "protocol": "blackhole"
-    },
-    {
-      "tag": "block",
       "protocol": "blackhole",
-      "settings": {}
+      "tag": "block"
     },
     {
-      "tag": "smart-dns-out",
-      "protocol": "dns",
+      "protocol": "freedom",
       "settings": {
-        "rewriteAddress": "1.1.1.1",
-        "rewriteNetwork": "tcp",
-        "rewritePort": 53,
-        "rules": [
-          {
-            "action": "hijack",
-            "qType": "1,28"
-          },
-          {
-            "action": "direct"
-          }
-        ]
+        "redirect": "164.92.247.51:443"
       },
       "streamSettings": {
         "sockopt": {
-          "dialerProxy": "smart-dns-relay"
+          "domainStrategy": "ForceIPv4"
         }
-      }
-    },
-    {
-      "tag": "smart-dns-relay",
-      "protocol": "loopback",
-      "settings": {
-        "inboundTag": "smart-dns-egress"
-      }
+      },
+      "tag": "compat-transport-1"
     }
   ],
+  "policy": {
+    "system": {
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
+  },
+  "remarks": "@shenvpn",
   "routing": {
     "domainStrategy": "AsIs",
-    "balancers": [
-      {
-        "tag": "smart-parallel-balancer",
-        "selector": [
-          "proxy-"
-        ],
-        "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 3,
-            "maxRTT": "2s",
-            "tolerance": 0.15
-          }
-        },
-        "fallbackTag": "block"
-      },
-      {
-        "tag": "bootstrap-ip-balancer",
-        "selector": [
-          "proxy-02"
-        ],
-        "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 3,
-            "maxRTT": "2s",
-            "tolerance": 0.15
-          }
-        },
-        "fallbackTag": "block"
-      }
-    ],
     "rules": [
       {
-        "type": "field",
+        "inboundTag": [
+          "dns-module"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      },
+      {
         "inboundTag": [
           "socks",
           "tun"
         ],
+        "network": "tcp,udp",
+        "outboundTag": "dns-out",
         "port": "53",
+        "type": "field"
+      },
+      {
         "network": "tcp,udp",
-        "outboundTag": "smart-dns-out"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-bootstrap"
-        ],
-        "balancerTag": "bootstrap-ip-balancer"
-      },
-      {
-        "type": "field",
-        "inboundTag": [
-          "dns-module",
-          "smart-dns-egress"
-        ],
-        "balancerTag": "smart-parallel-balancer"
-      },
-      {
-        "type": "field",
-        "network": "tcp,udp",
-        "balancerTag": "smart-parallel-balancer"
+        "outboundTag": "proxy",
+        "type": "field"
       }
     ]
   },
-  "burstObservatory": {
-    "subjectSelector": [
-      "proxy-"
-    ],
-    "pingConfig": {
-      "destination": "https://www.gstatic.com/generate_204",
-      "interval": "15s",
-      "sampling": 3,
-      "timeout": "5s",
-      "httpMethod": "GET"
-    }
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "handshake": 15,
-        "connIdle": 600,
-        "uplinkOnly": 2,
-        "downlinkOnly": 5
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true,
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "stats": {},
-  "metrics": {
-    "tag": "debug-metrics",
-    "listen": "127.0.0.1:11111"
-  }
+  "stats": {}
 }
