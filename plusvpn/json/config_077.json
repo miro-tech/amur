@@ -2,13 +2,6 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https+local://1.1.1.1/dns-query",
-        "domains": [
-          "full:vawe.iddns.ir"
-        ],
-        "skipFallback": true
-      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -43,22 +36,17 @@
   },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false,
-        "xudpProxyUDP443": "allow"
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "vawe.iddns.ir",
-            "port": 2087,
+            "address": "127.0.0.1",
+            "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "id": "c34f4e89-7a68-4c27-99ef-f040cc204e37",
-                "level": 8
+                "flow": "",
+                "id": "40992c2a-513e-4837-9594-23411fd42afd"
               }
             ]
           }
@@ -66,30 +54,40 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "ForceIP",
-          "happyEyeballs": {
-            "interleave": 2,
-            "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          }
+          "dialerProxy": "compat-transport-1"
         },
         "tcpSettings": {
           "header": {
-            "type": "none"
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "alpn": [
-            "h2",
-            "http/1.1",
-            "h3"
-          ],
-          "fingerprint": "chrome",
-          "serverName": "vawe.iddns.ir"
+          "serverName": "store.steampowered.com"
         }
       },
       "tag": "proxy"
@@ -111,6 +109,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "167.71.79.101:443"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {
