@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:zhgng.iddns.ir"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,17 +43,23 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpProxyUDP443": "allow"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "195.72.166.251",
+            "address": "zhgng.iddns.ir",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "flow": "xtls-rprx-vision-udp443",
-                "id": "64c05afc-ce81-4ba0-b697-afa04da1427e"
+                "flow": "",
+                "id": "92a188aa-2e86-4557-bd30-b2079a70f824",
+                "level": 8
               }
             ]
           }
@@ -54,20 +67,30 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "realitySettings": {
-          "allowInsecure": false,
-          "publicKey": "RKDT6fVgcZS8Qfzhv5rbeHRIflA3UTKD_HNLJyOoUwk",
-          "serverName": "www.lloydsbankinggroup.com",
-          "shortId": "25349b36802f"
-        },
-        "security": "reality",
+        "security": "tls",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
+          }
         },
         "tcpSettings": {
           "header": {
             "type": "none"
           }
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2",
+            "http/1.1",
+            "h3"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "zhgng.iddns.ir"
         }
       },
       "tag": "proxy"
