@@ -2,13 +2,6 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https+local://1.1.1.1/dns-query",
-        "domains": [
-          "full:zcdre3.iddns.ir"
-        ],
-        "skipFallback": true
-      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -43,23 +36,17 @@
   },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false,
-        "xudpProxyUDP443": "allow"
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "zcdre3.iddns.ir",
+            "address": "127.0.0.1",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
                 "flow": "",
-                "id": "92a188aa-2e86-4557-bd30-b2079a70f824",
-                "level": 8
+                "id": "40992c2a-513e-4837-9594-23411fd42afd"
               }
             ]
           }
@@ -67,30 +54,40 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "ForceIP",
-          "happyEyeballs": {
-            "interleave": 2,
-            "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          }
+          "dialerProxy": "compat-transport-1"
         },
         "tcpSettings": {
           "header": {
-            "type": "none"
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "alpn": [
-            "h2",
-            "http/1.1",
-            "h3"
-          ],
-          "fingerprint": "chrome",
-          "serverName": "zcdre3.iddns.ir"
+          "serverName": "store.steampowered.com"
         }
       },
       "tag": "proxy"
@@ -112,6 +109,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "64.227.34.84:443"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {

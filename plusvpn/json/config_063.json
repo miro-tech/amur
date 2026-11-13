@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:in.smrtai.top"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,17 +43,23 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": true,
+        "xudpConcurrency": 1,
+        "xudpProxyUDP443": "allow"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "127.0.0.1",
+            "address": "in.smrtai.top",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
                 "flow": "",
-                "id": "40992c2a-513e-4837-9594-23411fd42afd"
+                "id": "6bdc8320-7eae-46fc-be08-f5f54e65dfc8"
               }
             ]
           }
@@ -54,40 +67,21 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "3LbVuwKpQv55GngyRhvGl9KyAHIDAgvJx_VRM5mUD2Q",
+          "serverName": "www.cloudflare.com",
+          "shortId": "6bdc8320"
+        },
+        "security": "reality",
         "sockopt": {
-          "dialerProxy": "compat-transport-1"
+          "domainStrategy": "ForceIPv4"
         },
         "tcpSettings": {
           "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "store.steampowered.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+            "type": "none"
           }
-        },
-        "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "store.steampowered.com"
         }
       },
       "tag": "proxy"
@@ -109,18 +103,6 @@
     {
       "protocol": "blackhole",
       "tag": "block"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "redirect": "144.126.232.31:443"
-      },
-      "streamSettings": {
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        }
-      },
-      "tag": "compat-transport-1"
     }
   ],
   "policy": {

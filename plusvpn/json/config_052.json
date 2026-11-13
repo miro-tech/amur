@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:wwww.qarvian.ir"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,58 +43,48 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpProxyUDP443": "allow"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "127.0.0.1",
+            "address": "wwww.qarvian.ir",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
                 "flow": "",
-                "id": "40992c2a-513e-4837-9594-23411fd42afd"
+                "id": "97e0ea78-67ae-4984-8a14-a7d1a51e58de",
+                "level": 8
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "security": "none",
+        "network": "ws",
+        "security": "tls",
         "sockopt": {
-          "dialerProxy": "compat-transport-1"
-        },
-        "tcpSettings": {
-          "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "store.steampowered.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
           }
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "serverName": "store.steampowered.com"
+          "pinnedPeerCertSha256": "cd6e838b9bfe31cab8b3d5c858b0d6223fe84ece236c1fdb281be93c302e1e6e",
+          "serverName": "cdn.akamai.steamstatic.com"
+        },
+        "wsSettings": {
+          "host": "copy_az_channel_NUFiLTER_17i.global.ssl.fastly.net.",
+          "path": ""
         }
       },
       "tag": "proxy"
@@ -109,18 +106,6 @@
     {
       "protocol": "blackhole",
       "tag": "block"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "redirect": "46.101.211.45:443"
-      },
-      "streamSettings": {
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        }
-      },
-      "tag": "compat-transport-1"
     }
   ],
   "policy": {
