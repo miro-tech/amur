@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:fastly2.dunnexa.ir"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,52 +43,38 @@
   },
   "outbounds": [
     {
-      "protocol": "vless",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpProxyUDP443": "allow"
+      },
+      "protocol": "trojan",
       "settings": {
-        "vnext": [
-          {
-            "address": "127.0.0.1",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "none",
-                "id": "40992c2a-513e-4837-9594-23411fd42afd"
-              }
-            ]
-          }
-        ]
+        "address": "fastly2.dunnexa.ir",
+        "level": 8,
+        "password": "jcTG9WSWMJAmR4rv10xpww",
+        "port": 443
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "ws",
+        "security": "tls",
         "sockopt": {
-          "dialerProxy": "compat-transport-1"
-        },
-        "tcpSettings": {
-          "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "store.steampowered.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
           }
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "pinnedPeerCertSha256": "cd6e838b9bfe31cab8b3d5c858b0d6223fe84ece236c1fdb281be93c302e1e6e",
+          "serverName": "cdn.akamai.steamstatic.com"
+        },
+        "wsSettings": {
+          "host": "copy_az_channel_NUFiLTER_17i.global.ssl.fastly.net.",
+          "path": "/TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER"
         }
       },
       "tag": "proxy"
@@ -103,18 +96,6 @@
     {
       "protocol": "blackhole",
       "tag": "block"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "redirect": "13.63.99.120:443"
-      },
-      "streamSettings": {
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        }
-      },
-      "tag": "compat-transport-1"
     }
   ],
   "policy": {
