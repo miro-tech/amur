@@ -2,13 +2,6 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https+local://1.1.1.1/dns-query",
-        "domains": [
-          "full:jdwabxe.cvewfjg.shop"
-        ],
-        "skipFallback": true
-      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -43,23 +36,17 @@
   },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": true,
-        "xudpConcurrency": 1,
-        "xudpProxyUDP443": "allow"
-      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "jdwabxe.cvewfjg.shop",
+            "address": "127.0.0.1",
             "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "flow": "xtls-rprx-vision-udp443",
-                "id": "711c018e-2692-4aa8-93f3-544d83fcd16c"
+                "flow": "",
+                "id": "7060231d-b9ba-495f-a218-bf427940cf3e"
               }
             ]
           }
@@ -67,21 +54,40 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "HyVSZ2OyySwXT-xRhTAqoiuYflIaj_b0Jxm7S1Iq9hs",
-          "serverName": "www.cloudflare.com",
-          "shortId": "7a76f3c4b9dd"
-        },
-        "security": "reality",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "dialerProxy": "compat-transport-1"
         },
         "tcpSettings": {
           "header": {
-            "type": "none"
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "play.googleapis.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "serverName": "play.googleapis.com"
         }
       },
       "tag": "proxy"
@@ -103,6 +109,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "13.62.231.4:443"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {

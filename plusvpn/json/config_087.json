@@ -2,13 +2,6 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https+local://1.1.1.1/dns-query",
-        "domains": [
-          "full:sclass-b1.catcat321.com"
-        ],
-        "skipFallback": true
-      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -43,28 +36,52 @@
   },
   "outbounds": [
     {
-      "protocol": "trojan",
+      "protocol": "vless",
       "settings": {
-        "address": "sclass-b1.catcat321.com",
-        "flow": "",
-        "password": "d7563108-615c-4338-a7bd-77f359869a4a",
-        "port": 20027
+        "vnext": [
+          {
+            "address": "127.0.0.1",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "id": "40992c2a-513e-4837-9594-23411fd42afd"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "dialerProxy": "compat-transport-1"
         },
         "tcpSettings": {
           "header": {
-            "type": "none"
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "store.steampowered.com"
+                ],
+                "Pragma": "no-cache",
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
           }
-        },
-        "tlsSettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "serverName": "hk.catxstar.com"
         }
       },
       "tag": "proxy"
@@ -86,6 +103,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "170.64.220.234:443"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {
