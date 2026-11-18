@@ -34,94 +34,43 @@
     "dnsLog": false,
     "loglevel": "warning"
   },
-  "observatory": {
-    "enableConcurrency": true,
-    "probeInterval": "15s",
-    "probeUrl": "https://www.gstatic.com/generate_204",
-    "subjectSelector": [
-      "door6",
-      "door4"
-    ]
-  },
   "outbounds": [
     {
-      "protocol": "hysteria",
+      "protocol": "vless",
       "settings": {
-        "address": "46.225.132.127",
-        "port": 30150,
-        "version": 2
+        "vnext": [
+          {
+            "address": "167.233.178.254",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "xtls-rprx-vision-udp443",
+                "id": "585a421d-d782-4420-912e-dd58ff5966d7"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "quicParams": {
-            "congestion": "bbr"
-          },
-          "udp": [
-            {
-              "settings": {
-                "password": "fa374a506ef36184d3dd1454055a5665"
-              },
-              "type": "salamander"
-            }
-          ]
+        "network": "tcp",
+        "realitySettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "publicKey": "7jPluypHwPilf_Mq7JOY96SwKkbK35WuIlN1HwGQ_0A",
+          "serverName": "www.hetzner.com",
+          "shortId": "974f7f8f",
+          "spiderX": "/"
         },
-        "hysteriaSettings": {
-          "auth": "0075be7a-1f52-407b-81c1-7a0cb109e814",
-          "version": 2
-        },
-        "network": "hysteria",
-        "security": "tls",
+        "security": "reality",
         "sockopt": {
           "domainStrategy": "ForceIPv4"
         },
-        "tlsSettings": {
-          "pinnedPeerCertSha256": "6353a0ad7f69fd00c9aa6a8e3c9e9f4eded2d28ff92a3fdf63dda64dc3da2bf3",
-          "serverName": "www.bing.com"
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
         }
-      },
-      "tag": "door6"
-    },
-    {
-      "protocol": "hysteria",
-      "settings": {
-        "address": "46.225.132.127",
-        "port": 30150,
-        "version": 2
-      },
-      "streamSettings": {
-        "finalmask": {
-          "quicParams": {
-            "congestion": "bbr"
-          },
-          "udp": [
-            {
-              "settings": {
-                "password": "fa374a506ef36184d3dd1454055a5665"
-              },
-              "type": "salamander"
-            }
-          ]
-        },
-        "hysteriaSettings": {
-          "auth": "0075be7a-1f52-407b-81c1-7a0cb109e814",
-          "version": 2
-        },
-        "network": "hysteria",
-        "security": "tls",
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        },
-        "tlsSettings": {
-          "pinnedPeerCertSha256": "6353a0ad7f69fd00c9aa6a8e3c9e9f4eded2d28ff92a3fdf63dda64dc3da2bf3",
-          "serverName": "www.bing.com"
-        }
-      },
-      "tag": "door4"
-    },
-    {
-      "protocol": "loopback",
-      "settings": {
-        "inboundTag": "cm-balancer-dispatch"
       },
       "tag": "proxy"
     },
@@ -152,37 +101,19 @@
   },
   "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "door6",
-          "door4"
-        ],
-        "strategy": {
-          "type": "leastPing"
-        },
-        "tag": "doors"
-      }
-    ],
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "balancerTag": "doors",
-        "inboundTag": [
-          "cm-balancer-dispatch"
-        ],
-        "type": "field"
-      },
-      {
-        "balancerTag": "doors",
         "inboundTag": [
           "dns-module"
         ],
+        "outboundTag": "proxy",
         "type": "field"
       },
       {
         "inboundTag": [
-          "socks"
+          "socks",
+          "tun"
         ],
         "network": "tcp,udp",
         "outboundTag": "dns-out",
@@ -190,8 +121,8 @@
         "type": "field"
       },
       {
-        "balancerTag": "doors",
         "network": "tcp,udp",
+        "outboundTag": "proxy",
         "type": "field"
       }
     ]
