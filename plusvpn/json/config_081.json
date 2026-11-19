@@ -34,94 +34,63 @@
     "dnsLog": false,
     "loglevel": "warning"
   },
-  "observatory": {
-    "enableConcurrency": true,
-    "probeInterval": "15s",
-    "probeUrl": "https://www.gstatic.com/generate_204",
-    "subjectSelector": [
-      "door6",
-      "door4"
-    ]
-  },
   "outbounds": [
     {
-      "protocol": "hysteria",
+      "protocol": "vless",
       "settings": {
-        "address": "46.225.132.127",
-        "port": 30150,
-        "version": 2
+        "vnext": [
+          {
+            "address": "127.0.0.1",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "40992c2a-513e-4837-9594-23411fd42afd"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "finalmask": {
-          "quicParams": {
-            "congestion": "bbr"
-          },
-          "udp": [
-            {
-              "settings": {
-                "password": "fa374a506ef36184d3dd1454055a5665"
-              },
-              "type": "salamander"
-            }
-          ]
-        },
-        "hysteriaSettings": {
-          "auth": "0075be7a-1f52-407b-81c1-7a0cb109e814",
-          "version": 2
-        },
-        "network": "hysteria",
-        "security": "tls",
+        "network": "tcp",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "dialerProxy": "compat-transport-1"
+        },
+        "tcpSettings": {
+          "header": {
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "fast.com"
+                ],
+                "Pragma": [
+                  "no-cache"
+                ],
+                "User-Agent": [
+                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
+          }
         },
         "tlsSettings": {
-          "pinnedPeerCertSha256": "6353a0ad7f69fd00c9aa6a8e3c9e9f4eded2d28ff92a3fdf63dda64dc3da2bf3",
-          "serverName": "www.bing.com"
+          "allowInsecure": false,
+          "serverName": "fast.com"
         }
-      },
-      "tag": "door6"
-    },
-    {
-      "protocol": "hysteria",
-      "settings": {
-        "address": "46.225.132.127",
-        "port": 30150,
-        "version": 2
-      },
-      "streamSettings": {
-        "finalmask": {
-          "quicParams": {
-            "congestion": "bbr"
-          },
-          "udp": [
-            {
-              "settings": {
-                "password": "fa374a506ef36184d3dd1454055a5665"
-              },
-              "type": "salamander"
-            }
-          ]
-        },
-        "hysteriaSettings": {
-          "auth": "0075be7a-1f52-407b-81c1-7a0cb109e814",
-          "version": 2
-        },
-        "network": "hysteria",
-        "security": "tls",
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        },
-        "tlsSettings": {
-          "pinnedPeerCertSha256": "6353a0ad7f69fd00c9aa6a8e3c9e9f4eded2d28ff92a3fdf63dda64dc3da2bf3",
-          "serverName": "www.bing.com"
-        }
-      },
-      "tag": "door4"
-    },
-    {
-      "protocol": "loopback",
-      "settings": {
-        "inboundTag": "cm-balancer-dispatch"
       },
       "tag": "proxy"
     },
@@ -142,6 +111,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "178.62.37.247:443"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {
@@ -152,37 +133,19 @@
   },
   "remarks": "@shenvpn",
   "routing": {
-    "balancers": [
-      {
-        "selector": [
-          "door6",
-          "door4"
-        ],
-        "strategy": {
-          "type": "leastPing"
-        },
-        "tag": "doors"
-      }
-    ],
     "domainStrategy": "AsIs",
     "rules": [
       {
-        "balancerTag": "doors",
-        "inboundTag": [
-          "cm-balancer-dispatch"
-        ],
-        "type": "field"
-      },
-      {
-        "balancerTag": "doors",
         "inboundTag": [
           "dns-module"
         ],
+        "outboundTag": "proxy",
         "type": "field"
       },
       {
         "inboundTag": [
-          "socks"
+          "socks",
+          "tun"
         ],
         "network": "tcp,udp",
         "outboundTag": "dns-out",
@@ -190,8 +153,8 @@
         "type": "field"
       },
       {
-        "balancerTag": "doors",
         "network": "tcp,udp",
+        "outboundTag": "proxy",
         "type": "field"
       }
     ]
