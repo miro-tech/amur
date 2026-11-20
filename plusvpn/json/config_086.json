@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:ov-germany1.09vpn.com"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,39 +43,41 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": true,
+        "xudpConcurrency": 1,
+        "xudpProxyUDP443": "allow"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "48.102.170.205",
-            "port": 8443,
+            "address": "127.0.0.1",
+            "port": 80,
             "users": [
               {
                 "encryption": "none",
-                "flow": "xtls-rprx-vision-udp443",
-                "id": "1d1eda2e-0bd7-4478-877b-1c5425c6c4dd"
+                "flow": "",
+                "id": "18535741-e8b3-4b43-9348-785b55936751"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "tcp",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "firefox",
-          "publicKey": "yr_opKG6DGTppNDXkk-DhGSYJZXbb9o-caexk2FZO38",
-          "serverName": "tradingview.com",
-          "shortId": "8f3c6e2a1b5d4f09"
-        },
-        "security": "reality",
+        "network": "ws",
+        "security": "none",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "dialerProxy": "compat-transport-1"
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "tlsSettings": {
+          "allowInsecure": false,
+          "serverName": "ov-germany1.09vpn.com"
+        },
+        "wsSettings": {
+          "host": "ov-germany1.09vpn.com",
+          "path": "/vless/"
         }
       },
       "tag": "proxy"
@@ -90,6 +99,18 @@
     {
       "protocol": "blackhole",
       "tag": "block"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+        "redirect": "ov-germany1.09vpn.com:80"
+      },
+      "streamSettings": {
+        "sockopt": {
+          "domainStrategy": "ForceIPv4"
+        }
+      },
+      "tag": "compat-transport-1"
     }
   ],
   "policy": {
