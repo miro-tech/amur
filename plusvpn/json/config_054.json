@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:eefdffdv.localip.ir"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,17 +43,22 @@
   },
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpProxyUDP443": "allow"
+      },
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "37.235.247.81",
-            "port": 8443,
+            "address": "eefdffdv.localip.ir",
+            "port": 443,
             "users": [
               {
                 "encryption": "none",
-                "flow": "xtls-rprx-vision-udp443",
-                "id": "2ae0670d-0bdf-409e-9a55-4e970252d378"
+                "id": "92a188aa-2e86-4557-bd30-b2079a70f824",
+                "level": 8
               }
             ]
           }
@@ -54,21 +66,30 @@
       },
       "streamSettings": {
         "network": "tcp",
-        "realitySettings": {
-          "allowInsecure": false,
-          "fingerprint": "chrome",
-          "publicKey": "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc",
-          "serverName": "apple.com",
-          "shortId": "6ba85179e30d4fc2"
-        },
-        "security": "reality",
+        "security": "tls",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
+          }
         },
         "tcpSettings": {
           "header": {
             "type": "none"
           }
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2",
+            "http/1.1",
+            "h3"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "eefdffdv.localip.ir"
         }
       },
       "tag": "proxy"

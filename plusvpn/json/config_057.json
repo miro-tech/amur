@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:tttevcv.localip.ir"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -36,18 +43,38 @@
   },
   "outbounds": [
     {
-      "protocol": "shadowsocks",
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpProxyUDP443": "allow"
+      },
+      "protocol": "vless",
       "settings": {
-        "address": "23.162.152.22",
-        "method": "aes-256-gcm",
-        "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
-        "port": 19999
+        "vnext": [
+          {
+            "address": "tttevcv.localip.ir",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "id": "92a188aa-2e86-4557-bd30-b2079a70f824",
+                "level": 8
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
+        "security": "tls",
         "sockopt": {
-          "domainStrategy": "ForceIPv4"
+          "domainStrategy": "ForceIP",
+          "happyEyeballs": {
+            "interleave": 2,
+            "maxConcurrentTry": 4,
+            "prioritizeIPv6": false,
+            "tryDelayMs": 250
+          }
         },
         "tcpSettings": {
           "header": {
@@ -55,7 +82,14 @@
           }
         },
         "tlsSettings": {
-          "allowInsecure": false
+          "allowInsecure": false,
+          "alpn": [
+            "h2",
+            "http/1.1",
+            "h3"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "tttevcv.localip.ir"
         }
       },
       "tag": "proxy"
