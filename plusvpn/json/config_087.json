@@ -2,6 +2,13 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
+      {
+        "address": "https+local://1.1.1.1/dns-query",
+        "domains": [
+          "full:static.167.125.29.2.clients.your-server.de"
+        ],
+        "skipFallback": true
+      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -40,12 +47,13 @@
       "settings": {
         "vnext": [
           {
-            "address": "127.0.0.1",
-            "port": 443,
+            "address": "static.167.125.29.2.clients.your-server.de",
+            "port": 8443,
             "users": [
               {
                 "encryption": "none",
-                "id": "40992c2a-513e-4837-9594-23411fd42afd"
+                "flow": "xtls-rprx-vision-udp443",
+                "id": "071c751b-aadb-4cdf-8e2a-077e797afbee"
               }
             ]
           }
@@ -53,35 +61,23 @@
       },
       "streamSettings": {
         "network": "tcp",
+        "security": "tls",
         "sockopt": {
-          "dialerProxy": "compat-transport-1"
+          "domainStrategy": "ForceIPv4"
         },
         "tcpSettings": {
           "header": {
-            "request": {
-              "headers": {
-                "Accept-Encoding": [
-                  "gzip, deflate"
-                ],
-                "Connection": [
-                  "keep-alive"
-                ],
-                "Host": [
-                  "fast.com"
-                ],
-                "Pragma": "no-cache",
-                "User-Agent": [
-                  "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
-                ]
-              },
-              "method": "GET",
-              "path": [
-                "/"
-              ],
-              "version": "1.1"
-            },
-            "type": "http"
+            "type": "none"
           }
+        },
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "static.162.97.119.168.clients.your-server.de"
         }
       },
       "tag": "proxy"
@@ -103,18 +99,6 @@
     {
       "protocol": "blackhole",
       "tag": "block"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "redirect": "35.89.125.157:443"
-      },
-      "streamSettings": {
-        "sockopt": {
-          "domainStrategy": "ForceIPv4"
-        }
-      },
-      "tag": "compat-transport-1"
     }
   ],
   "policy": {
