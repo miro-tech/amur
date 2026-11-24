@@ -2,13 +2,6 @@
   "dns": {
     "queryStrategy": "UseIPv4",
     "servers": [
-      {
-        "address": "https+local://1.1.1.1/dns-query",
-        "domains": [
-          "full:ipfast.kingmna.com"
-        ],
-        "skipFallback": true
-      },
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
       "https://9.9.9.9/dns-query"
@@ -43,38 +36,71 @@
   },
   "outbounds": [
     {
-      "mux": {
-        "concurrency": -1,
-        "enabled": false,
-        "xudpProxyUDP443": "allow"
-      },
-      "protocol": "trojan",
+      "protocol": "vless",
       "settings": {
-        "address": "ipfast.kingmna.com",
-        "level": 8,
-        "password": "lDU6Jpl4nSXA-x4sWmb1LQ",
-        "port": 443
+        "vnext": [
+          {
+            "address": "188.114.98.0",
+            "port": 443,
+            "users": [
+              {
+                "encryption": "none",
+                "flow": "",
+                "id": "e58384f2-76ba-400b-ae0a-8271b4c9c310"
+              }
+            ]
+          }
+        ]
       },
       "streamSettings": {
-        "network": "ws",
+        "finalmask": {
+          "tcp": [
+            {
+              "settings": {
+                "delays": [
+                  "0"
+                ],
+                "lengths": [
+                  "0",
+                  "104",
+                  "1"
+                ],
+                "maxSplit": "0",
+                "packets": "tlshello"
+              },
+              "type": "fragment"
+            },
+            {
+              "settings": {
+                "delays": [
+                  "1"
+                ],
+                "lengths": [
+                  "114",
+                  "1"
+                ],
+                "maxSplit": "11",
+                "packets": "1-1"
+              },
+              "type": "fragment"
+            }
+          ]
+        },
+        "network": "xhttp",
         "security": "tls",
         "sockopt": {
-          "domainStrategy": "ForceIP",
-          "happyEyeballs": {
-            "interleave": 2,
-            "maxConcurrentTry": 4,
-            "prioritizeIPv6": false,
-            "tryDelayMs": 250
-          }
+          "domainStrategy": "ForceIPv4"
         },
         "tlsSettings": {
           "allowInsecure": false,
-          "pinnedPeerCertSha256": "cd6e838b9bfe31cab8b3d5c858b0d6223fe84ece236c1fdb281be93c302e1e6e",
-          "serverName": "cdn.akamai.steamstatic.com"
+          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+          "fingerprint": "unsafe",
+          "serverName": "crm.dpdns.org"
         },
-        "wsSettings": {
-          "host": "copy_az_channel_NUFiLTER_17i.global.ssl.fastly.net.",
-          "path": "/TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER-TELEGRAM-@NUFiLTER"
+        "xhttpSettings": {
+          "host": "crm.dpdns.org",
+          "mode": "auto",
+          "path": "/api/v1/stream"
         }
       },
       "tag": "proxy"
